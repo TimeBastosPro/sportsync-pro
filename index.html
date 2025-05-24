@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportSync Pro - v0.1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-generate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .workout-section {
+            background: white;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .workout-section h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .duration-badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .ai-note {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #d1c4e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 2s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>SportSync Pro</h1>
+            <p class="subtitle">Gerador Inteligente de Treinos Personalizados</p>
+        </div>
+        
+        <form id="workoutForm">
+            <div class="form-group">
+                <label for="athlete">👤 Nome do Atleta:</label>
+                <input type="text" id="athlete" required placeholder="Ex: João Silva" autocomplete="name">
+            </div>
+            
+            <div class="form-group">
+                <label for="sport">🏃 Esporte Principal:</label>
+                <select id="sport" required>
+                    <option value="">Selecione o esporte</option>
+                    <option value="corrida">🏃‍♂️ Corrida</option>
+                    <option value="ciclismo">🚴‍♂️ Ciclismo</option>
+                    <option value="natacao">🏊‍♂️ Natação</option>
+                    <option value="futebol">⚽ Futebol</option>
+                    <option value="basquete">🏀 Basquete</option>
+                    <option value="crossfit">🏋️‍♂️ CrossFit</option>
+                    <option value="tenis">🎾 Tênis</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="goal">🎯 Objetivo Principal:</label>
+                <select id="goal" required>
+                    <option value="">Selecione o objetivo</option>
+                    <option value="resistencia">💪 Melhorar Resistência</option>
+                    <option value="velocidade">⚡ Aumentar Velocidade</option>
+                    <option value="forca">🏋️ Ganhar Força</option>
+                    <option value="peso">🔥 Perder Peso</option>
+                    <option value="competicao">🏆 Preparar para Competição</option>
+                    <option value="recuperacao">🧘 Recuperação Ativa</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="duration">⏱️ Duração (minutos):</label>
+                <input type="number" id="duration" required min="20" max="180" placeholder="60" value="60">
+            </div>
+            
+            <div class="form-group">
+                <label for="level">📊 Nível Atual:</label>
+                <select id="level" required>
+                    <option value="">Selecione o nível</option>
+                    <option value="iniciante">🌱 Iniciante (0-6 meses)</option>
+                    <option value="intermediario">📈 Intermediário (6-24 meses)</option>
+                    <option value="avancado">🚀 Avançado (2+ anos)</option>
+                    <option value="elite">👑 Elite/Profissional</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">📝 Observações (opcional):</label>
+                <textarea id="notes" rows="3" placeholder="Ex: Lesão no joelho, prefere manhã, equipamentos disponíveis..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-generate" id="generateBtn">
+                🚀 Gerar Treino Personalizado
+            </button>
+        </form>
+        
+        <div id="result" class="result">
+            <div id="loading" class="loading" style="display: none;">
+                <p>🤖 IA analisando seu perfil e criando treino personalizado...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p id="loadingText">Processando dados do atleta...</p>
+            </div>
+            <div id="workout" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let currentWorkout = null;
+        
+        // Event listeners
+        document.getElementById('workoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateWorkout();
+        });
+        
+        // Função principal de geração
+        async function generateWorkout() {
+            // Coletar dados do formulário
+            const athleteData = {
+                name: document.getElementById('athlete').value,
+                sport: document.getElementById('sport').value,
+                goal: document.getElementById('goal').value,
+                duration: parseInt(document.getElementById('duration').value),
+                level: document.getElementById('level').value,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Validar dados
+            if (!validateForm(athleteData)) return;
+            
+            // Iniciar processo de geração
+            startLoading();
+            
+            try {
+                // Simular processamento IA (2-3 segundos)
+                await simulateAIProcessing();
+                
+                // Gerar treino
+                const workout = await createPersonalizedWorkout(athleteData);
+                
+                // Exibir resultado
+                displayWorkout(workout);
+                
+            } catch (error) {
+                showError('Erro ao gerar treino. Tente novamente.');
+            }
+        }
+        
+        // Validação do formulário
+        function validateForm(data) {
+            if (!data.name.trim()) {
+                alert('❌ Por favor, insira o nome do atleta');
+                return false;
+            }
+            if (data.duration < 20 || data.duration > 180) {
+                alert('❌ Duração deve ser entre 20 e 180 minutos');
+                return false;
+            }
+            return true;
+        }
+        
+        // Simular processamento da IA
+        async function simulateAIProcessing() {
+            const steps = [
+                'Analisando perfil do atleta...',
+                'Aplicando metodologias científicas...',
+                'Personalizando estrutura do treino...',
+                'Calculando zonas de intensidade...',
+                'Finalizando recomendações...'
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                document.getElementById('loadingText').textContent = steps[i];
+                document.getElementById('progressFill').style.width = ((i + 1) / steps.length * 100) + '%';
+                await sleep(400);
+            }
+        }
+        
+        // Função sleep para delays
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Iniciar loading
+        function startLoading() {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('workout').style.display = 'none';
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtn').textContent = '⏳ Gerando...';
+        }
+        
+        // Gerar treino personalizado
+        async function createPersonalizedWorkout(data) {
+            const warmupTime = Math.round(data.duration * 0.15);
+            const mainTime = Math.round(data.duration * 0.70);
+            const cooldownTime = data.duration - warmupTime - mainTime;
+            
+            // Base de conhecimento para treinos
+            const workoutDatabase = {
+                corrida: {
+                    resistencia: {
+                        iniciante: {
+                            main: "Corrida contínua em ritmo confortável (Zona 2). Mantenha conversa possível durante todo o treino.",
+                            intensity: "65-75% FC Máxima",
+                            tips: "Foque na postura e respiração. Não se preocupe com velocidade."
+                        },
+                        intermediario: {
+                            main: "Corrida base com 3 blocos de 8 minutos em ritmo moderado, recuperação de 2 min entre blocos.",
+                            intensity: "70-80% FC Máxima",
+                            tips: "Mantenha ritmo constante nos blocos. Use a recuperação para se recompor."
+                        },
+                        avancado: {
+                            main: "Corrida progressiva: 20min Z2, 15min Z3, 10min Z2. Aumente 10 seg/km a cada segmento.",
+                            intensity: "70-85% FC Máxima",
+                            tips: "Controle o esforço na progressão. Finalize forte mas controlado."
+                        }
+                    },
+                    velocidade: {
+                        iniciante: {
+                            main: "4 x 2 minutos em ritmo ligeiramente desconfortável, recuperação 2 min caminhando.",
+                            intensity: "80-85% FC Máxima",
+                            tips: "Recupere completamente entre tiros. Qualidade > Quantidade."
+                        },
+                        intermediario: {
+                            main: "6 x 3 minutos em ritmo de 10km, recuperação 90 seg trote leve.",
+                            intensity: "85-90% FC Máxima",
+                            tips: "Mantenha ritmo uniforme nos tiros. Recuperação ativa."
+                        },
+                        avancado: {
+                            main: "8 x 400m em ritmo de 5km, recuperação 200m trote (1:1). Foque na economia de movimento.",
+                            intensity: "90-95% FC Máxima",
+                            tips: "Relaxe braços e ombros. Mantenha cadência alta."
+                        }
+                    }
+                },
+                ciclismo: {
+                    resistencia: {
+                        iniciante: {
+                            main: "Pedalada contínua em cadência 80-90 rpm, esforço confortável.",
+                            intensity: "65-75% FC Máxima",
+                            tips: "Mantenha cadência constante. Hidrate regularmente."
+                        },
+                        intermediario: {
+                            main: "Base aeróbica com 4 x 5min em tempo de 40km (Z3), recuperação 3min Z1.",
+                            intensity: "75-85% FC Máxima",
+                            tips: "Foque na eficiência da pedalada. Mantenha posição aerodinâmica."
+                        }
+                    }
+                }
+            };
+            
+            // Buscar treino específico ou usar padrão
+            const sportData = workoutDatabase[data.sport] || {};
+            const goalData = sportData[data.goal] || {};
+            const levelData = goalData[data.level] || {
+                main: `Treino específico de ${data.sport} focado em ${data.goal}`,
+                intensity: "Intensidade moderada",
+                tips: "Adapte conforme sua experiência"
+            };
+            
+            // Gerar aquecimento específico
+            const warmups = {
+                corrida: "Caminhada rápida (3 min) + Corrida leve progressiva + Educativos (skipping, anfersen)",
+                ciclismo: "Pedalada suave aumentando cadência gradualmente + Sprints curtos de ativação",
+                natacao: "Nado livre fácil + Exercícios técnicos (puxada, chute, respiração bilateral)",
+                futebol: "Trote + Alongamento dinâmico + Controle de bola + Passes curtos",
+                basquete: "Corrida lateral + Drible + Arremessos próximos + Movimentação sem bola"
+            };
+            
+            const cooldowns = {
+                corrida: "Caminhada progressivamente mais lenta + Alongamento estático (panturrilha, quadríceps, isquios)",
+                ciclismo: "Pedalada muito leve diminuindo cadência + Alongamento (lombar, quadríceps, glúteos)",
+                natacao: "Nado costas fácil + Respiração + Alongamento aquático",
+                futebol: "Trote leve + Alongamento + Relaxamento muscular",
+                basquete: "Caminhada + Alongamento + Arremessos livres relaxados"
+            };
+            
+            return {
+                athlete: data.name,
+                sport: data.sport,
+                goal: data.goal,
+                level: data.level,
+                title: `Treino de ${data.sport.charAt(0).toUpperCase() + data.sport.slice(1)} - ${data.goal.charAt(0).toUpperCase() + data.goal.slice(1)}`,
+                totalDuration: data.duration,
+                createdAt: new Date().toLocaleString('pt-BR'),
+                structure: {
+                    warmup: {
+                        duration: warmupTime,
+                        description: warmups[data.sport] || "Aquecimento progressivo específico",
+                        intensity: "50-65% FC Máxima"
+                    },
+                    main: {
+                        duration: mainTime,
+                        description: levelData.main,
+                        intensity: levelData.intensity,
+                        tips: levelData.tips
+                    },
+                    cooldown: {
+                        duration: cooldownTime,
+                        description: cooldowns[data.sport] || "Volta à calma com alongamento",
+                        intensity: "Baixa intensidade"
+                    }
+                },
+                scientificBasis: generateScientificBasis(data.goal),
+                adaptations: generateExpectedAdaptations(data.goal),
+                notes: data.notes
+            };
+        }
+        
+        // Gerar base científica
+        function generateScientificBasis(goal) {
+            const bases = {
+                resistencia: "Treino aeróbico estimula a biogênese mitocondrial, aumenta a densidade capilar e melhora a eficiência do sistema cardiovascular, resultando em maior capacidade de utilização de oxigênio pelos músculos ativos.",
+                velocidade: "Intervalos de alta intensidade desenvolvem a potência anaeróbica através da melhoria do sistema de fosfato de creatina e glicólise anaeróbica, além de aumentar a capacidade de tamponamento do lactato.",
+                forca: "Treino de força promove hipertrofia muscular e melhora da coordenação neuromuscular através do aumento do recrutamento de unidades motoras e sincronização neural.",
+                peso: "Exercício aeróbico em intensidade moderada maximiza a oxidação de ácidos graxos, promovendo déficit calórico e mudanças na composição corporal quando combinado com dieta adequada.",
+                competicao: "Treino específico desenvolve as demandas metabólicas e neuromusculares da modalidade, preparando os sistemas energéticos predominantes na competição.",
+                recuperacao: "Exercício de baixa intensidade facilita a remoção de metabólitos, aumenta o fluxo sanguíneo e promove recuperação ativa dos sistemas fisiológicos."
+            };
+            return bases[goal] || "Treino baseado em princípios científicos de adaptação fisiológica.";
+        }
+        
+        // Gerar adaptações esperadas
+        function generateExpectedAdaptations(goal) {
+            const adaptations = {
+                resistencia: ["Aumento do VO2 máximo", "Melhora da eficiência cardíaca", "Maior densidade mitocondrial", "Economia de movimento"],
+                velocidade: ["Aumento da potência anaeróbica", "Melhora da coordenação neuromuscular", "Maior tolerância ao lactato", "Velocidade de contração"],
+                forca: ["Hipertrofia muscular", "Aumento da força máxima", "Melhora da potência", "Coordenação intermuscular"],
+                peso: ["Redução do percentual de gordura", "Aumento do gasto calórico", "Melhora da composição corporal", "Aceleração metabólica"],
+                competicao: ["Preparação psicológica", "Adaptação específica", "Pico de performance", "Estratégia de prova"],
+                recuperacao: ["Redução da fadiga", "Melhora da circulação", "Relaxamento muscular", "Preparação para próximo treino"]
+            };
+            return adaptations[goal] || ["Melhora geral da condição física"];
+        }
+        
+        // Exibir treino
+        function displayWorkout(workout) {
+            const workoutHTML = `
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h3 style="color: #333; margin-bottom: 0.5rem;">🎯 ${workout.title}</h3>
+                    <p style="color: #666;"><strong>Atleta:</strong> ${workout.athlete} | <strong>Criado:</strong> ${workout.createdAt}</p>
+                    <p style="color: #667eea; font-weight: 600; font-size: 1.1rem;">⏱️ Duração Total: ${workout.totalDuration} minutos</p>
+                </div>
+                
+                <div class="workout-section" style="border-left-color: #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>🔥 Aquecimento</h4>
+                        <span class="duration-badge" style="background: #ffc107;">${workout.structure.warmup.duration} min</span>
+                    </div>
+                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.warmup.intensity}</p>
+                    <p>${workout.structure.warmup.description}</p>
+                </div>
+                
+                <div class="workout-section" style="border-left-color: #dc3545;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>💪 Parte Principal</h4>
+                        <span class="duration-badge" style="background: #dc3545;">${workout.structure.main.duration} min</span>
+                    </div>
+                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.main.intensity}</p>
+                    <p style="margin-bottom: 1rem;">${workout.structure.main.description}</p>
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 0.75rem;">
+                        <strong>💡 Dica do Treinador:</strong> ${workout.structure.main.tips}
+                    </div>
+                </div>
+                
+                <div class="workout-section" style="border-left-color: #28a745;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>🧘 Volta à Calma</h4>
+                        <span class="duration-badge" style="background: #28a745;">${workout.structure.cooldown.duration} min</span>
+                    </div>
+                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.cooldown.intensity}</p>
+                    <p>${workout.structure.cooldown.description}</p>
+                </div>
+                
+                <div class="ai-note">
+                    <h4 style="color: #6f42c1; margin-bottom: 1rem;">🧬 Base Científica</h4>
+                    <p style="margin-bottom: 1rem; line-height: 1.5;">${workout.scientificBasis}</p>
+                    
+                    <h5 style="color: #6f42c1; margin-bottom: 0.5rem;">🎯 Adaptações Esperadas:</h5>
+                    <ul style="margin-left: 1rem; line-height: 1.6;">
+                        ${workout.adaptations.map(adaptation => `<li>${adaptation}</li>`).join('')}
+                    </ul>
+                    
+                    ${workout.notes ? `
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #d1c4e9;">
+                            <strong>📝 Observações:</strong> ${workout.notes}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button onclick="exportWorkout()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
+                        📄 Exportar PDF
+                    </button>
+                    <button onclick="shareWorkout()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
+                        📤 Compartilhar
+                    </button>
+                    <button onclick="resetForm()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
+                        🔄 Novo Treino
+                    </button>
+                </div>
+            `;
+            
+            // Finalizar loading e mostrar resultado
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('workout').style.display = 'block';
+            document.getElementById('workout').innerHTML = workoutHTML;
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('generateBtn').textContent = '🚀 Gerar Treino Personalizado';
+            
+            // Salvar treino atual
+            currentWorkout = workout;
+            
+            // Scroll para resultado
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Funções adicionais
+        function exportWorkout() {
+            if (!currentWorkout) return;
+            
+            // Simular export (por enquanto)
+            alert('🚧 Funcionalidade de exportação será implementada em breve!\n\nPor enquanto, você pode copiar o texto do treino.');
+        }
+        
+        function shareWorkout() {
+            if (!currentWorkout) return;
+            
+            const shareText = `🤖 Treino gerado pelo SportSync Pro!\n\n${currentWorkout.title}\n⏱️ ${currentWorkout.totalDuration} minutos\n\n💪 Aquecimento: ${currentWorkout.structure.warmup.duration}min\n🎯 Principal: ${currentWorkout.structure.main.duration}min\n🧘 Volta à calma: ${currentWorkout.structure.cooldown.duration}min`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SportSync Pro - Treino Personalizado',
+                    text: shareText
+                });
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('✅ Treino copiado para a área de transferência!');
+                });
+            }
+        }
+        
+        function resetForm() {
+            document.getElementById('workoutForm').reset();
+            document.getElementById('result').style.display = 'none';
+            currentWorkout = null;
+            
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('workout').innerHTML = `
+                <div style="text-align: center; color: #dc3545;">
+                    <h3>❌ Ops!</h3>
+                    <p>${message}</p>
+                    <button onclick="resetForm()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 1rem; cursor: pointer;">
+                        Tentar Novamente
+                    </button>
+                </div>
+            `;
+            document.getElementById('workout').style.display = 'block';
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('generateBtn').textContent = '🚀 Gerar Treino Personalizado';
+        }
+    </script>
+</body>
+</html>
