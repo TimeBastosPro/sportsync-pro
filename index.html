@@ -944,6 +944,173 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
+        /* AVALIAÇÕES */
+        .evaluation-section {
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .test-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        
+        .test-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .test-card .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .result-item {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e40af;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        
+        .result-unit {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .zones-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .zones-table th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .zones-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .zone-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .zone-1 { background: #10b981; }
+        .zone-2 { background: #3b82f6; }
+        .zone-3 { background: #f59e0b; }
+        .zone-4 { background: #ef4444; }
+        .zone-5 { background: #8b5cf6; }
+        
+        .calculate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .calculate-btn:hover {
+            background: #2563eb;
+        }
+        
+        .info-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 12px;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav {
@@ -1330,10 +1497,182 @@
 
                         <!-- Aba Avaliações -->
                         <div id="avaliacoesTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-chart-line"></i>
-                                <h3>Avaliações em Desenvolvimento</h3>
-                                <p>Esta seção conterá gráficos de evolução, testes físicos e avaliações de desempenho</p>
+                            <!-- Dados Físicos -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-heart"></i> Dados Físicos
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-user"></i> Características Pessoais</h4>
+                                        <div class="form-group">
+                                            <label>Idade (anos)</label>
+                                            <input type="number" id="age" placeholder="Ex: 35">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Sexo</label>
+                                            <select id="gender">
+                                                <option value="">Selecionar</option>
+                                                <option value="male">Masculino</option>
+                                                <option value="female">Feminino</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Altura (cm)</label>
+                                            <input type="number" id="height" placeholder="Ex: 175">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Peso (kg)</label>
+                                            <input type="number" id="weight" placeholder="Ex: 70">
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-heartbeat"></i> Frequência Cardíaca</h4>
+                                        <div class="form-group">
+                                            <label>FC Repouso (bpm)</label>
+                                            <input type="number" id="fcRest" placeholder="Ex: 60">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>FC Máxima (bpm)</label>
+                                            <input type="number" id="fcMax" placeholder="Ex: 185">
+                                            <div class="info-note">
+                                                Se não souber, será calculada pela fórmula: 220 - idade
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Testes de Esforço -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-running"></i> Testes de Esforço
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-stopwatch"></i> Teste de Cooper (12 min)</h4>
+                                        <div class="form-group">
+                                            <label>Distância percorrida (metros)</label>
+                                            <input type="number" id="cooperTest" placeholder="Ex: 2800">
+                                        </div>
+                                        <div class="info-note">
+                                            Teste validado para estimativa de VO2 máximo. Correr/caminhar a maior distância possível em 12 minutos.
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-chart-line"></i> Teste VAM (Velocidade Aeróbia Máxima)</h4>
+                                        <div class="form-group">
+                                            <label>Velocidade final (km/h)</label>
+                                            <input type="number" step="0.1" id="vamTest" placeholder="Ex: 16.5">
+                                        </div>
+                                        <div class="info-note">
+                                            Teste progressivo: inicia a 8 km/h, aumenta 1 km/h a cada 3 minutos até exaustão.
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-road"></i> Teste de 5km</h4>
+                                        <div class="form-group">
+                                            <label>Tempo (min:seg)</label>
+                                            <input type="text" id="test5km" placeholder="Ex: 22:30" pattern="[0-9]{1,2}:[0-9]{2}">
+                                        </div>
+                                        <div class="info-note">
+                                            Correr 5km no menor tempo possível. Usado para calcular VAM e zonas de treino.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Exames Clínicos -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-stethoscope"></i> Exames Clínicos (Opcional)
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-lungs"></i> Ergoespirometria</h4>
+                                        <div class="form-group">
+                                            <label>VO2 máximo (ml/kg/min)</label>
+                                            <input type="number" step="0.1" id="vo2Max" placeholder="Ex: 55.2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Limiar Anaeróbio (% VO2 max)</label>
+                                            <input type="number" id="anaerobicThreshold" placeholder="Ex: 85">
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-chart-area"></i> Teste de Lactato</h4>
+                                        <div class="form-group">
+                                            <label>Limiar Aeróbio - LT1 (bpm)</label>
+                                            <input type="number" id="lt1" placeholder="Ex: 155">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Limiar Anaeróbio - LT2 (bpm)</label>
+                                            <input type="number" id="lt2" placeholder="Ex: 175">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botão Calcular -->
+                            <button class="calculate-btn" onclick="calculatePerformanceData()">
+                                <i class="fas fa-calculator"></i> Calcular Dados e Zonas
+                            </button>
+
+                            <!-- Resultados -->
+                            <div id="performanceResults" style="display: none;">
+                                <div class="evaluation-section">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-chart-bar"></i> Resultados Calculados
+                                    </h3>
+                                    <div class="results-grid">
+                                        <div class="result-item">
+                                            <div class="result-label">VO2 Máximo</div>
+                                            <div class="result-value" id="calculatedVO2">--</div>
+                                            <div class="result-unit">ml/kg/min</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">VAM</div>
+                                            <div class="result-value" id="calculatedVAM">--</div>
+                                            <div class="result-unit">km/h</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">FC Máxima</div>
+                                            <div class="result-value" id="calculatedFCMax">--</div>
+                                            <div class="result-unit">bpm</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">FC Reserva</div>
+                                            <div class="result-value" id="calculatedFCReserve">--</div>
+                                            <div class="result-unit">bpm</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela de Zonas -->
+                                <div class="evaluation-section">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-layer-group"></i> Zonas de Treinamento
+                                    </h3>
+                                    <table class="zones-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Zona</th>
+                                                <th>Descrição</th>
+                                                <th>% FC Max</th>
+                                                <th>FC (bpm)</th>
+                                                <th>% VAM</th>
+                                                <th>Ritmo (min/km)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="zonesTableBody">
+                                            <!-- Zonas serão preenchidas automaticamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
@@ -1817,6 +2156,155 @@
                             </div>
                         </div>
                     </div>
+                `;
+            }).join('');
+        }
+
+        // Funções de Cálculo de Performance
+        function calculatePerformanceData() {
+            // Pegar valores dos inputs
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const gender = document.getElementById('gender').value;
+            const height = parseInt(document.getElementById('height').value) || 0;
+            const weight = parseInt(document.getElementById('weight').value) || 0;
+            const fcRest = parseInt(document.getElementById('fcRest').value) || 60;
+            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+            const test5km = document.getElementById('test5km').value;
+            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+
+            // Validações básicas
+            if (!age || !gender || !height || !weight) {
+                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+                return;
+            }
+
+            // Calcular FC Máxima se não informada
+            if (!fcMax) {
+                fcMax = 220 - age;
+            }
+
+            // Calcular VO2 máximo
+            let vo2Max = vo2MaxInput;
+            if (!vo2Max && cooperTest > 0) {
+                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
+                vo2Max = (cooperTest - 504.9) / 44.73;
+            }
+
+            // Calcular VAM
+            let vam = vamTest;
+            if (!vam && test5km) {
+                // Converter tempo de 5km para VAM
+                const [minutes, seconds] = test5km.split(':').map(Number);
+                const totalMinutes = minutes + (seconds / 60);
+                const speed = 5 / (totalMinutes / 60); // km/h
+                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+            }
+            if (!vam && vo2Max > 0) {
+                // Estimar VAM a partir do VO2 (fórmula de Léger)
+                vam = vo2Max * 0.278;
+            }
+
+            // Calcular FC Reserva
+            const fcReserve = fcMax - fcRest;
+
+            // Mostrar resultados
+            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+            document.getElementById('calculatedFCMax').textContent = fcMax;
+            document.getElementById('calculatedFCReserve').textContent = fcReserve;
+
+            // Gerar tabela de zonas
+            generateTrainingZones(fcMax, fcRest, vam);
+
+            // Mostrar seção de resultados
+            document.getElementById('performanceResults').style.display = 'block';
+        }
+
+        function generateTrainingZones(fcMax, fcRest, vam) {
+            const zones = [
+                {
+                    zone: 1,
+                    name: 'Recuperação Ativa',
+                    color: 'zone-1',
+                    fcPercent: [50, 60],
+                    vamPercent: [60, 70],
+                    description: 'Recuperação e aquecimento'
+                },
+                {
+                    zone: 2,
+                    name: 'Base Aeróbia',
+                    color: 'zone-2',
+                    fcPercent: [60, 70],
+                    vamPercent: [70, 80],
+                    description: 'Resistência aeróbia básica'
+                },
+                {
+                    zone: 3,
+                    name: 'Aeróbio Intenso',
+                    color: 'zone-3',
+                    fcPercent: [70, 80],
+                    vamPercent: [80, 90],
+                    description: 'Limiar aeróbio'
+                },
+                {
+                    zone: 4,
+                    name: 'Limiar Anaeróbio',
+                    color: 'zone-4',
+                    fcPercent: [80, 90],
+                    vamPercent: [90, 100],
+                    description: 'Limiar anaeróbio/lactato'
+                },
+                {
+                    zone: 5,
+                    name: 'Potência Aeróbia',
+                    color: 'zone-5',
+                    fcPercent: [90, 100],
+                    vamPercent: [100, 120],
+                    description: 'VO2 máximo'
+                }
+            ];
+
+            const tbody = document.getElementById('zonesTableBody');
+            tbody.innerHTML = zones.map(zone => {
+                // Calcular FC usando método Karvonen (FC de reserva)
+                const fcReserve = fcMax - fcRest;
+                const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                
+                // Calcular ritmo baseado na VAM
+                let paceMin = '--', paceMax = '--';
+                if (vam > 0) {
+                    const speedMin = vam * (zone.vamPercent[0] / 100);
+                    const speedMax = vam * (zone.vamPercent[1] / 100);
+                    
+                    // Converter km/h para min/km
+                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
+                    const paceMaxCalc = 60 / speedMin; // min/km
+                    
+                    const formatPace = (pace) => {
+                        const minutes = Math.floor(pace);
+                        const seconds = Math.round((pace - minutes) * 60);
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+                    
+                    paceMin = formatPace(paceMinCalc);
+                    paceMax = formatPace(paceMaxCalc);
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="zone-color ${zone.color}"></span>
+                            Zona ${zone.zone}
+                        </td>
+                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
+                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
+                        <td>${fcMin}-${fcMaxZone} bpm</td>
+                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
+                        <td>${paceMin}-${paceMax} /km</td>
+                    </tr>
                 `;
             }).join('');
         }
