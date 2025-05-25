@@ -1,4 +1,244 @@
-<p>Comece cadastrando seu primeiro atleta para usar o GPT Coach.</p>
+// Dashboard avançado
+        function updateDashboard() {
+            // Atualizar métricas básicas
+            document.getElementById('totalAthletes').textContent = athletes.length;
+            document.getElementById('athleteCount').textContent = athletes.length;
+            document.getElementById('totalPeriodizations').textContent = periodizations.length;
+            
+            // Atualizar saudação com nome do treinador
+            if (currentUser) {
+                document.getElementById('trainerWelcome').textContent = `Bem-vindo, ${currentUser.name}!`;
+            }
+            
+            // Atualizar data atual
+            updateCurrentDate();
+            
+            // Métricas avançadas
+            updateAdvancedMetrics();
+            
+            // Carregar atletas recentes
+            loadRecentAthletes();
+            
+            // Carregar agenda do dia
+            loadTodayAgenda();
+            
+            // Carregar alertas
+            loadAlerts();
+            
+            // Métricas da semana
+            updateWeekMetrics();
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            const currentDate = document.getElementById('currentDate');
+            const todayDateLong = document.getElementById('todayDateLong');
+            
+            if (currentDate) {
+                currentDate.textContent = now.toLocaleDateString('pt-BR', options);
+            }
+            
+            if (todayDateLong) {
+                todayDateLong.textContent = now.toLocaleDateString('pt-BR', { 
+                    day: 'numeric', 
+                    month: 'short' 
+                });
+            }
+        }
+
+        function updateAdvancedMetrics() {
+            // Calcular atletas novos este mês
+            const thisMonth = new Date().getMonth();
+            const newAthletesThisMonth = athletes.filter(athlete => {
+                const created = new Date(athlete.createdAt);
+                return created.getMonth() === thisMonth;
+            }).length;
+            
+            const newAthletesElement = document.getElementById('newAthletesMonth');
+            if (newAthletesElement) {
+                newAthletesElement.textContent = `+${newAthletesThisMonth} este mês`;
+            }
+            
+            // Simular outros dados (até implementarmos as funcionalidades)
+            const todayWorkouts = Math.floor(athletes.length * 0.3); // 30% dos atletas treinam hoje
+            const completedToday = Math.floor(todayWorkouts * 0.7); // 70% completaram
+            const totalAlerts = athletes.length > 5 ? Math.floor(athletes.length * 0.1) : 0;
+            
+            const todayWorkoutsElement = document.getElementById('todayWorkouts');
+            const completedTodayElement = document.getElementById('completedToday');
+            const totalAlertsElement = document.getElementById('totalAlerts');
+            const urgentAlertsElement = document.getElementById('urgentAlerts');
+            
+            if (todayWorkoutsElement) todayWorkoutsElement.textContent = todayWorkouts;
+            if (completedTodayElement) completedTodayElement.textContent = `${completedToday} concluídos`;
+            if (totalAlertsElement) totalAlertsElement.textContent = totalAlerts;
+            if (urgentAlertsElement) urgentAlertsElement.textContent = `${Math.floor(totalAlerts * 0.3)} urgentes`;
+        }
+
+        function loadRecentAthletes() {
+            const container = document.getElementById('recentAthletes');
+            if (!container) return;
+            
+            if (athletes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 40px 20px;">
+                        <i class="fas fa-users" style="font-size: 32px; margin-bottom: 12px;"></i>
+                        <p>Nenhum atleta cadastrado ainda</p>
+                        <button class="btn-primary" onclick="showPage('athletes')" style="margin-top: 12px;">
+                            <i class="fas fa-plus"></i>
+                            Cadastrar Primeiro Atleta
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mostrar últimos 3 atletas
+            const recentAthletes = athletes
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 3);
+            
+            container.innerHTML = recentAthletes.map(athlete => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                        ${athlete.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${athlete.name}</div>
+                        <div style="color: #64748b; font-size: 12px;">${getExperienceLabel(athlete.experience)} • ${athlete.primaryGoal ? getGoalLabel(athlete.primaryGoal) : 'Sem objetivo'}</div>
+                    </div>
+                    <div style="color: #10b981; font-size: 12px;">
+                        ${getTimeAgo(athlete.createdAt)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadTodayAgenda() {
+            const container = document.getElementById('todayAgenda');
+            if (!container) return;
+            
+            // Simular agenda baseada nos atletas
+            if (athletes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                        <i class="fas fa-calendar-check" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <p>Nenhum evento programado para hoje</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Gerar eventos simulados
+            const events = [];
+            const now = new Date();
+            
+            // Adicionar eventos baseados nos atletas
+            athletes.slice(0, 3).forEach((athlete, index) => {
+                const time = new Date();
+                time.setHours(9 + index * 2, 0, 0, 0);
+                
+                events.push({
+                    time: time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                    title: `Treino - ${athlete.name}`,
+                    type: 'workout',
+                    athlete: athlete.name
+                });
+            });
+            
+            if (events.length > 0) {
+                container.innerHTML = events.map(event => `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #10b981;">
+                        <div style="color: #10b981; font-weight: 600; font-size: 14px; min-width: 50px;">
+                            ${event.time}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${event.title}</div>
+                            <div style="color: #64748b; font-size: 12px;">Treino programado</div>
+                        </div>
+                        <i class="fas fa-running" style="color: #10b981;"></i>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadAlerts() {
+            const container = document.getElementById('alertsList');
+            if (!container) return;
+            
+            const alerts = [];
+            
+            // Gerar alertas baseados nos dados
+            if (athletes.length === 0) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'fas fa-info-circle',
+                    color: '#3b82f6',
+                    title: 'Sistema vazio',
+                    message: 'Cadastre seus primeiros atletas para começar'
+                });
+            }
+            
+            if (athletes.length > 5 && periodizations.length === 0) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fas fa-exclamation-triangle',
+                    color: '#f59e0b',
+                    title: 'Sem periodizações',
+                    message: 'Você tem atletas sem planos de treino'
+                });
+            }
+            
+            if (alerts.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 40px 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 32px; margin-bottom: 12px; color: #10b981;"></i>
+                        <p>Tudo em ordem!</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Nenhum alerta no momento</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = alerts.map(alert => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid ${alert.color};">
+                    <i class="${alert.icon}" style="color: ${alert.color}; font-size: 16px;"></i>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${alert.title}</div>
+                        <div style="color: #64748b; font-size: 12px;">${alert.message}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateWeekMetrics() {
+            // Simular métricas da semana
+            const weekWorkouts = athletes.length * 3; // 3 treinos por atleta na semana
+            const weekPlans = periodizations.length;
+            const weekFeedbacks = Math.floor(athletes.length * 0.8); // 80% deram feedback
+            const weekAlerts = Math.floor(athletes.length * 0.1);
+            
+            const elements = {
+                'weekWorkouts': weekWorkouts,
+                'weekPlans': weekPlans,
+                'weekFeedbacks': weekFeedbacks,
+                'weekAlerts': weekAlerts
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            });
+        }
+
+        function refreshDashboard() {                        <p>Comece cadastrando seu primeiro atleta para usar o GPT Coach.</p>
                         <button class="btn-primary" onclick="openAthleteModal()">
                             <i class="fas fa-user-plus"></i>
                             Cadastrar Primeiro Atleta
@@ -1977,6 +2217,7 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
         <div class="container">
             <!-- DASHBOARD -->
             <div id="dashboardPage" class="page active">
+                <!-- Header do Dashboard -->
                 <div class="card">
                     <div class="card-header">
                         <div>
@@ -1987,64 +2228,221 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
                                     Bem-vindo!
                                 </span>
                             </h1>
-                            <p class="card-subtitle">Visão geral dos seus atletas e planejamentos</p>
+                            <p class="card-subtitle" id="currentDate">Carregando data...</p>
                         </div>
-                        <button class="btn-primary" onclick="showPage('athletes')">
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn-secondary" onclick="refreshDashboard()">
+                                <i class="fas fa-sync-alt"></i>
+                                Atualizar
+                            </button>
+                            <button class="btn-primary" onclick="showPage('athletes')">
+                                <i class="fas fa-user-plus"></i>
+                                Novo Atleta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métricas Principais -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-primary">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3><i class="fas fa-users"></i> Atletas Ativos</h3>
+                                <div class="stat-number" id="totalAthletes">0</div>
+                                <p>Total cadastrados</p>
+                            </div>
+                            <div style="text-align: right; font-size: 12px; color: #64748b;">
+                                <span id="newAthletesMonth">+0 este mês</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-success">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3><i class="fas fa-calendar-check"></i> Periodizações</h3>
+                                <div class="stat-number" id="totalPeriodizations">0</div>
+                                <p>Planos ativos</p>
+                            </div>
+                            <div style="text-align: right; font-size: 12px; color: #64748b;">
+                                <span id="activePlans">0 em andamento</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-warning">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3><i class="fas fa-clock"></i> Treinos Hoje</h3>
+                                <div class="stat-number" id="todayWorkouts">0</div>
+                                <p>Programados</p>
+                            </div>
+                            <div style="text-align: right; font-size: 12px; color: #64748b;">
+                                <span id="completedToday">0 concluídos</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-danger">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3><i class="fas fa-exclamation-triangle"></i> Alertas</h3>
+                                <div class="stat-number" id="totalAlerts">0</div>
+                                <p>Requerem atenção</p>
+                            </div>
+                            <div style="text-align: right; font-size: 12px; color: #64748b;">
+                                <span id="urgentAlerts">0 urgentes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo do Dia -->
+                <div class="card">
+                    <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-calendar-day" style="color: #3b82f6;"></i>
+                        Resumo de Hoje
+                        <span style="color: #64748b; font-size: 14px; font-weight: normal;" id="todayDateLong"></span>
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Agenda do Dia -->
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #374151; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-calendar-alt" style="color: #10b981;"></i>
+                                Agenda do Dia
+                            </h4>
+                            <div id="todayAgenda">
+                                <div style="text-align: center; color: #64748b; padding: 20px;">
+                                    <i class="fas fa-calendar-check" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                    <p>Nenhum evento programado para hoje</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Atletas em Destaque -->
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #374151; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-star" style="color: #fbbf24;"></i>
+                                Atletas em Destaque
+                            </h4>
+                            <div id="featuredAthletes">
+                                <div style="text-align: center; color: #64748b; padding: 20px;">
+                                    <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                    <p>Cadastre atletas para ver destaques</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Métricas da Semana -->
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #374151; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+                                Esta Semana
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">
+                                    <div style="font-size: 18px; font-weight: bold; color: #10b981;" id="weekWorkouts">0</div>
+                                    <div style="font-size: 12px; color: #64748b;">Treinos</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">
+                                    <div style="font-size: 18px; font-weight: bold; color: #3b82f6;" id="weekPlans">0</div>
+                                    <div style="font-size: 12px; color: #64748b;">Planos</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">
+                                    <div style="font-size: 18px; font-weight: bold; color: #f59e0b;" id="weekFeedbacks">0</div>
+                                    <div style="font-size: 12px; color: #64748b;">Feedbacks</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">
+                                    <div style="font-size: 18px; font-weight: bold; color: #ef4444;" id="weekAlerts">0</div>
+                                    <div style="font-size: 12px; color: #64748b;">Alertas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="card">
+                    <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+                        Ações Rápidas
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <button class="btn-primary" onclick="showPage('athletes')" style="padding: 16px; justify-content: center;">
                             <i class="fas fa-user-plus"></i>
-                            Adicionar Atleta
+                            <div style="text-align: left;">
+                                <div style="font-weight: 600;">Cadastrar Atleta</div>
+                                <div style="font-size: 12px; opacity: 0.8;">Adicionar novo atleta ao sistema</div>
+                            </div>
+                        </button>
+                        <button class="btn-primary" onclick="createNewPlan()" style="padding: 16px; justify-content: center;">
+                            <i class="fas fa-calendar-plus"></i>
+                            <div style="text-align: left;">
+                                <div style="font-weight: 600;">Nova Periodização</div>
+                                <div style="font-size: 12px; opacity: 0.8;">Criar plano de treinos</div>
+                            </div>
+                        </button>
+                        <button class="btn-secondary" onclick="showPage('gpt-chat')" style="padding: 16px; justify-content: center;">
+                            <i class="fas fa-brain"></i>
+                            <div style="text-align: left;">
+                                <div style="font-weight: 600;">GPT Coach</div>
+                                <div style="font-size: 12px; opacity: 0.8;">Assistente inteligente</div>
+                            </div>
+                        </button>
+                        <button class="btn-secondary" onclick="generateReport()" style="padding: 16px; justify-content: center;">
+                            <i class="fas fa-chart-bar"></i>
+                            <div style="text-align: left;">
+                                <div style="font-weight: 600;">Relatório</div>
+                                <div style="font-size: 12px; opacity: 0.8;">Análise de performance</div>
+                            </div>
                         </button>
                     </div>
+                </div>
 
-                    <!-- Estatísticas -->
-                    <div class="stats-grid">
-                        <div class="stat-card stat-primary">
-                            <h3><i class="fas fa-users"></i> Total de Atletas</h3>
-                            <div class="stat-number" id="totalAthletes">0</div>
-                            <p>Cadastrados no sistema</p>
-                        </div>
-                        
-                        <div class="stat-card stat-success">
-                            <h3><i class="fas fa-brain"></i> Conversas GPT</h3>
-                            <div class="stat-number" id="totalConversations">0</div>
-                            <p>Interações com IA</p>
-                        </div>
-                        
-                        <div class="stat-card stat-warning">
-                            <h3><i class="fas fa-calendar-check"></i> Periodizações</h3>
-                            <div class="stat-number" id="totalPeriodizations">0</div>
-                            <p>Planos criados</p>
-                        </div>
-                        
-                        <div class="stat-card stat-danger">
-                            <h3><i class="fas fa-comment-dots"></i> Feedbacks</h3>
-                            <div class="stat-number" id="pendingFeedbacks">0</div>
-                            <p>Aguardando análise</p>
+                <!-- Atletas Recentes e Alertas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <!-- Atletas Recentes -->
+                    <div class="card">
+                        <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-clock" style="color: #10b981;"></i>
+                                Atletas Recentes
+                            </span>
+                            <button class="btn-secondary" onclick="showPage('athletes')" style="padding: 6px 12px; font-size: 12px;">
+                                Ver Todos
+                            </button>
+                        </h3>
+                        <div id="recentAthletes">
+                            <div style="text-align: center; color: #64748b; padding: 40px 20px;">
+                                <i class="fas fa-users" style="font-size: 32px; margin-bottom: 12px;"></i>
+                                <p>Nenhum atleta cadastrado ainda</p>
+                                <button class="btn-primary" onclick="showPage('athletes')" style="margin-top: 12px;">
+                                    <i class="fas fa-plus"></i>
+                                    Cadastrar Primeiro Atleta
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Ações Rápidas Dashboard -->
+                    <!-- Sistema de Alertas -->
                     <div class="card">
-                        <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <i class="fas fa-bolt" style="color: #fbbf24;"></i>
-                            Ações Rápidas
+                        <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-bell" style="color: #ef4444;"></i>
+                                Alertas e Notificações
+                            </span>
+                            <button class="btn-secondary" onclick="clearAllAlerts()" style="padding: 6px 12px; font-size: 12px;">
+                                Limpar
+                            </button>
                         </h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
-                            <button class="btn-primary" onclick="showPage('athletes')" style="padding: 16px; justify-content: center;">
-                                <i class="fas fa-user-plus"></i>
-                                Cadastrar Atleta
-                            </button>
-                            <button class="btn-primary" onclick="showPage('gpt-chat')" style="padding: 16px; justify-content: center;">
-                                <i class="fas fa-brain"></i>
-                                Usar GPT Coach
-                            </button>
-                            <button class="btn-secondary" onclick="showPage('config')" style="padding: 16px; justify-content: center;">
-                                <i class="fas fa-cog"></i>
-                                Configurações
-                            </button>
-                            <button class="btn-secondary" onclick="exportData()" style="padding: 16px; justify-content: center;">
-                                <i class="fas fa-download"></i>
-                                Exportar Dados
-                            </button>
+                        <div id="alertsList">
+                            <div style="text-align: center; color: #64748b; padding: 40px 20px;">
+                                <i class="fas fa-check-circle" style="font-size: 32px; margin-bottom: 12px; color: #10b981;"></i>
+                                <p>Tudo em ordem!</p>
+                                <p style="font-size: 12px; margin-top: 8px;">Nenhum alerta no momento</p>
+                            </div>
                         </div>
                     </div>
                 </div>
