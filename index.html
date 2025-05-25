@@ -1,4 +1,1264 @@
-<!DOCTYPE html>
+.zones-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .zone-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .zone-1 { background: #10b981; }
+        .zone-2 { background: #3b82f6; }
+        .zone-3 { background: #f59e0b; }
+        .zone-4 { background: #ef4444; }
+        .zone-5 { background: #8b5cf6; }
+        
+        .calculate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .calculate-btn:hover {
+            background: #2563eb;
+        }
+        
+        .info-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 12px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+            
+            .search-input {
+                min-width: 100%;
+            }
+            
+            .period-selector {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .current-period {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-user-tie"></i>
+                    <h1>Bastos Run Coach</h1>
+                </div>
+
+    <script>
+        // Estado do sistema
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let currentWeekStart = new Date('2025-05-26'); // Data inicial
+        let currentFilter = 'geral';
+        let currentAthlete = null;
+        let events = JSON.parse(localStorage.getItem('events') || '[]');
+
+        // Dados dos atletas
+        const athletesData = {
+            'adao-oliveira': {
+                name: 'Adão Aparecido de Oliveira',
+                group: 'Projeto Corra',
+                status: 'Em preparação',
+                mesocycle: 'Base Geral',
+                microcycle: '14/27 Choque'
+            },
+            'adriana-freitas': {
+                name: 'Adriana Duque de Freitas',
+                group: 'TIME BASTOS',
+                status: 'Liberado',
+                mesocycle: 'Específico',
+                microcycle: '22/25'
+            }
+        };
+
+        // Credenciais
+        const trainerCredentials = {
+            email: 'treinador@bastos.com',
+            password: '123456'
+        };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                showApp();
+                initializeApp();
+                loadEvents();
+            } else {
+                showLogin();
+            }
+            
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+        });
+
+        // Funções de autenticação
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Entrando...';
+            
+            setTimeout(() => {
+                if (email === trainerCredentials.email && password === trainerCredentials.password) {
+                    currentUser = {
+                        name: 'Treinador Bastos',
+                        email: email,
+                        role: 'trainer'
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showApp();
+                    initializeApp();
+                } else {
+                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Entrar como Treinador';
+                }
+            }, 1000);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLogin();
+        }
+
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('appContainer').classList.remove('active');
+        }
+
+        function showApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+        }
+
+        function initializeApp() {
+            if (currentUser) {
+                document.getElementById('trainerName').textContent = currentUser.name;
+            }
+            
+            // Navegação
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    switchPage(page);
+                    
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        }
+
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Atualizar navegação se não for perfil
+            if (pageId !== 'athleteProfile') {
+                const navButtons = document.querySelectorAll('.nav-btn');
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                
+                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
+        }
+
+        // Função de busca de atletas
+        function searchAthletes() {
+            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
+            const athleteRows = document.querySelectorAll('.athlete-row');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            let visibleRows = 0;
+
+            athleteRows.forEach(row => {
+                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
+                const athleteStatus = row.dataset.status;
+                
+                // Verifica se corresponde à busca e ao filtro atual
+                const matchesSearch = athleteName.includes(searchTerm);
+                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
+                
+                if (matchesSearch && matchesFilter) {
+                    row.classList.remove('hidden');
+                    visibleRows++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Mostrar/esconder mensagem de "nenhum resultado"
+            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
+
+        // Função para navegar entre semanas
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            updateWeekDisplay();
+        }
+
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            updateWeekDisplay();
+        }
+
+        function updateWeekDisplay() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            const startStr = formatDate(currentWeekStart);
+            const endStr = formatDate(weekEnd);
+            
+            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Função para filtrar por status
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Aplicar filtro
+            searchAthletes();
+        }
+
+        // Função para visualizar perfil do atleta
+        function viewAthleteProfile(athleteId) {
+            currentAthlete = athletesData[athleteId];
+            if (!currentAthlete) return;
+
+            // Preencher dados do header
+            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
+            document.getElementById('profileName').textContent = currentAthlete.name;
+            document.getElementById('profileGroup').textContent = currentAthlete.group;
+            document.getElementById('profileStatus').textContent = currentAthlete.status;
+
+            // Preencher dados na aba de dados
+            document.getElementById('fullName').textContent = currentAthlete.name;
+            document.getElementById('athleteGroup').textContent = currentAthlete.group;
+            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
+            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
+
+            // Mostrar página do perfil
+            switchPage('athleteProfile');
+        }
+
+        // Função para voltar à lista de atletas
+        function backToAthletes() {
+            switchPage('athletes');
+        }
+
+        // Função para trocar aba do perfil
+        function switchProfileTab(tabName) {
+            // Remover active de todas as abas
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Ativar aba selecionada
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Se for aba de eventos, carregar eventos do atleta
+            if (tabName === 'eventos') {
+                loadAthleteEvents();
+            }
+        }
+
+        // Funções de Eventos
+        function openEventModal() {
+            document.getElementById('eventModal').classList.add('active');
+            loadAthletesForSelection();
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            document.getElementById('eventForm').reset();
+        }
+
+        function loadAthletesForSelection() {
+            const athletesList = document.getElementById('athletesList');
+            athletesList.innerHTML = '';
+            
+            Object.keys(athletesData).forEach(athleteId => {
+                const athlete = athletesData[athleteId];
+                const div = document.createElement('div');
+                div.className = 'athlete-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
+                    <label for="athlete_${athleteId}">${athlete.name}</label>
+                `;
+                athletesList.appendChild(div);
+            });
+        }
+
+        function handleEventSubmit(e) {
+            e.preventDefault();
+            
+            const eventData = {
+                id: Date.now().toString(),
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                distance: document.getElementById('eventDistance').value,
+                location: document.getElementById('eventLocation').value,
+                participants: []
+            };
+            
+            // Pegar atletas selecionados
+            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                eventData.participants.push(checkbox.value);
+            });
+            
+            events.push(eventData);
+            localStorage.setItem('events', JSON.stringify(events));
+            
+            closeEventModal();
+            loadEvents();
+            alert('Evento cadastrado com sucesso!');
+        }
+
+        function loadEvents() {
+            const eventsContent = document.getElementById('eventsContent');
+            
+            if (events.length === 0) {
+                eventsContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            eventsContent.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                const participantNames = event.participants.map(id => athletesData[id]?.name || 'Atleta').join(', ');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                        <div class="event-participants">
+                            <div class="participants-title">Participantes</div>
+                            <div class="participants-list">
+                                ${event.participants.map(id => 
+                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadAthleteEvents() {
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const athleteEvents = events.filter(event => 
+                event.participants.includes(athleteId)
+            );
+            
+            const athleteEventsContainer = document.getElementById('athleteEvents');
+            
+            if (athleteEvents.length === 0) {
+                athleteEventsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Funções de Cálculo de Performance
+        function calculatePerformanceData() {
+            // Pegar valores dos inputs
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const gender = document.getElementById('gender').value;
+            const height = parseInt(document.getElementById('height').value) || 0;
+            const weight = parseInt(document.getElementById('weight').value) || 0;
+            const fcRest = parseInt(document.getElementById('fcRest').value) || 60;
+            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+            const test5km = document.getElementById('test5km').value;
+            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+
+            // Validações básicas
+            if (!age || !gender || !height || !weight) {
+                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+                return;
+            }
+
+            // Calcular FC Máxima se não informada
+            if (!fcMax) {
+                fcMax = 220 - age;
+            }
+
+            // Calcular VO2 máximo
+            let vo2Max = vo2MaxInput;
+            if (!vo2Max && cooperTest > 0) {
+                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
+                vo2Max = (cooperTest - 504.9) / 44.73;
+            }
+
+            // Calcular VAM
+            let vam = vamTest;
+            if (!vam && test5km) {
+                // Converter tempo de 5km para VAM
+                const [minutes, seconds] = test5km.split(':').map(Number);
+                const totalMinutes = minutes + (seconds / 60);
+                const speed = 5 / (totalMinutes / 60); // km/h
+                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+            }
+            if (!vam && vo2Max > 0) {
+                // Estimar VAM a partir do VO2 (fórmula de Léger)
+                vam = vo2Max * 0.278;
+            }
+
+            // Calcular FC Reserva
+            const fcReserve = fcMax - fcRest;
+
+            // Mostrar resultados
+            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+            document.getElementById('calculatedFCMax').textContent = fcMax;
+            document.getElementById('calculatedFCReserve').textContent = fcReserve;
+
+            // Gerar tabela de zonas
+            generateTrainingZones(fcMax, fcRest, vam);
+
+            // Mostrar seção de resultados
+            document.getElementById('performanceResults').style.display = 'block';
+        }
+
+        function generateTrainingZones(fcMax, fcRest, vam) {
+            const zones = [
+                {
+                    zone: 1,
+                    name: 'Recuperação Ativa',
+                    color: 'zone-1',
+                    fcPercent: [50, 60],
+                    vamPercent: [60, 70],
+                    description: 'Recuperação e aquecimento'
+                },
+                {
+                    zone: 2,
+                    name: 'Base Aeróbia',
+                    color: 'zone-2',
+                    fcPercent: [60, 70],
+                    vamPercent: [70, 80],
+                    description: 'Resistência aeróbia básica'
+                },
+                {
+                    zone: 3,
+                    name: 'Aeróbio Intenso',
+                    color: 'zone-3',
+                    fcPercent: [70, 80],
+                    vamPercent: [80, 90],
+                    description: 'Limiar aeróbio'
+                },
+                {
+                    zone: 4,
+                    name: 'Limiar Anaeróbio',
+                    color: 'zone-4',
+                    fcPercent: [80, 90],
+                    vamPercent: [90, 100],
+                    description: 'Limiar anaeróbio/lactato'
+                },
+                {
+                    zone: 5,
+                    name: 'Potência Aeróbia',
+                    color: 'zone-5',
+                    fcPercent: [90, 100],
+                    vamPercent: [100, 120],
+                    description: 'VO2 máximo'
+                }
+            ];
+
+            const tbody = document.getElementById('zonesTableBody');
+            tbody.innerHTML = zones.map(zone => {
+                // Calcular FC usando método Karvonen (FC de reserva)
+                const fcReserve = fcMax - fcRest;
+                const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                
+                // Calcular ritmo baseado na VAM
+                let paceMin = '--', paceMax = '--';
+                if (vam > 0) {
+                    const speedMin = vam * (zone.vamPercent[0] / 100);
+                    const speedMax = vam * (zone.vamPercent[1] / 100);
+                    
+                    // Converter km/h para min/km
+                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
+                    const paceMaxCalc = 60 / speedMin; // min/km
+                    
+                    const formatPace = (pace) => {
+                        const minutes = Math.floor(pace);
+                        const seconds = Math.round((pace - minutes) * 60);
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+                    
+                    paceMin = formatPace(paceMinCalc);
+                    paceMax = formatPace(paceMaxCalc);
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="zone-color ${zone.color}"></span>
+                            Zona ${zone.zone}
+                        </td>
+                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
+                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
+                        <td>${fcMin}-${fcMaxZone} bpm</td>
+                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
+                        <td>${paceMin}-${paceMax} /km</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Limpar busca quando campo estiver vazio
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('athleteSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    if (this.value === '') {
+                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+                <div class="role-badge">TREINADOR</div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Entrar como Treinador
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <strong>Credenciais de Teste:</strong><br>
+                E-mail: treinador@bastos.com<br>
+                Senha: 123456
+            </div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appContainer" class="app-container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Bastos Run Coach</span>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" data-page="dashboard">
+                        <i class="fas fa-chart-bar"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-page="athletes">
+                        <i class="fas fa-users"></i> Meus Atletas
+                    </button>
+                    <div class="user-info">
+                        <i class="fas fa-user"></i>
+                        <span id="trainerName">Treinador</span>
+                        <button class="logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- DASHBOARD -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-title">Atletas Ativos</div>
+                        </div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-description">Total de atletas cadastrados</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-title">Sem Planejamento</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Atletas sem plano de treino</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon yellow">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-title">Planilhas Vazias</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Planilhas sem treinos</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="stat-title">Sem Feedback</div>
+                        </div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-description">Treinos aguardando feedback</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Próximos Eventos</h2>
+                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
+                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
+                            <i class="fas fa-plus"></i> Cadastrar Evento
+                        </button>
+                    </div>
+                    <div id="eventsContent">
+                        <!-- Eventos serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEUS ATLETAS -->
+            <div id="athletesPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Meus Atletas</h1>
+                </div>
+
+                <div class="content-card">
+                    <!-- Seletor de Período -->
+                    <div class="card-header">
+                        <div class="period-selector">
+                            <button class="period-navigation" onclick="previousWeek()">
+                                <i class="fas fa-chevron-left"></i> Semana Anterior
+                            </button>
+                            <div class="current-period" id="currentPeriod">
+                                26/05 a 01/06/2025
+                            </div>
+                            <button class="period-navigation" onclick="nextWeek()">
+                                Próxima Semana <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
+                            <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
+                            <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
+                            <button class="period-btn" onclick="filterByStatus('liberado')">Liberado</button>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Busca -->
+                    <div class="filters-bar">
+                        <div class="search-group">
+                            <i class="fas fa-search" style="color: #6b7280;"></i>
+                            <input 
+                                type="text" 
+                                id="athleteSearch" 
+                                class="search-input" 
+                                placeholder="Buscar atleta por nome..."
+                                onkeyup="searchAthletes()"
+                            >
+                        </div>
+                        <button class="btn-success">
+                            <i class="fas fa-unlock"></i> Liberar
+                        </button>
+                    </div>
+
+                    <!-- Tabela de Atletas -->
+                    <table class="athletes-table">
+                        <thead class="table-header">
+                            <tr>
+                                <th>Atleta</th>
+                                <th>Situação</th>
+                                <th>Grupo</th>
+                                <th>Mesociclo</th>
+                                <th>Microciclo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="athletesTableBody">
+                            <tr class="athlete-row" data-status="preparacao">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adao-oliveira')">Adão Aparecido de Oliveira</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-preparation">Em preparação</span>
+                                </td>
+                                <td>Projeto Corra</td>
+                                <td>Base Geral</td>
+                                <td>14/27 Choque</td>
+                            </tr>
+                            <tr class="athlete-row" data-status="liberado">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adriana-freitas')">Adriana Duque de Freitas</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active">Liberado</span>
+                                </td>
+                                <td>TIME BASTOS</td>
+                                <td>Específico</td>
+                                <td>22/25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Mensagem quando não há resultados -->
+                    <div id="noResultsMessage" class="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>Nenhum atleta encontrado</h3>
+                        <p>Tente buscar com um termo diferente</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERFIL DO ATLETA -->
+            <div id="athleteProfilePage" class="page">
+                <div class="content-card">
+                    <!-- Header do Perfil -->
+                    <div class="profile-header">
+                        <div class="profile-info">
+                            <div class="profile-avatar" id="profileAvatar">A</div>
+                            <div class="profile-details">
+                                <h1 id="profileName">Nome do Atleta</h1>
+                                <p id="profileGroup">Grupo</p>
+                                <p id="profileStatus">Status</p>
+                            </div>
+                            <button class="back-btn" onclick="backToAthletes()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Abas do Perfil -->
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" onclick="switchProfileTab('dados')">
+                            <i class="fas fa-user"></i> Dados
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">
+                            <i class="fas fa-chart-line"></i> Avaliações
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planejamento')">
+                            <i class="fas fa-calendar-alt"></i> Planejamento
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
+                            <i class="fas fa-file-excel"></i> Planilhas
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('eventos')">
+                            <i class="fas fa-trophy"></i> Eventos
+                        </button>
+                    </div>
+
+                    <!-- Conteúdo das Abas -->
+                    <div class="profile-content">
+                        <!-- Aba Dados -->
+                        <div id="dadosTab" class="tab-content active">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Nome Completo:</span>
+                                        <span class="info-value" id="fullName">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Data de Nascimento:</span>
+                                        <span class="info-value">15/03/1985</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Idade:</span>
+                                        <span class="info-value">40 anos</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">E-mail:</span>
+                                        <span class="info-value">atleta@email.com</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Telefone:</span>
+                                        <span class="info-value">(11) 99999-9999</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Grupo:</span>
+                                        <span class="info-value" id="athleteGroup">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Categoria:</span>
+                                        <span class="info-value">Veterano</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tempo de Treino:</span>
+                                        <span class="info-value">2 anos</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Mesociclo Atual:</span>
+                                        <span class="info-value" id="currentMesocycle">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Microciclo Atual:</span>
+                                        <span class="info-value" id="currentMicrocycle">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3><i class="fas fa-heart"></i> Dados Físicos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Altura:</span>
+                                        <span class="info-value">1,75 m</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Peso:</span>
+                                        <span class="info-value">70 kg</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">IMC:</span>
+                                        <span class="info-value">22,9</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">FC Repouso:</span>
+                                        <span class="info-value">60 bpm</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">FC Máxima:</span>
+                                        <span class="info-value">180 bpm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Avaliações -->
+                        <div id="avaliacoesTab" class="tab-content">
+                            <!-- Dados Físicos -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-heart"></i> Dados Físicos
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-user"></i> Características Pessoais</h4>
+                                        <div class="form-group">
+                                            <label>Idade (anos)</label>
+                                            <input type="number" id="age" placeholder="Ex: 35">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Sexo</label>
+                                            <select id="gender">
+                                                <option value="">Selecionar</option>
+                                                <option value="male">Masculino</option>
+                                                <option value="female">Feminino</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Altura (cm)</label>
+                                            <input type="number" id="height" placeholder="Ex: 175">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Peso (kg)</label>
+                                            <input type="number" id="weight" placeholder="Ex: 70">
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-heartbeat"></i> Frequência Cardíaca</h4>
+                                        <div class="form-group">
+                                            <label>FC Repouso (bpm)</label>
+                                            <input type="number" id="fcRest" placeholder="Ex: 60">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>FC Máxima (bpm)</label>
+                                            <input type="number" id="fcMax" placeholder="Ex: 185">
+                                            <div class="info-note">
+                                                Se não souber, será calculada pela fórmula: 220 - idade
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Testes de Esforço -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-running"></i> Testes de Esforço
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-stopwatch"></i> Teste de Cooper (12 min)</h4>
+                                        <div class="form-group">
+                                            <label>Distância percorrida (metros)</label>
+                                            <input type="number" id="cooperTest" placeholder="Ex: 2800">
+                                        </div>
+                                        <div class="info-note">
+                                            Teste validado para estimativa de VO2 máximo. Correr/caminhar a maior distância possível em 12 minutos.
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-chart-line"></i> Teste VAM (Velocidade Aeróbia Máxima)</h4>
+                                        <div class="form-group">
+                                            <label>Velocidade final (km/h)</label>
+                                            <input type="number" step="0.1" id="vamTest" placeholder="Ex: 16.5">
+                                        </div>
+                                        <div class="info-note">
+                                            Teste progressivo: inicia a 8 km/h, aumenta 1 km/h a cada 3 minutos até exaustão.
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-road"></i> Teste de 5km</h4>
+                                        <div class="form-group">
+                                            <label>Tempo (min:seg)</label>
+                                            <input type="text" id="test5km" placeholder="Ex: 22:30" pattern="[0-9]{1,2}:[0-9]{2}">
+                                        </div>
+                                        <div class="info-note">
+                                            Correr 5km no menor tempo possível. Usado para calcular VAM e zonas de treino.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Exames Clínicos -->
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-stethoscope"></i> Exames Clínicos (Opcional)
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-lungs"></i> Ergoespirometria</h4>
+                                        <div class="form-group">
+                                            <label>VO2 máximo (ml/kg/min)</label>
+                                            <input type="number" step="0.1" id="vo2Max" placeholder="Ex: 55.2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Limiar Anaeróbio (% VO2 max)</label>
+                                            <input type="number" id="anaerobicThreshold" placeholder="Ex: 85">
+                                        </div>
+                                    </div>
+
+                                    <div class="test-card">
+                                        <h4><i class="fas fa-chart-area"></i> Teste de Lactato</h4>
+                                        <div class="form-group">
+                                            <label>Limiar Aeróbio - LT1 (bpm)</label>
+                                            <input type="number" id="lt1" placeholder="Ex: 155">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Limiar Anaeróbio - LT2 (bpm)</label>
+                                            <input type="number" id="lt2" placeholder="Ex: 175">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botão Calcular -->
+                            <button class="calculate-btn" onclick="calculatePerformanceData()">
+                                <i class="fas fa-calculator"></i> Calcular Dados e Zonas
+                            </button>
+
+                            <!-- Resultados -->
+                            <div id="performanceResults" style="display: none;">
+                                <div class="evaluation-section">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-chart-bar"></i> Resultados Calculados
+                                    </h3>
+                                    <div class="results-grid">
+                                        <div class="result-item">
+                                            <div class="result-label">VO2 Máximo</div>
+                                            <div class="result-value" id="calculatedVO2">--</div>
+                                            <div class="result-unit">ml/kg/min</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">VAM</div>
+                                            <div class="result-value" id="calculatedVAM">--</div>
+                                            <div class="result-unit">km/h</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">FC Máxima</div>
+                                            <div class="result-value" id="calculatedFCMax">--</div>
+                                            <div class="result-unit">bpm</div>
+                                        </div>
+                                        <div class="result-item">
+                                            <div class="result-label">FC Reserva</div>
+                                            <div class="result-value" id="calculatedFCReserve">--</div>
+                                            <div class="result-unit">bpm</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela de Zonas -->
+                                <div class="evaluation-section">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-layer-group"></i> Zonas de Treinamento
+                                    </h3>
+                                    <table class="zones-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Zona</th>
+                                                <th>Descrição</th>
+                                                <th>% FC Max</th>
+                                                <th>FC (bpm)</th>
+                                                <th>% VAM</th>
+                                                <th>Ritmo (min/km)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="zonesTableBody">
+                                            <!-- Zonas serão preenchidas automaticamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Planejamento -->
+                        <div id="planejamentoTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h3>Planejamento em Desenvolvimento</h3>
+                                <p>Esta seção conterá o planejamento de treinos, periodização e objetivos</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Planilhas -->
+                        <div id="planilhasTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-file-excel"></i>
+                                <h3>Planilhas em Desenvolvimento</h3>
+                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Eventos -->
+                        <div id="eventosTab" class="tab-content">
+                            <div id="athleteEvents">
+                                <!-- Eventos do atleta serão carregados aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO DE EVENTO -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Cadastrar Novo Evento</h2>
+                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventName">Nome do Evento</label>
+                    <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Data do Evento</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDistance">Distância</label>
+                        <input type="text" id="eventDistance" required placeholder="Ex: 10km, 21km, 42km">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventLocation">Local</label>
+                    <input type="text" id="eventLocation" required placeholder="Ex: Parque Ibirapuera, São Paulo">
+                </div>
+                
+                <div class="athletes-selection">
+                    <h3>Selecionar Atletas Participantes</h3>
+                    <div id="athletesList">
+                        <!-- Lista de atletas será carregada aqui -->
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Cadastrar Evento</button>
+                </div>
+            </form>
+        </div><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -1063,1263 +2323,4 @@
         
         .zones-table td {
             padding: 12px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
-            color: #374151;
-        }
-        
-        .zone-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        
-        .zone-1 { background: #10b981; }
-        .zone-2 { background: #3b82f6; }
-        .zone-3 { background: #f59e0b; }
-        .zone-4 { background: #ef4444; }
-        .zone-5 { background: #8b5cf6; }
-        
-        .calculate-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .calculate-btn:hover {
-            background: #2563eb;
-        }
-        
-        .info-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 12px;
-            color: #92400e;
-            margin-top: 12px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
-            
-            .container {
-                padding: 16px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .search-group {
-                margin-right: 0;
-                margin-bottom: 12px;
-            }
-            
-            .search-input {
-                min-width: 100%;
-            }
-            
-            .period-selector {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .current-period {
-                order: -1;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- LOGIN -->
-    <div id="loginContainer" class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">
-                    <i class="fas fa-user-tie"></i>
-                    <h1>Bastos Run Coach</h1>
-                </div>
-                <div class="role-badge">TREINADOR</div>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
-                </div>
-                
-                <button type="submit" class="login-btn" id="loginBtn">
-                    Entrar como Treinador
-                </button>
-            </form>
-            
-            <div class="demo-info">
-                <strong>Credenciais de Teste:</strong><br>
-                E-mail: treinador@bastos.com<br>
-                Senha: 123456
-            </div>
-        </div>
-    </div>
-
-    <!-- APP -->
-    <div id="appContainer" class="app-container">
-        <header class="header">
-            <nav class="nav">
-                <div class="logo">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Bastos Run Coach</span>
-                </div>
-                <div class="nav-buttons">
-                    <button class="nav-btn active" data-page="dashboard">
-                        <i class="fas fa-chart-bar"></i> Dashboard
-                    </button>
-                    <button class="nav-btn" data-page="athletes">
-                        <i class="fas fa-users"></i> Meus Atletas
-                    </button>
-                    <div class="user-info">
-                        <i class="fas fa-user"></i>
-                        <span id="trainerName">Treinador</span>
-                        <button class="logout-btn" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <div class="container">
-            <!-- DASHBOARD -->
-            <div id="dashboardPage" class="page active">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon blue">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-title">Atletas Ativos</div>
-                        </div>
-                        <div class="stat-value">2</div>
-                        <div class="stat-description">Total de atletas cadastrados</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon red">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="stat-title">Sem Planejamento</div>
-                        </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Atletas sem plano de treino</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon yellow">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="stat-title">Planilhas Vazias</div>
-                        </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Planilhas sem treinos</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon green">
-                                <i class="fas fa-comment-dots"></i>
-                            </div>
-                            <div class="stat-title">Sem Feedback</div>
-                        </div>
-                        <div class="stat-value">1</div>
-                        <div class="stat-description">Treinos aguardando feedback</div>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Próximos Eventos</h2>
-                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
-                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
-                            <i class="fas fa-plus"></i> Cadastrar Evento
-                        </button>
-                    </div>
-                    <div id="eventsContent">
-                        <!-- Eventos serão carregados aqui -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- MEUS ATLETAS -->
-            <div id="athletesPage" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Meus Atletas</h1>
-                </div>
-
-                <div class="content-card">
-                    <!-- Seletor de Período -->
-                    <div class="card-header">
-                        <div class="period-selector">
-                            <button class="period-navigation" onclick="previousWeek()">
-                                <i class="fas fa-chevron-left"></i> Semana Anterior
-                            </button>
-                            <div class="current-period" id="currentPeriod">
-                                26/05 a 01/06/2025
-                            </div>
-                            <button class="period-navigation" onclick="nextWeek()">
-                                Próxima Semana <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                            <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
-                            <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
-                            <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
-                            <button class="period-btn" onclick="filterByStatus('liberado')">Liberado</button>
-                        </div>
-                    </div>
-
-                    <!-- Barra de Busca -->
-                    <div class="filters-bar">
-                        <div class="search-group">
-                            <i class="fas fa-search" style="color: #6b7280;"></i>
-                            <input 
-                                type="text" 
-                                id="athleteSearch" 
-                                class="search-input" 
-                                placeholder="Buscar atleta por nome..."
-                                onkeyup="searchAthletes()"
-                            >
-                        </div>
-                        <button class="btn-success">
-                            <i class="fas fa-unlock"></i> Liberar
-                        </button>
-                    </div>
-
-                    <!-- Tabela de Atletas -->
-                    <table class="athletes-table">
-                        <thead class="table-header">
-                            <tr>
-                                <th>Atleta</th>
-                                <th>Situação</th>
-                                <th>Grupo</th>
-                                <th>Mesociclo</th>
-                                <th>Microciclo</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body" id="athletesTableBody">
-                            <tr class="athlete-row" data-status="preparacao">
-                                <td>
-                                    <div class="athlete-info">
-                                        <div class="athlete-avatar">A</div>
-                                        <div class="athlete-name" onclick="viewAthleteProfile('adao-oliveira')">Adão Aparecido de Oliveira</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-preparation">Em preparação</span>
-                                </td>
-                                <td>Projeto Corra</td>
-                                <td>Base Geral</td>
-                                <td>14/27 Choque</td>
-                            </tr>
-                            <tr class="athlete-row" data-status="liberado">
-                                <td>
-                                    <div class="athlete-info">
-                                        <div class="athlete-avatar">A</div>
-                                        <div class="athlete-name" onclick="viewAthleteProfile('adriana-freitas')">Adriana Duque de Freitas</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-active">Liberado</span>
-                                </td>
-                                <td>TIME BASTOS</td>
-                                <td>Específico</td>
-                                <td>22/25</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <!-- Mensagem quando não há resultados -->
-                    <div id="noResultsMessage" class="no-results" style="display: none;">
-                        <i class="fas fa-search"></i>
-                        <h3>Nenhum atleta encontrado</h3>
-                        <p>Tente buscar com um termo diferente</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PERFIL DO ATLETA -->
-            <div id="athleteProfilePage" class="page">
-                <div class="content-card">
-                    <!-- Header do Perfil -->
-                    <div class="profile-header">
-                        <div class="profile-info">
-                            <div class="profile-avatar" id="profileAvatar">A</div>
-                            <div class="profile-details">
-                                <h1 id="profileName">Nome do Atleta</h1>
-                                <p id="profileGroup">Grupo</p>
-                                <p id="profileStatus">Status</p>
-                            </div>
-                            <button class="back-btn" onclick="backToAthletes()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Abas do Perfil -->
-                    <div class="profile-tabs">
-                        <button class="profile-tab active" onclick="switchProfileTab('dados')">
-                            <i class="fas fa-user"></i> Dados
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">
-                            <i class="fas fa-chart-line"></i> Avaliações
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planejamento')">
-                            <i class="fas fa-calendar-alt"></i> Planejamento
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
-                            <i class="fas fa-file-excel"></i> Planilhas
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('eventos')">
-                            <i class="fas fa-trophy"></i> Eventos
-                        </button>
-                    </div>
-
-                    <!-- Conteúdo das Abas -->
-                    <div class="profile-content">
-                        <!-- Aba Dados -->
-                        <div id="dadosTab" class="tab-content active">
-                            <div class="info-grid">
-                                <div class="info-card">
-                                    <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Nome Completo:</span>
-                                        <span class="info-value" id="fullName">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Data de Nascimento:</span>
-                                        <span class="info-value">15/03/1985</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Idade:</span>
-                                        <span class="info-value">40 anos</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">E-mail:</span>
-                                        <span class="info-value">atleta@email.com</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Telefone:</span>
-                                        <span class="info-value">(11) 99999-9999</span>
-                                    </div>
-                                </div>
-
-                                <div class="info-card">
-                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Grupo:</span>
-                                        <span class="info-value" id="athleteGroup">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Categoria:</span>
-                                        <span class="info-value">Veterano</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Tempo de Treino:</span>
-                                        <span class="info-value">2 anos</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Mesociclo Atual:</span>
-                                        <span class="info-value" id="currentMesocycle">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Microciclo Atual:</span>
-                                        <span class="info-value" id="currentMicrocycle">-</span>
-                                    </div>
-                                </div>
-
-                                <div class="info-card">
-                                    <h3><i class="fas fa-heart"></i> Dados Físicos</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Altura:</span>
-                                        <span class="info-value">1,75 m</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Peso:</span>
-                                        <span class="info-value">70 kg</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">IMC:</span>
-                                        <span class="info-value">22,9</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">FC Repouso:</span>
-                                        <span class="info-value">60 bpm</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">FC Máxima:</span>
-                                        <span class="info-value">180 bpm</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Aba Avaliações -->
-                        <div id="avaliacoesTab" class="tab-content">
-                            <!-- Dados Físicos -->
-                            <div class="evaluation-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-heart"></i> Dados Físicos
-                                </h3>
-                                <div class="form-grid">
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-user"></i> Características Pessoais</h4>
-                                        <div class="form-group">
-                                            <label>Idade (anos)</label>
-                                            <input type="number" id="age" placeholder="Ex: 35">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Sexo</label>
-                                            <select id="gender">
-                                                <option value="">Selecionar</option>
-                                                <option value="male">Masculino</option>
-                                                <option value="female">Feminino</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Altura (cm)</label>
-                                            <input type="number" id="height" placeholder="Ex: 175">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Peso (kg)</label>
-                                            <input type="number" id="weight" placeholder="Ex: 70">
-                                        </div>
-                                    </div>
-
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-heartbeat"></i> Frequência Cardíaca</h4>
-                                        <div class="form-group">
-                                            <label>FC Repouso (bpm)</label>
-                                            <input type="number" id="fcRest" placeholder="Ex: 60">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>FC Máxima (bpm)</label>
-                                            <input type="number" id="fcMax" placeholder="Ex: 185">
-                                            <div class="info-note">
-                                                Se não souber, será calculada pela fórmula: 220 - idade
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Testes de Esforço -->
-                            <div class="evaluation-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-running"></i> Testes de Esforço
-                                </h3>
-                                <div class="form-grid">
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-stopwatch"></i> Teste de Cooper (12 min)</h4>
-                                        <div class="form-group">
-                                            <label>Distância percorrida (metros)</label>
-                                            <input type="number" id="cooperTest" placeholder="Ex: 2800">
-                                        </div>
-                                        <div class="info-note">
-                                            Teste validado para estimativa de VO2 máximo. Correr/caminhar a maior distância possível em 12 minutos.
-                                        </div>
-                                    </div>
-
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-chart-line"></i> Teste VAM (Velocidade Aeróbia Máxima)</h4>
-                                        <div class="form-group">
-                                            <label>Velocidade final (km/h)</label>
-                                            <input type="number" step="0.1" id="vamTest" placeholder="Ex: 16.5">
-                                        </div>
-                                        <div class="info-note">
-                                            Teste progressivo: inicia a 8 km/h, aumenta 1 km/h a cada 3 minutos até exaustão.
-                                        </div>
-                                    </div>
-
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-road"></i> Teste de 5km</h4>
-                                        <div class="form-group">
-                                            <label>Tempo (min:seg)</label>
-                                            <input type="text" id="test5km" placeholder="Ex: 22:30" pattern="[0-9]{1,2}:[0-9]{2}">
-                                        </div>
-                                        <div class="info-note">
-                                            Correr 5km no menor tempo possível. Usado para calcular VAM e zonas de treino.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Exames Clínicos -->
-                            <div class="evaluation-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-stethoscope"></i> Exames Clínicos (Opcional)
-                                </h3>
-                                <div class="form-grid">
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-lungs"></i> Ergoespirometria</h4>
-                                        <div class="form-group">
-                                            <label>VO2 máximo (ml/kg/min)</label>
-                                            <input type="number" step="0.1" id="vo2Max" placeholder="Ex: 55.2">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Limiar Anaeróbio (% VO2 max)</label>
-                                            <input type="number" id="anaerobicThreshold" placeholder="Ex: 85">
-                                        </div>
-                                    </div>
-
-                                    <div class="test-card">
-                                        <h4><i class="fas fa-chart-area"></i> Teste de Lactato</h4>
-                                        <div class="form-group">
-                                            <label>Limiar Aeróbio - LT1 (bpm)</label>
-                                            <input type="number" id="lt1" placeholder="Ex: 155">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Limiar Anaeróbio - LT2 (bpm)</label>
-                                            <input type="number" id="lt2" placeholder="Ex: 175">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Botão Calcular -->
-                            <button class="calculate-btn" onclick="calculatePerformanceData()">
-                                <i class="fas fa-calculator"></i> Calcular Dados e Zonas
-                            </button>
-
-                            <!-- Resultados -->
-                            <div id="performanceResults" style="display: none;">
-                                <div class="evaluation-section">
-                                    <h3 class="section-title">
-                                        <i class="fas fa-chart-bar"></i> Resultados Calculados
-                                    </h3>
-                                    <div class="results-grid">
-                                        <div class="result-item">
-                                            <div class="result-label">VO2 Máximo</div>
-                                            <div class="result-value" id="calculatedVO2">--</div>
-                                            <div class="result-unit">ml/kg/min</div>
-                                        </div>
-                                        <div class="result-item">
-                                            <div class="result-label">VAM</div>
-                                            <div class="result-value" id="calculatedVAM">--</div>
-                                            <div class="result-unit">km/h</div>
-                                        </div>
-                                        <div class="result-item">
-                                            <div class="result-label">FC Máxima</div>
-                                            <div class="result-value" id="calculatedFCMax">--</div>
-                                            <div class="result-unit">bpm</div>
-                                        </div>
-                                        <div class="result-item">
-                                            <div class="result-label">FC Reserva</div>
-                                            <div class="result-value" id="calculatedFCReserve">--</div>
-                                            <div class="result-unit">bpm</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Tabela de Zonas -->
-                                <div class="evaluation-section">
-                                    <h3 class="section-title">
-                                        <i class="fas fa-layer-group"></i> Zonas de Treinamento
-                                    </h3>
-                                    <table class="zones-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Zona</th>
-                                                <th>Descrição</th>
-                                                <th>% FC Max</th>
-                                                <th>FC (bpm)</th>
-                                                <th>% VAM</th>
-                                                <th>Ritmo (min/km)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="zonesTableBody">
-                                            <!-- Zonas serão preenchidas automaticamente -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Aba Planejamento -->
-                        <div id="planejamentoTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-alt"></i>
-                                <h3>Planejamento em Desenvolvimento</h3>
-                                <p>Esta seção conterá o planejamento de treinos, periodização e objetivos</p>
-                            </div>
-                        </div>
-
-                        <!-- Aba Planilhas -->
-                        <div id="planilhasTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-file-excel"></i>
-                                <h3>Planilhas em Desenvolvimento</h3>
-                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
-                            </div>
-                        </div>
-
-                        <!-- Aba Eventos -->
-                        <div id="eventosTab" class="tab-content">
-                            <div id="athleteEvents">
-                                <!-- Eventos do atleta serão carregados aqui -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CADASTRO DE EVENTO -->
-    <div id="eventModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Cadastrar Novo Evento</h2>
-                <button class="modal-close" onclick="closeEventModal()">&times;</button>
-            </div>
-            
-            <form id="eventForm">
-                <div class="form-group">
-                    <label for="eventName">Nome do Evento</label>
-                    <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="eventDate">Data do Evento</label>
-                        <input type="date" id="eventDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDistance">Distância</label>
-                        <input type="text" id="eventDistance" required placeholder="Ex: 10km, 21km, 42km">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="eventLocation">Local</label>
-                    <input type="text" id="eventLocation" required placeholder="Ex: Parque Ibirapuera, São Paulo">
-                </div>
-                
-                <div class="athletes-selection">
-                    <h3>Selecionar Atletas Participantes</h3>
-                    <div id="athletesList">
-                        <!-- Lista de atletas será carregada aqui -->
-                    </div>
-                </div>
-                
-                <div style="text-align: right; margin-top: 24px;">
-                    <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Cadastrar Evento</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Estado do sistema
-        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        let currentWeekStart = new Date('2025-05-26'); // Data inicial
-        let currentFilter = 'geral';
-        let currentAthlete = null;
-        let events = JSON.parse(localStorage.getItem('events') || '[]');
-
-        // Dados dos atletas
-        const athletesData = {
-            'adao-oliveira': {
-                name: 'Adão Aparecido de Oliveira',
-                group: 'Projeto Corra',
-                status: 'Em preparação',
-                mesocycle: 'Base Geral',
-                microcycle: '14/27 Choque'
-            },
-            'adriana-freitas': {
-                name: 'Adriana Duque de Freitas',
-                group: 'TIME BASTOS',
-                status: 'Liberado',
-                mesocycle: 'Específico',
-                microcycle: '22/25'
-            }
-        };
-
-        // Credenciais
-        const trainerCredentials = {
-            email: 'treinador@bastos.com',
-            password: '123456'
-        };
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            if (currentUser) {
-                showApp();
-                initializeApp();
-                loadEvents();
-            } else {
-                showLogin();
-            }
-            
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
-        });
-
-        // Funções de autenticação
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Entrando...';
-            
-            setTimeout(() => {
-                if (email === trainerCredentials.email && password === trainerCredentials.password) {
-                    currentUser = {
-                        name: 'Treinador Bastos',
-                        email: email,
-                        role: 'trainer'
-                    };
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showApp();
-                    initializeApp();
-                } else {
-                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Entrar como Treinador';
-                }
-            }, 1000);
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showLogin();
-        }
-
-        function showLogin() {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('appContainer').classList.remove('active');
-        }
-
-        function showApp() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('appContainer').classList.add('active');
-        }
-
-        function initializeApp() {
-            if (currentUser) {
-                document.getElementById('trainerName').textContent = currentUser.name;
-            }
-            
-            // Navegação
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = btn.dataset.page;
-                    switchPage(page);
-                    
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-        }
-
-        function switchPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const targetPage = document.getElementById(pageId + 'Page');
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            // Atualizar navegação se não for perfil
-            if (pageId !== 'athleteProfile') {
-                const navButtons = document.querySelectorAll('.nav-btn');
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                
-                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
-                if (activeBtn) {
-                    activeBtn.classList.add('active');
-                }
-            }
-        }
-
-        // Função de busca de atletas
-        function searchAthletes() {
-            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
-            const athleteRows = document.querySelectorAll('.athlete-row');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            let visibleRows = 0;
-
-            athleteRows.forEach(row => {
-                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
-                const athleteStatus = row.dataset.status;
-                
-                // Verifica se corresponde à busca e ao filtro atual
-                const matchesSearch = athleteName.includes(searchTerm);
-                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
-                
-                if (matchesSearch && matchesFilter) {
-                    row.classList.remove('hidden');
-                    visibleRows++;
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // Mostrar/esconder mensagem de "nenhum resultado"
-            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
-                noResultsMessage.style.display = 'block';
-            } else {
-                noResultsMessage.style.display = 'none';
-            }
-        }
-
-        // Função para navegar entre semanas
-        function previousWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-            updateWeekDisplay();
-        }
-
-        function nextWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-            updateWeekDisplay();
-        }
-
-        function updateWeekDisplay() {
-            const weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            
-            const startStr = formatDate(currentWeekStart);
-            const endStr = formatDate(weekEnd);
-            
-            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
-        }
-
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        // Função para filtrar por status
-        function filterByStatus(status) {
-            currentFilter = status;
-            
-            // Atualizar botões ativos
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            event.target.classList.add('active');
-            
-            // Aplicar filtro
-            searchAthletes();
-        }
-
-        // Função para visualizar perfil do atleta
-        function viewAthleteProfile(athleteId) {
-            currentAthlete = athletesData[athleteId];
-            if (!currentAthlete) return;
-
-            // Preencher dados do header
-            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
-            document.getElementById('profileName').textContent = currentAthlete.name;
-            document.getElementById('profileGroup').textContent = currentAthlete.group;
-            document.getElementById('profileStatus').textContent = currentAthlete.status;
-
-            // Preencher dados na aba de dados
-            document.getElementById('fullName').textContent = currentAthlete.name;
-            document.getElementById('athleteGroup').textContent = currentAthlete.group;
-            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
-            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
-
-            // Mostrar página do perfil
-            switchPage('athleteProfile');
-        }
-
-        // Função para voltar à lista de atletas
-        function backToAthletes() {
-            switchPage('athletes');
-        }
-
-        // Função para trocar aba do perfil
-        function switchProfileTab(tabName) {
-            // Remover active de todas as abas
-            document.querySelectorAll('.profile-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            // Ativar aba selecionada
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            // Se for aba de eventos, carregar eventos do atleta
-            if (tabName === 'eventos') {
-                loadAthleteEvents();
-            }
-        }
-
-        // Funções de Eventos
-        function openEventModal() {
-            document.getElementById('eventModal').classList.add('active');
-            loadAthletesForSelection();
-        }
-
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('active');
-            document.getElementById('eventForm').reset();
-        }
-
-        function loadAthletesForSelection() {
-            const athletesList = document.getElementById('athletesList');
-            athletesList.innerHTML = '';
-            
-            Object.keys(athletesData).forEach(athleteId => {
-                const athlete = athletesData[athleteId];
-                const div = document.createElement('div');
-                div.className = 'athlete-checkbox';
-                div.innerHTML = `
-                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
-                    <label for="athlete_${athleteId}">${athlete.name}</label>
-                `;
-                athletesList.appendChild(div);
-            });
-        }
-
-        function handleEventSubmit(e) {
-            e.preventDefault();
-            
-            const eventData = {
-                id: Date.now().toString(),
-                name: document.getElementById('eventName').value,
-                date: document.getElementById('eventDate').value,
-                distance: document.getElementById('eventDistance').value,
-                location: document.getElementById('eventLocation').value,
-                participants: []
-            };
-            
-            // Pegar atletas selecionados
-            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                eventData.participants.push(checkbox.value);
-            });
-            
-            events.push(eventData);
-            localStorage.setItem('events', JSON.stringify(events));
-            
-            closeEventModal();
-            loadEvents();
-            alert('Evento cadastrado com sucesso!');
-        }
-
-        function loadEvents() {
-            const eventsContent = document.getElementById('eventsContent');
-            
-            if (events.length === 0) {
-                eventsContent.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-alt"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            eventsContent.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                const participantNames = event.participants.map(id => athletesData[id]?.name || 'Atleta').join(', ');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
-                        </div>
-                        <div class="event-participants">
-                            <div class="participants-title">Participantes</div>
-                            <div class="participants-list">
-                                ${event.participants.map(id => 
-                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
-                                ).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function loadAthleteEvents() {
-            if (!currentAthlete) return;
-            
-            const athleteId = Object.keys(athletesData).find(id => 
-                athletesData[id].name === currentAthlete.name
-            );
-            
-            const athleteEvents = events.filter(event => 
-                event.participants.includes(athleteId)
-            );
-            
-            const athleteEventsContainer = document.getElementById('athleteEvents');
-            
-            if (athleteEvents.length === 0) {
-                athleteEventsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-trophy"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Funções de Cálculo de Performance
-        function calculatePerformanceData() {
-            // Pegar valores dos inputs
-            const age = parseInt(document.getElementById('age').value) || 0;
-            const gender = document.getElementById('gender').value;
-            const height = parseInt(document.getElementById('height').value) || 0;
-            const weight = parseInt(document.getElementById('weight').value) || 0;
-            const fcRest = parseInt(document.getElementById('fcRest').value) || 60;
-            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
-            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
-            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
-            const test5km = document.getElementById('test5km').value;
-            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
-
-            // Validações básicas
-            if (!age || !gender || !height || !weight) {
-                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
-                return;
-            }
-
-            // Calcular FC Máxima se não informada
-            if (!fcMax) {
-                fcMax = 220 - age;
-            }
-
-            // Calcular VO2 máximo
-            let vo2Max = vo2MaxInput;
-            if (!vo2Max && cooperTest > 0) {
-                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
-                vo2Max = (cooperTest - 504.9) / 44.73;
-            }
-
-            // Calcular VAM
-            let vam = vamTest;
-            if (!vam && test5km) {
-                // Converter tempo de 5km para VAM
-                const [minutes, seconds] = test5km.split(':').map(Number);
-                const totalMinutes = minutes + (seconds / 60);
-                const speed = 5 / (totalMinutes / 60); // km/h
-                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
-            }
-            if (!vam && vo2Max > 0) {
-                // Estimar VAM a partir do VO2 (fórmula de Léger)
-                vam = vo2Max * 0.278;
-            }
-
-            // Calcular FC Reserva
-            const fcReserve = fcMax - fcRest;
-
-            // Mostrar resultados
-            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
-            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
-            document.getElementById('calculatedFCMax').textContent = fcMax;
-            document.getElementById('calculatedFCReserve').textContent = fcReserve;
-
-            // Gerar tabela de zonas
-            generateTrainingZones(fcMax, fcRest, vam);
-
-            // Mostrar seção de resultados
-            document.getElementById('performanceResults').style.display = 'block';
-        }
-
-        function generateTrainingZones(fcMax, fcRest, vam) {
-            const zones = [
-                {
-                    zone: 1,
-                    name: 'Recuperação Ativa',
-                    color: 'zone-1',
-                    fcPercent: [50, 60],
-                    vamPercent: [60, 70],
-                    description: 'Recuperação e aquecimento'
-                },
-                {
-                    zone: 2,
-                    name: 'Base Aeróbia',
-                    color: 'zone-2',
-                    fcPercent: [60, 70],
-                    vamPercent: [70, 80],
-                    description: 'Resistência aeróbia básica'
-                },
-                {
-                    zone: 3,
-                    name: 'Aeróbio Intenso',
-                    color: 'zone-3',
-                    fcPercent: [70, 80],
-                    vamPercent: [80, 90],
-                    description: 'Limiar aeróbio'
-                },
-                {
-                    zone: 4,
-                    name: 'Limiar Anaeróbio',
-                    color: 'zone-4',
-                    fcPercent: [80, 90],
-                    vamPercent: [90, 100],
-                    description: 'Limiar anaeróbio/lactato'
-                },
-                {
-                    zone: 5,
-                    name: 'Potência Aeróbia',
-                    color: 'zone-5',
-                    fcPercent: [90, 100],
-                    vamPercent: [100, 120],
-                    description: 'VO2 máximo'
-                }
-            ];
-
-            const tbody = document.getElementById('zonesTableBody');
-            tbody.innerHTML = zones.map(zone => {
-                // Calcular FC usando método Karvonen (FC de reserva)
-                const fcReserve = fcMax - fcRest;
-                const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
-                const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
-                
-                // Calcular ritmo baseado na VAM
-                let paceMin = '--', paceMax = '--';
-                if (vam > 0) {
-                    const speedMin = vam * (zone.vamPercent[0] / 100);
-                    const speedMax = vam * (zone.vamPercent[1] / 100);
-                    
-                    // Converter km/h para min/km
-                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
-                    const paceMaxCalc = 60 / speedMin; // min/km
-                    
-                    const formatPace = (pace) => {
-                        const minutes = Math.floor(pace);
-                        const seconds = Math.round((pace - minutes) * 60);
-                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                    };
-                    
-                    paceMin = formatPace(paceMinCalc);
-                    paceMax = formatPace(paceMaxCalc);
-                }
-
-                return `
-                    <tr>
-                        <td>
-                            <span class="zone-color ${zone.color}"></span>
-                            Zona ${zone.zone}
-                        </td>
-                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
-                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
-                        <td>${fcMin}-${fcMaxZone} bpm</td>
-                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
-                        <td>${paceMin}-${paceMax} /km</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Limpar busca quando campo estiver vazio
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('athleteSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    if (this.value === '') {
-                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+            border-bottom: 1px
