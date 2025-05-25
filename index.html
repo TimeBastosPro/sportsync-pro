@@ -46,52 +46,6 @@
             font-size: 12px;
             color: #92400e;
             margin-top: 12px;
-        } solid #f3f4f6;
-            font-size: 14px;
-            color: #374151;
-        }
-        
-        .zone-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        
-        .zone-1 { background: #10b981; }
-        .zone-2 { background: #3b82f6; }
-        .zone-3 { background: #f59e0b; }
-        .zone-4 { background: #ef4444; }
-        .zone-5 { background: #8b5cf6; }
-        
-        .calculate-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .calculate-btn:hover {
-            background: #2563eb;
-        }
-        
-        .info-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 12px;
-            color: #92400e;
-            margin-top: 12px;
         }
         
         /* Responsive */
@@ -144,599 +98,6 @@
                     <i class="fas fa-user-tie"></i>
                     <h1>Bastos Run Coach</h1>
                 </div>
-
-    <script>
-        // Estado do sistema
-        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        let currentWeekStart = new Date('2025-05-26'); // Data inicial
-        let currentFilter = 'geral';
-        let currentAthlete = null;
-        let events = JSON.parse(localStorage.getItem('events') || '[]');
-
-        // Dados dos atletas
-        const athletesData = {
-            'adao-oliveira': {
-                name: 'Adão Aparecido de Oliveira',
-                group: 'Projeto Corra',
-                status: 'Em preparação',
-                mesocycle: 'Base Geral',
-                microcycle: '14/27 Choque'
-            },
-            'adriana-freitas': {
-                name: 'Adriana Duque de Freitas',
-                group: 'TIME BASTOS',
-                status: 'Liberado',
-                mesocycle: 'Específico',
-                microcycle: '22/25'
-            }
-        };
-
-        // Credenciais
-        const trainerCredentials = {
-            email: 'treinador@bastos.com',
-            password: '123456'
-        };
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            if (currentUser) {
-                showApp();
-                initializeApp();
-                loadEvents();
-            } else {
-                showLogin();
-            }
-            
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
-        });
-
-        // Funções de autenticação
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Entrando...';
-            
-            setTimeout(() => {
-                if (email === trainerCredentials.email && password === trainerCredentials.password) {
-                    currentUser = {
-                        name: 'Treinador Bastos',
-                        email: email,
-                        role: 'trainer'
-                    };
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showApp();
-                    initializeApp();
-                } else {
-                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Entrar como Treinador';
-                }
-            }, 1000);
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showLogin();
-        }
-
-        function showLogin() {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('appContainer').classList.remove('active');
-        }
-
-        function showApp() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('appContainer').classList.add('active');
-        }
-
-        function initializeApp() {
-            if (currentUser) {
-                document.getElementById('trainerName').textContent = currentUser.name;
-            }
-            
-            // Navegação
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = btn.dataset.page;
-                    switchPage(page);
-                    
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-        }
-
-        function switchPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const targetPage = document.getElementById(pageId + 'Page');
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            // Atualizar navegação se não for perfil
-            if (pageId !== 'athleteProfile') {
-                const navButtons = document.querySelectorAll('.nav-btn');
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                
-                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
-                if (activeBtn) {
-                    activeBtn.classList.add('active');
-                }
-            }
-        }
-
-        // Função de busca de atletas
-        function searchAthletes() {
-            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
-            const athleteRows = document.querySelectorAll('.athlete-row');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            let visibleRows = 0;
-
-            athleteRows.forEach(row => {
-                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
-                const athleteStatus = row.dataset.status;
-                
-                // Verifica se corresponde à busca e ao filtro atual
-                const matchesSearch = athleteName.includes(searchTerm);
-                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
-                
-                if (matchesSearch && matchesFilter) {
-                    row.classList.remove('hidden');
-                    visibleRows++;
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // Mostrar/esconder mensagem de "nenhum resultado"
-            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
-                noResultsMessage.style.display = 'block';
-            } else {
-                noResultsMessage.style.display = 'none';
-            }
-        }
-
-        // Função para navegar entre semanas
-        function previousWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-            updateWeekDisplay();
-        }
-
-        function nextWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-            updateWeekDisplay();
-        }
-
-        function updateWeekDisplay() {
-            const weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            
-            const startStr = formatDate(currentWeekStart);
-            const endStr = formatDate(weekEnd);
-            
-            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
-        }
-
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        // Função para filtrar por status
-        function filterByStatus(status) {
-            currentFilter = status;
-            
-            // Atualizar botões ativos
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            event.target.classList.add('active');
-            
-            // Aplicar filtro
-            searchAthletes();
-        }
-
-        // Função para visualizar perfil do atleta
-        function viewAthleteProfile(athleteId) {
-            currentAthlete = athletesData[athleteId];
-            if (!currentAthlete) return;
-
-            // Preencher dados do header
-            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
-            document.getElementById('profileName').textContent = currentAthlete.name;
-            document.getElementById('profileGroup').textContent = currentAthlete.group;
-            document.getElementById('profileStatus').textContent = currentAthlete.status;
-
-            // Preencher dados na aba de dados
-            document.getElementById('fullName').textContent = currentAthlete.name;
-            document.getElementById('athleteGroup').textContent = currentAthlete.group;
-            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
-            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
-
-            // Mostrar página do perfil
-            switchPage('athleteProfile');
-        }
-
-        // Função para voltar à lista de atletas
-        function backToAthletes() {
-            switchPage('athletes');
-        }
-
-        // Função para trocar aba do perfil
-        function switchProfileTab(tabName) {
-            // Remover active de todas as abas
-            document.querySelectorAll('.profile-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            // Ativar aba selecionada
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            // Se for aba de eventos, carregar eventos do atleta
-            if (tabName === 'eventos') {
-                loadAthleteEvents();
-            }
-        }
-
-        // Funções de Eventos
-        function openEventModal() {
-            document.getElementById('eventModal').classList.add('active');
-            loadAthletesForSelection();
-        }
-
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('active');
-            document.getElementById('eventForm').reset();
-        }
-
-        function loadAthletesForSelection() {
-            const athletesList = document.getElementById('athletesList');
-            athletesList.innerHTML = '';
-            
-            Object.keys(athletesData).forEach(athleteId => {
-                const athlete = athletesData[athleteId];
-                const div = document.createElement('div');
-                div.className = 'athlete-checkbox';
-                div.innerHTML = `
-                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
-                    <label for="athlete_${athleteId}">${athlete.name}</label>
-                `;
-                athletesList.appendChild(div);
-            });
-        }
-
-        function handleEventSubmit(e) {
-            e.preventDefault();
-            
-            const eventData = {
-                id: Date.now().toString(),
-                name: document.getElementById('eventName').value,
-                date: document.getElementById('eventDate').value,
-                distance: document.getElementById('eventDistance').value,
-                location: document.getElementById('eventLocation').value,
-                participants: []
-            };
-            
-            // Pegar atletas selecionados
-            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                eventData.participants.push(checkbox.value);
-            });
-            
-            events.push(eventData);
-            localStorage.setItem('events', JSON.stringify(events));
-            
-            closeEventModal();
-            loadEvents();
-            alert('Evento cadastrado com sucesso!');
-        }
-
-        function loadEvents() {
-            const eventsContent = document.getElementById('eventsContent');
-            
-            if (events.length === 0) {
-                eventsContent.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-alt"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            eventsContent.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                const participantNames = event.participants.map(id => athletesData[id]?.name || 'Atleta').join(', ');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
-                        </div>
-                        <div class="event-participants">
-                            <div class="participants-title">Participantes</div>
-                            <div class="participants-list">
-                                ${event.participants.map(id => 
-                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
-                                ).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function loadAthleteEvents() {
-            if (!currentAthlete) return;
-            
-            const athleteId = Object.keys(athletesData).find(id => 
-                athletesData[id].name === currentAthlete.name
-            );
-            
-            const athleteEvents = events.filter(event => 
-                event.participants.includes(athleteId)
-            );
-            
-            const athleteEventsContainer = document.getElementById('athleteEvents');
-            
-            if (athleteEvents.length === 0) {
-                athleteEventsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-trophy"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Funções de Cálculo de Performance
-        function calculatePerformanceData() {
-            // Pegar valores dos inputs
-            const age = parseInt(document.getElementById('age').value) || 0;
-            const gender = document.getElementById('gender').value;
-            const height = parseInt(document.getElementById('height').value) || 0;
-            const weight = parseInt(document.getElementById('weight').value) || 0;
-            const fcRest = parseInt(document.getElementById('fcRest').value) || 60;
-            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
-            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
-            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
-            const test5km = document.getElementById('test5km').value;
-            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
-
-            // Validações básicas
-            if (!age || !gender || !height || !weight) {
-                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
-                return;
-            }
-
-            // Calcular FC Máxima se não informada - usando fórmula de Tanaka
-            if (!fcMax) {
-                fcMax = Math.round(208 - (0.7 * age));
-            }
-
-            // Calcular VO2 máximo (prioridade: testes > fórmulas por FC)
-            let vo2Max = vo2MaxInput;
-            if (!vo2Max && cooperTest > 0) {
-                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
-                vo2Max = (cooperTest - 504.9) / 44.73;
-            }
-            // Se ainda não temos VO2, estimar pela FC (fórmula de Uth)
-            if (!vo2Max && fcMax > 0 && fcRest > 0) {
-                // Fórmula de Uth: VO2 max = 15.3 × (FCmax / FCrepouso)
-                vo2Max = 15.3 * (fcMax / fcRest);
-            }
-
-            // Calcular VAM (prioridade: teste direto > tempo 5km > VO2)
-            let vam = vamTest;
-            if (!vam && test5km) {
-                // Converter tempo de 5km para VAM
-                const [minutes, seconds] = test5km.split(':').map(Number);
-                const totalMinutes = minutes + (seconds / 60);
-                const speed = 5 / (totalMinutes / 60); // km/h
-                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
-            }
-            if (!vam && vo2Max > 0) {
-                // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
-                vam = vo2Max * 0.278;
-            }
-            // Se ainda não temos VAM, estimar diretamente pela FC
-            if (!vam && fcMax > 0 && fcRest > 0) {
-                // Estimar VAM pela FC usando relação empírica
-                const fcReserve = fcMax - fcRest;
-                vam = (fcReserve * 0.15) + 8; // Fórmula empírica: VAM baseada na FC de reserva
-            }
-
-            // Calcular FC Reserva
-            const fcReserve = fcMax - fcRest;
-
-            // Mostrar resultados
-            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
-            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
-            document.getElementById('calculatedFCMax').textContent = fcMax;
-            document.getElementById('calculatedFCReserve').textContent = fcReserve;
-
-            // Gerar tabela de zonas
-            generateTrainingZones(fcMax, fcRest, vam);
-
-            // Mostrar seção de resultados
-            document.getElementById('performanceResults').style.display = 'block';
-        }
-
-        function generateTrainingZones(fcMax, fcRest, vam) {
-            const zones = [
-                {
-                    zone: 1,
-                    name: 'Recuperação Ativa',
-                    color: 'zone-1',
-                    fcPercent: [50, 60],
-                    vamPercent: [60, 70],
-                    description: 'Recuperação e aquecimento'
-                },
-                {
-                    zone: 2,
-                    name: 'Base Aeróbia',
-                    color: 'zone-2',
-                    fcPercent: [60, 70],
-                    vamPercent: [70, 80],
-                    description: 'Resistência aeróbia básica'
-                },
-                {
-                    zone: 3,
-                    name: 'Aeróbio Intenso',
-                    color: 'zone-3',
-                    fcPercent: [70, 80],
-                    vamPercent: [80, 90],
-                    description: 'Limiar aeróbio'
-                },
-                {
-                    zone: 4,
-                    name: 'Limiar Anaeróbio',
-                    color: 'zone-4',
-                    fcPercent: [80, 90],
-                    vamPercent: [90, 100],
-                    description: 'Limiar anaeróbio/lactato'
-                },
-                {
-                    zone: 5,
-                    name: 'Potência Aeróbia',
-                    color: 'zone-5',
-                    fcPercent: [90, 100],
-                    vamPercent: [100, 120],
-                    description: 'VO2 máximo'
-                }
-            ];
-
-            const tbody = document.getElementById('zonesTableBody');
-            tbody.innerHTML = zones.map(zone => {
-                let fcMin, fcMaxZone;
-                
-                // Usar fórmula de Karvonen se FC repouso estiver preenchida, senão usar percentual direto
-                if (fcRest && fcRest > 0) {
-                    // Método Karvonen (FC de reserva)
-                    const fcReserve = fcMax - fcRest;
-                    fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
-                    fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
-                } else {
-                    // Percentual direto da FC máxima
-                    fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
-                    fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
-                }
-                
-                // Calcular ritmo baseado na VAM
-                let paceMin = '--', paceMax = '--';
-                if (vam > 0) {
-                    const speedMin = vam * (zone.vamPercent[0] / 100);
-                    const speedMax = vam * (zone.vamPercent[1] / 100);
-                    
-                    // Converter km/h para min/km
-                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
-                    const paceMaxCalc = 60 / speedMin; // min/km
-                    
-                    const formatPace = (pace) => {
-                        const minutes = Math.floor(pace);
-                        const seconds = Math.round((pace - minutes) * 60);
-                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                    };
-                    
-                    paceMin = formatPace(paceMinCalc);
-                    paceMax = formatPace(paceMaxCalc);
-                }
-
-                return `
-                    <tr>
-                        <td>
-                            <span class="zone-color ${zone.color}"></span>
-                            Zona ${zone.zone}
-                        </td>
-                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
-                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
-                        <td>${fcMin}-${fcMaxZone} bpm</td>
-                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
-                        <td>${paceMin}-${paceMax} /km</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Limpar busca quando campo estiver vazio
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('athleteSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    if (this.value === '') {
-                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-</html>
                 <div class="role-badge">TREINADOR</div>
             </div>
             
@@ -1108,6 +469,9 @@
                                         <div class="form-group">
                                             <label>FC Repouso (bpm)</label>
                                             <input type="number" id="fcRest" placeholder="Ex: 60">
+                                            <div class="info-note">
+                                                Necessária para fórmula de Karvonen e estimativas de VO2/VAM quando não há testes
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label>FC Máxima (bpm)</label>
@@ -1324,7 +688,606 @@
                     <button type="submit" class="btn-primary">Cadastrar Evento</button>
                 </div>
             </form>
-        </div><!DOCTYPE html>
+        </div>
+    </div>
+
+    <script>
+        // Estado do sistema
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let currentWeekStart = new Date('2025-05-26'); // Data inicial
+        let currentFilter = 'geral';
+        let currentAthlete = null;
+        let events = JSON.parse(localStorage.getItem('events') || '[]');
+
+        // Dados dos atletas
+        const athletesData = {
+            'adao-oliveira': {
+                name: 'Adão Aparecido de Oliveira',
+                group: 'Projeto Corra',
+                status: 'Em preparação',
+                mesocycle: 'Base Geral',
+                microcycle: '14/27 Choque'
+            },
+            'adriana-freitas': {
+                name: 'Adriana Duque de Freitas',
+                group: 'TIME BASTOS',
+                status: 'Liberado',
+                mesocycle: 'Específico',
+                microcycle: '22/25'
+            }
+        };
+
+        // Credenciais
+        const trainerCredentials = {
+            email: 'treinador@bastos.com',
+            password: '123456'
+        };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                showApp();
+                initializeApp();
+                loadEvents();
+            } else {
+                showLogin();
+            }
+            
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+        });
+
+        // Funções de autenticação
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Entrando...';
+            
+            setTimeout(() => {
+                if (email === trainerCredentials.email && password === trainerCredentials.password) {
+                    currentUser = {
+                        name: 'Treinador Bastos',
+                        email: email,
+                        role: 'trainer'
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showApp();
+                    initializeApp();
+                } else {
+                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Entrar como Treinador';
+                }
+            }, 1000);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLogin();
+        }
+
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('appContainer').classList.remove('active');
+        }
+
+        function showApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+        }
+
+        function initializeApp() {
+            if (currentUser) {
+                document.getElementById('trainerName').textContent = currentUser.name;
+            }
+            
+            // Navegação
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    switchPage(page);
+                    
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        }
+
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Atualizar navegação se não for perfil
+            if (pageId !== 'athleteProfile') {
+                const navButtons = document.querySelectorAll('.nav-btn');
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                
+                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
+        }
+
+        // Função de busca de atletas
+        function searchAthletes() {
+            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
+            const athleteRows = document.querySelectorAll('.athlete-row');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            let visibleRows = 0;
+
+            athleteRows.forEach(row => {
+                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
+                const athleteStatus = row.dataset.status;
+                
+                // Verifica se corresponde à busca e ao filtro atual
+                const matchesSearch = athleteName.includes(searchTerm);
+                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
+                
+                if (matchesSearch && matchesFilter) {
+                    row.classList.remove('hidden');
+                    visibleRows++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Mostrar/esconder mensagem de "nenhum resultado"
+            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
+
+        // Função para navegar entre semanas
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            updateWeekDisplay();
+        }
+
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            updateWeekDisplay();
+        }
+
+        function updateWeekDisplay() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            const startStr = formatDate(currentWeekStart);
+            const endStr = formatDate(weekEnd);
+            
+            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Função para filtrar por status
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Aplicar filtro
+            searchAthletes();
+        }
+
+        // Função para visualizar perfil do atleta
+        function viewAthleteProfile(athleteId) {
+            currentAthlete = athletesData[athleteId];
+            if (!currentAthlete) return;
+
+            // Preencher dados do header
+            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
+            document.getElementById('profileName').textContent = currentAthlete.name;
+            document.getElementById('profileGroup').textContent = currentAthlete.group;
+            document.getElementById('profileStatus').textContent = currentAthlete.status;
+
+            // Preencher dados na aba de dados
+            document.getElementById('fullName').textContent = currentAthlete.name;
+            document.getElementById('athleteGroup').textContent = currentAthlete.group;
+            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
+            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
+
+            // Mostrar página do perfil
+            switchPage('athleteProfile');
+        }
+
+        // Função para voltar à lista de atletas
+        function backToAthletes() {
+            switchPage('athletes');
+        }
+
+        // Função para trocar aba do perfil
+        function switchProfileTab(tabName) {
+            // Remover active de todas as abas
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Ativar aba selecionada
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Se for aba de eventos, carregar eventos do atleta
+            if (tabName === 'eventos') {
+                loadAthleteEvents();
+            }
+        }
+
+        // Funções de Eventos
+        function openEventModal() {
+            document.getElementById('eventModal').classList.add('active');
+            loadAthletesForSelection();
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            document.getElementById('eventForm').reset();
+        }
+
+        function loadAthletesForSelection() {
+            const athletesList = document.getElementById('athletesList');
+            athletesList.innerHTML = '';
+            
+            Object.keys(athletesData).forEach(athleteId => {
+                const athlete = athletesData[athleteId];
+                const div = document.createElement('div');
+                div.className = 'athlete-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
+                    <label for="athlete_${athleteId}">${athlete.name}</label>
+                `;
+                athletesList.appendChild(div);
+            });
+        }
+
+        function handleEventSubmit(e) {
+            e.preventDefault();
+            
+            const eventData = {
+                id: Date.now().toString(),
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                distance: document.getElementById('eventDistance').value,
+                location: document.getElementById('eventLocation').value,
+                participants: []
+            };
+            
+            // Pegar atletas selecionados
+            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                eventData.participants.push(checkbox.value);
+            });
+            
+            events.push(eventData);
+            localStorage.setItem('events', JSON.stringify(events));
+            
+            closeEventModal();
+            loadEvents();
+            alert('Evento cadastrado com sucesso!');
+        }
+
+        function loadEvents() {
+            const eventsContent = document.getElementById('eventsContent');
+            
+            if (events.length === 0) {
+                eventsContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            eventsContent.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                        <div class="event-participants">
+                            <div class="participants-title">Participantes</div>
+                            <div class="participants-list">
+                                ${event.participants.map(id => 
+                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadAthleteEvents() {
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const athleteEvents = events.filter(event => 
+                event.participants.includes(athleteId)
+            );
+            
+            const athleteEventsContainer = document.getElementById('athleteEvents');
+            
+            if (athleteEvents.length === 0) {
+                athleteEventsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Funções de Cálculo de Performance
+        function calculatePerformanceData() {
+            // Pegar valores dos inputs
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const gender = document.getElementById('gender').value;
+            const height = parseInt(document.getElementById('height').value) || 0;
+            const weight = parseInt(document.getElementById('weight').value) || 0;
+            const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
+            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+            const test5km = document.getElementById('test5km').value;
+            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+
+            // Validações básicas
+            if (!age || !gender || !height || !weight) {
+                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+                return;
+            }
+
+            // Para estimativas por FC, precisamos pelo menos FC repouso
+            if (!cooperTest && !vamTest && !test5km && !vo2MaxInput && !fcRest) {
+                alert('Por favor, preencha pelo menos um teste de esforço OU a FC de repouso para estimativas');
+                return;
+            }
+
+            // Calcular FC Máxima se não informada - usando fórmula de Tanaka
+            if (!fcMax) {
+                fcMax = Math.round(208 - (0.7 * age));
+            }
+
+            // Calcular VO2 máximo (prioridade: testes > fórmulas por FC)
+            let vo2Max = vo2MaxInput;
+            if (!vo2Max && cooperTest > 0) {
+                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
+                vo2Max = (cooperTest - 504.9) / 44.73;
+            }
+            // Se ainda não temos VO2, estimar pela FC (fórmula de Uth)
+            if (!vo2Max && fcMax > 0 && fcRest > 0) {
+                // Fórmula de Uth: VO2 max = 15.3 × (FCmax / FCrepouso)
+                vo2Max = 15.3 * (fcMax / fcRest);
+            }
+
+            // Calcular VAM (prioridade: teste direto > tempo 5km > VO2)
+            let vam = vamTest;
+            if (!vam && test5km) {
+                // Converter tempo de 5km para VAM
+                const [minutes, seconds] = test5km.split(':').map(Number);
+                const totalMinutes = minutes + (seconds / 60);
+                const speed = 5 / (totalMinutes / 60); // km/h
+                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+            }
+            if (!vam && vo2Max > 0) {
+                // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
+                vam = vo2Max * 0.278;
+            }
+            // Se ainda não temos VAM, estimar diretamente pela FC
+            if (!vam && fcMax > 0 && fcRest > 0) {
+                // Estimar VAM pela FC usando relação empírica
+                const fcReserve = fcMax - fcRest;
+                vam = (fcReserve * 0.15) + 8; // Fórmula empírica: VAM baseada na FC de reserva
+            }
+
+            // Calcular FC Reserva
+            const fcReserve = fcMax - fcRest;
+
+            // Mostrar resultados
+            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+            document.getElementById('calculatedFCMax').textContent = fcMax;
+            document.getElementById('calculatedFCReserve').textContent = fcReserve;
+
+            // Gerar tabela de zonas
+            generateTrainingZones(fcMax, fcRest, vam);
+
+            // Mostrar seção de resultados
+            document.getElementById('performanceResults').style.display = 'block';
+        }
+
+        function generateTrainingZones(fcMax, fcRest, vam) {
+            const zones = [
+                {
+                    zone: 1,
+                    name: 'Recuperação Ativa',
+                    color: 'zone-1',
+                    fcPercent: [50, 60],
+                    vamPercent: [60, 70],
+                    description: 'Recuperação e aquecimento'
+                },
+                {
+                    zone: 2,
+                    name: 'Base Aeróbia',
+                    color: 'zone-2',
+                    fcPercent: [60, 70],
+                    vamPercent: [70, 80],
+                    description: 'Resistência aeróbia básica'
+                },
+                {
+                    zone: 3,
+                    name: 'Aeróbio Intenso',
+                    color: 'zone-3',
+                    fcPercent: [70, 80],
+                    vamPercent: [80, 90],
+                    description: 'Limiar aeróbio'
+                },
+                {
+                    zone: 4,
+                    name: 'Limiar Anaeróbio',
+                    color: 'zone-4',
+                    fcPercent: [80, 90],
+                    vamPercent: [90, 100],
+                    description: 'Limiar anaeróbio/lactato'
+                },
+                {
+                    zone: 5,
+                    name: 'Potência Aeróbia',
+                    color: 'zone-5',
+                    fcPercent: [90, 100],
+                    vamPercent: [100, 120],
+                    description: 'VO2 máximo'
+                }
+            ];
+
+            const tbody = document.getElementById('zonesTableBody');
+            tbody.innerHTML = zones.map(zone => {
+                let fcMin, fcMaxZone;
+                
+                // Usar fórmula de Karvonen se FC repouso estiver preenchida, senão usar percentual direto
+                if (fcRest && fcRest > 0) {
+                    // Método Karvonen (FC de reserva)
+                    const fcReserve = fcMax - fcRest;
+                    fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                    fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                } else {
+                    // Percentual direto da FC máxima
+                    fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
+                    fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
+                }
+                
+                // Calcular ritmo baseado na VAM
+                let paceMin = '--', paceMax = '--';
+                if (vam > 0) {
+                    const speedMin = vam * (zone.vamPercent[0] / 100);
+                    const speedMax = vam * (zone.vamPercent[1] / 100);
+                    
+                    // Converter km/h para min/km
+                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
+                    const paceMaxCalc = 60 / speedMin; // min/km
+                    
+                    const formatPace = (pace) => {
+                        const minutes = Math.floor(pace);
+                        const seconds = Math.round((pace - minutes) * 60);
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+                    
+                    paceMin = formatPace(paceMinCalc);
+                    paceMax = formatPace(paceMaxCalc);
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="zone-color ${zone.color}"></span>
+                            Zona ${zone.zone}
+                        </td>
+                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
+                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
+                        <td>${fcMin}-${fcMaxZone} bpm</td>
+                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
+                        <td>${paceMin}-${paceMax} /km</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Limpar busca quando campo estiver vazio
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('athleteSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    if (this.value === '') {
+                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -2389,4 +2352,4 @@
         
         .zones-table td {
             padding: 12px;
-            border-bottom: 1px
+            border
