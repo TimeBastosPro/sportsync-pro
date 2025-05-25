@@ -501,6 +501,13 @@
         .athlete-name {
             font-weight: 600;
             color: #1f2937;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .athlete-name:hover {
+            color: #3b82f6;
+            text-decoration: underline;
         }
         
         .status-badge {
@@ -550,6 +557,154 @@
             font-size: 32px;
             color: #d1d5db;
             margin-bottom: 12px;
+        }
+        
+        /* PERFIL DO ATLETA */
+        .profile-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .profile-details h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .profile-details p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 2px;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .profile-tab {
+            background: none;
+            border: none;
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .profile-tab:hover {
+            color: #3b82f6;
+            background: #f8fafc;
+        }
+        
+        .profile-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .profile-content {
+            background: white;
+            padding: 24px;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .info-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .info-card h3 {
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            color: #1f2937;
+            font-weight: 500;
+            font-size: 14px;
         }
         
         /* Responsive */
@@ -785,7 +940,7 @@
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
-                                        <div class="athlete-name">Adão Aparecido de Oliveira</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adao-oliveira')">Adão Aparecido de Oliveira</div>
                                     </div>
                                 </td>
                                 <td>
@@ -799,7 +954,7 @@
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
-                                        <div class="athlete-name">Adriana Duque de Freitas</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adriana-freitas')">Adriana Duque de Freitas</div>
                                     </div>
                                 </td>
                                 <td>
@@ -820,6 +975,161 @@
                     </div>
                 </div>
             </div>
+
+            <!-- PERFIL DO ATLETA -->
+            <div id="athleteProfilePage" class="page">
+                <div class="content-card">
+                    <!-- Header do Perfil -->
+                    <div class="profile-header">
+                        <div class="profile-info">
+                            <div class="profile-avatar" id="profileAvatar">A</div>
+                            <div class="profile-details">
+                                <h1 id="profileName">Nome do Atleta</h1>
+                                <p id="profileGroup">Grupo</p>
+                                <p id="profileStatus">Status</p>
+                            </div>
+                            <button class="back-btn" onclick="backToAthletes()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Abas do Perfil -->
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" onclick="switchProfileTab('dados')">
+                            <i class="fas fa-user"></i> Dados
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">
+                            <i class="fas fa-chart-line"></i> Avaliações
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planejamento')">
+                            <i class="fas fa-calendar-alt"></i> Planejamento
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
+                            <i class="fas fa-file-excel"></i> Planilhas
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('eventos')">
+                            <i class="fas fa-trophy"></i> Eventos
+                        </button>
+                    </div>
+
+                    <!-- Conteúdo das Abas -->
+                    <div class="profile-content">
+                        <!-- Aba Dados -->
+                        <div id="dadosTab" class="tab-content active">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Nome Completo:</span>
+                                        <span class="info-value" id="fullName">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Data de Nascimento:</span>
+                                        <span class="info-value">15/03/1985</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Idade:</span>
+                                        <span class="info-value">40 anos</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">E-mail:</span>
+                                        <span class="info-value">atleta@email.com</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Telefone:</span>
+                                        <span class="info-value">(11) 99999-9999</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Grupo:</span>
+                                        <span class="info-value" id="athleteGroup">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Categoria:</span>
+                                        <span class="info-value">Veterano</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tempo de Treino:</span>
+                                        <span class="info-value">2 anos</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Mesociclo Atual:</span>
+                                        <span class="info-value" id="currentMesocycle">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Microciclo Atual:</span>
+                                        <span class="info-value" id="currentMicrocycle">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3><i class="fas fa-heart"></i> Dados Físicos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Altura:</span>
+                                        <span class="info-value">1,75 m</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Peso:</span>
+                                        <span class="info-value">70 kg</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">IMC:</span>
+                                        <span class="info-value">22,9</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">FC Repouso:</span>
+                                        <span class="info-value">60 bpm</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">FC Máxima:</span>
+                                        <span class="info-value">180 bpm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Avaliações -->
+                        <div id="avaliacoesTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>Avaliações em Desenvolvimento</h3>
+                                <p>Esta seção conterá gráficos de evolução, testes físicos e avaliações de desempenho</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Planejamento -->
+                        <div id="planejamentoTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h3>Planejamento em Desenvolvimento</h3>
+                                <p>Esta seção conterá o planejamento de treinos, periodização e objetivos</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Planilhas -->
+                        <div id="planilhasTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-file-excel"></i>
+                                <h3>Planilhas em Desenvolvimento</h3>
+                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Eventos -->
+                        <div id="eventosTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-trophy"></i>
+                                <h3>Eventos em Desenvolvimento</h3>
+                                <p>Esta seção conterá provas, competições e resultados do atleta</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -828,6 +1138,25 @@
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
         let currentWeekStart = new Date('2025-05-26'); // Data inicial
         let currentFilter = 'geral';
+        let currentAthlete = null;
+
+        // Dados dos atletas
+        const athletesData = {
+            'adao-oliveira': {
+                name: 'Adão Aparecido de Oliveira',
+                group: 'Projeto Corra',
+                status: 'Em preparação',
+                mesocycle: 'Base Geral',
+                microcycle: '14/27 Choque'
+            },
+            'adriana-freitas': {
+                name: 'Adriana Duque de Freitas',
+                group: 'TIME BASTOS',
+                status: 'Liberado',
+                mesocycle: 'Específico',
+                microcycle: '22/25'
+            }
+        };
 
         // Credenciais
         const trainerCredentials = {
@@ -919,6 +1248,17 @@
             if (targetPage) {
                 targetPage.classList.add('active');
             }
+
+            // Atualizar navegação se não for perfil
+            if (pageId !== 'athleteProfile') {
+                const navButtons = document.querySelectorAll('.nav-btn');
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                
+                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
         }
 
         // Função de busca de atletas
@@ -993,6 +1333,47 @@
             
             // Aplicar filtro
             searchAthletes();
+        }
+
+        // Função para visualizar perfil do atleta
+        function viewAthleteProfile(athleteId) {
+            currentAthlete = athletesData[athleteId];
+            if (!currentAthlete) return;
+
+            // Preencher dados do header
+            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
+            document.getElementById('profileName').textContent = currentAthlete.name;
+            document.getElementById('profileGroup').textContent = currentAthlete.group;
+            document.getElementById('profileStatus').textContent = currentAthlete.status;
+
+            // Preencher dados na aba de dados
+            document.getElementById('fullName').textContent = currentAthlete.name;
+            document.getElementById('athleteGroup').textContent = currentAthlete.group;
+            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
+            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
+
+            // Mostrar página do perfil
+            switchPage('athleteProfile');
+        }
+
+        // Função para voltar à lista de atletas
+        function backToAthletes() {
+            switchPage('athletes');
+        }
+
+        // Função para trocar aba do perfil
+        function switchProfileTab(tabName) {
+            // Remover active de todas as abas
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Ativar aba selecionada
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
         }
 
         // Limpar busca quando campo estiver vazio
