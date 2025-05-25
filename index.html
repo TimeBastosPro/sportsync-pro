@@ -1,101 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bastos Run Coach</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* TODO O SEU CSS COMPLETO DEVE ESTAR AQUI DENTRO */
-        .zones-table td {
-            padding: 12px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
-            color: #374151;
-        }
-
-        .zone-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        .zone-1 { background: #10b981; }
-        .zone-2 { background: #3b82f6; }
-        .zone-3 { background: #f59e0b; }
-        .zone-4 { background: #ef4444; }
-        .zone-5 { background: #8b5cf6; }
-
-        .calculate-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .calculate-btn:hover {
-            background: #2563eb;
-        }
-
-        .info-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 12px;
-            color: #92400e;
-            margin-top: 12px;
-        }
-
-        @media (max-width: 768px) {
-            .nav {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
-
-            .container {
-                padding: 16px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filters-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-group {
-                margin-right: 0;
-                margin-bottom: 12px;
-            }
-
-            .search-input {
-                min-width: 100%;
-            }
-
-            .period-selector {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .current-period {
-                order: -1;
-            }
-        }
-    </style>
+</style>
 </head>
 <body>
     <!-- LOGIN -->
@@ -413,30 +316,6 @@
                                         <span class="info-value" id="currentMicrocycle">-</span>
                                     </div>
                                 </div>
-
-                                <div class="info-card">
-                                    <h3><i class="fas fa-heart"></i> Dados Físicos</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Altura:</span>
-                                        <span class="info-value">1,75 m</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Peso:</span>
-                                        <span class="info-value">70 kg</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">IMC:</span>
-                                        <span class="info-value">22,9</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">FC Repouso:</span>
-                                        <span class="info-value">60 bpm</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">FC Máxima:</span>
-                                        <span class="info-value">180 bpm</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -469,6 +348,10 @@
                                         <div class="form-group">
                                             <label>Peso (kg)</label>
                                             <input type="number" id="weight" placeholder="Ex: 70">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>IMC</label>
+                                            <input type="text" id="imc" placeholder="Calculado automaticamente" readonly style="background: #f3f4f6; color: #6b7280;">
                                         </div>
                                     </div>
 
@@ -658,11 +541,12 @@
     <div id="eventModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">Cadastrar Novo Evento</h2>
+                <h2 class="modal-title" id="modalTitle">Cadastrar Novo Evento</h2>
                 <button class="modal-close" onclick="closeEventModal()">&times;</button>
             </div>
             
             <form id="eventForm">
+                <input type="hidden" id="eventId" value="">
                 <div class="form-group">
                     <label for="eventName">Nome do Evento</label>
                     <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
@@ -693,7 +577,7 @@
                 
                 <div style="text-align: right; margin-top: 24px;">
                     <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Cadastrar Evento</button>
+                    <button type="submit" class="btn-primary" id="submitEventBtn">Cadastrar Evento</button>
                 </div>
             </form>
         </div>
@@ -706,6 +590,7 @@
         let currentFilter = 'geral';
         let currentAthlete = null;
         let events = JSON.parse(localStorage.getItem('events') || '[]');
+        let editingEventId = null;
 
         // Dados dos atletas
         const athletesData = {
@@ -743,7 +628,26 @@
             
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+            
+            // Adicionar listeners para cálculo automático do IMC
+            document.getElementById('height').addEventListener('input', calculateIMC);
+            document.getElementById('weight').addEventListener('input', calculateIMC);
         });
+
+        // Função para calcular IMC automaticamente
+        function calculateIMC() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const imcField = document.getElementById('imc');
+            
+            if (height && weight && height > 0) {
+                const heightInMeters = height / 100;
+                const imc = weight / (heightInMeters * heightInMeters);
+                imcField.value = imc.toFixed(1);
+            } else {
+                imcField.value = '';
+            }
+        }
 
         // Funções de autenticação
         function handleLogin(e) {
@@ -951,26 +855,58 @@
         }
 
         // Funções de Eventos
-        function openEventModal() {
+        function openEventModal(eventId = null) {
+            editingEventId = eventId;
+            
+            if (eventId) {
+                // Modo edição
+                const event = events.find(e => e.id === eventId);
+                if (event) {
+                    document.getElementById('modalTitle').textContent = 'Editar Evento';
+                    document.getElementById('submitEventBtn').textContent = 'Salvar Alterações';
+                    document.getElementById('eventId').value = eventId;
+                    document.getElementById('eventName').value = event.name;
+                    document.getElementById('eventDate').value = event.date;
+                    document.getElementById('eventDistance').value = event.distance;
+                    document.getElementById('eventLocation').value = event.location;
+                }
+            } else {
+                // Modo criação
+                document.getElementById('modalTitle').textContent = 'Cadastrar Novo Evento';
+                document.getElementById('submitEventBtn').textContent = 'Cadastrar Evento';
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventId').value = '';
+            }
+            
             document.getElementById('eventModal').classList.add('active');
-            loadAthletesForSelection();
+            loadAthletesForSelection(eventId);
         }
 
         function closeEventModal() {
             document.getElementById('eventModal').classList.remove('active');
             document.getElementById('eventForm').reset();
+            editingEventId = null;
         }
 
-        function loadAthletesForSelection() {
+        function loadAthletesForSelection(eventId = null) {
             const athletesList = document.getElementById('athletesList');
             athletesList.innerHTML = '';
             
+            let selectedParticipants = [];
+            if (eventId) {
+                const event = events.find(e => e.id === eventId);
+                if (event) {
+                    selectedParticipants = event.participants;
+                }
+            }
+            
             Object.keys(athletesData).forEach(athleteId => {
                 const athlete = athletesData[athleteId];
+                const isSelected = selectedParticipants.includes(athleteId);
                 const div = document.createElement('div');
                 div.className = 'athlete-checkbox';
                 div.innerHTML = `
-                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
+                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}" ${isSelected ? 'checked' : ''}>
                     <label for="athlete_${athleteId}">${athlete.name}</label>
                 `;
                 athletesList.appendChild(div);
@@ -980,8 +916,9 @@
         function handleEventSubmit(e) {
             e.preventDefault();
             
+            const eventId = document.getElementById('eventId').value;
             const eventData = {
-                id: Date.now().toString(),
+                id: eventId || Date.now().toString(),
                 name: document.getElementById('eventName').value,
                 date: document.getElementById('eventDate').value,
                 distance: document.getElementById('eventDistance').value,
@@ -995,12 +932,35 @@
                 eventData.participants.push(checkbox.value);
             });
             
-            events.push(eventData);
+            if (eventId) {
+                // Editar evento existente
+                const eventIndex = events.findIndex(e => e.id === eventId);
+                if (eventIndex !== -1) {
+                    events[eventIndex] = eventData;
+                }
+            } else {
+                // Criar novo evento
+                events.push(eventData);
+            }
+            
             localStorage.setItem('events', JSON.stringify(events));
             
             closeEventModal();
             loadEvents();
-            alert('Evento cadastrado com sucesso!');
+            alert(eventId ? 'Evento atualizado com sucesso!' : 'Evento cadastrado com sucesso!');
+        }
+
+        function editEvent(eventId) {
+            openEventModal(eventId);
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Tem certeza que deseja excluir este evento?')) {
+                events = events.filter(event => event.id !== eventId);
+                localStorage.setItem('events', JSON.stringify(events));
+                loadEvents();
+                alert('Evento excluído com sucesso!');
+            }
         }
 
         function loadEvents() {
@@ -1029,6 +989,14 @@
                             <div>
                                 <div class="event-title">${event.name}</div>
                                 <div class="event-date">${formattedDate}</div>
+                            </div>
+                            <div class="event-actions">
+                                <button class="event-btn edit" onclick="editEvent('${event.id}')" title="Editar evento">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="event-btn delete" onclick="deleteEvent('${event.id}')" title="Excluir evento">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
                             </div>
                         </div>
                         <div class="event-details">
@@ -2039,6 +2007,40 @@
             font-weight: 500;
         }
         
+        .event-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .event-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .event-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        .event-btn.edit:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .event-btn.delete:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+        
         .event-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2357,7 +2359,92 @@
             text-transform: uppercase;
             border-bottom: 1px solid #e5e7eb;
         }
-        
+
         .zones-table td {
             padding: 12px;
-            border
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .zone-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .zone-1 { background: #10b981; }
+        .zone-2 { background: #3b82f6; }
+        .zone-3 { background: #f59e0b; }
+        .zone-4 { background: #ef4444; }
+        .zone-5 { background: #8b5cf6; }
+
+        .calculate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calculate-btn:hover {
+            background: #2563eb;
+        }
+
+        .info-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-group {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .period-selector {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .current-period {
+                order: -1;
+            }
+        }
