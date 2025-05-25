@@ -5,7 +5,716 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bastos Run Coach - Sistema para Treinadores</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* HEADER */
+        .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: #3b82f6;
+            font-size: 28px;
+        }
+        
+        .badge-trainer {
+            background: #fbbf24;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #f1f5f9;
+            color: #3b82f6;
+        }
+        
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        
+        /* PÁGINAS */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* CARDS */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .card-title i {
+            color: #3b82f6;
+        }
+        
+        .card-subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        /* BOTÕES */
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #64748b;
+            border: 1px solid #d1d5db;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 16px;
+        }
+        
+        /* ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 16px 0;
+            color: #1e293b;
+        }
+        
+        .stat-card p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .stat-primary .stat-number { color: #3b82f6; }
+        .stat-success .stat-number { color: #10b981; }
+        .stat-warning .stat-number { color: #f59e0b; }
+        .stat-danger .stat-number { color: #ef4444; }
+        
+        /* AÇÕES RÁPIDAS */
+        .quick-actions {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .quick-actions h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        
+        .quick-actions h3 i {
+            color: #fbbf24;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+        }
+        
+        .action-btn:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn i {
+            font-size: 24px;
+            color: #3b82f6;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .action-btn strong {
+            display: block;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .action-btn span {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        /* FORMULÁRIOS */
+        .form-section {
+            margin-bottom: 32px;
+        }
+        
+        .form-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .form-section h3 i {
+            color: #3b82f6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-submit {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* PROGRESSO */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            gap: 40px;
+        }
+        
+        .step {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #64748b;
+            position: relative;
+        }
+        
+        .step.active {
+            border-color: #3b82f6;
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .step.completed {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 40px;
+            height: 2px;
+            background: #e2e8f0;
+            transform: translateY(-50%);
+        }
+        
+        /* ATLETAS */
+        .athletes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .athlete-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        
+        .athlete-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .athlete-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .athlete-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .athlete-info h3 {
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .athlete-info p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+        
+        .athlete-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .athlete-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            width: 600px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-large {
+            width: 800px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 24px;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0 16px;
+                flex-direction: column;
+                height: auto;
+                padding: 16px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 12px;
+            }
+            
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .athletes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95vw;
+                padding: 24px;
+            }
+            
+            .progress-steps {
+                gap: 20px;
+            }
+            
+            .step:not(:last-child)::after {
+                width: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -17,16 +726,16 @@
             </div>
             <div class="nav-buttons">
                 <button class="nav-btn active" data-page="dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                    <i class="fas fa-home"></i> Dashboard
                 </button>
                 <button class="nav-btn" data-page="athletes">
                     <i class="fas fa-users"></i> Atletas (<span id="athleteCount">0</span>)
                 </button>
                 <button class="nav-btn" data-page="periodization">
-                    <i class="fas fa-calendar-alt"></i> Periodização
+                    <i class="fas fa-brain"></i> Periodização
                 </button>
                 <button class="nav-btn" data-page="weeks">
-                    <i class="fas fa-tasks"></i> Semanas
+                    <i class="fas fa-calendar-week"></i> Semanas
                 </button>
                 <button class="nav-btn" data-page="feedback">
                     <i class="fas fa-comments"></i> Feedbacks (<span id="feedbackCount">0</span>)
@@ -41,10 +750,10 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2 class="card-title">
-                            <i class="fas fa-tachometer-alt"></i>
+                        <h1 class="card-title">
+                            <i class="fas fa-home"></i>
                             Dashboard do Treinador
-                        </h2>
+                        </h1>
                         <p class="card-subtitle">Visão geral dos seus atletas e planejamentos</p>
                     </div>
                     <button class="btn-primary" onclick="showPage('athletes')">
@@ -53,7 +762,7 @@
                     </button>
                 </div>
 
-                <!-- Estatísticas Rápidas -->
+                <!-- Estatísticas -->
                 <div class="stats-grid">
                     <div class="stat-card stat-primary">
                         <h3><i class="fas fa-users"></i> Total de Atletas</h3>
@@ -95,14 +804,14 @@
                             <i class="fas fa-brain"></i>
                             <div>
                                 <strong>Criar Periodização</strong>
-                                <span>Gerar plano com IA</span>
+                                <span>Gerar plano completo com IA</span>
                             </div>
                         </button>
                         <button class="action-btn" onclick="showPage('weeks')">
                             <i class="fas fa-play"></i>
                             <div>
                                 <strong>Liberar Semanas</strong>
-                                <span>Disponibilizar treinos</span>
+                                <span>Disponibilizar treinos para atletas</span>
                             </div>
                         </button>
                         <button class="action-btn" onclick="showPage('feedback')">
@@ -122,10 +831,10 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2 class="card-title">
+                        <h1 class="card-title">
                             <i class="fas fa-users"></i>
                             Gestão de Atletas
-                        </h2>
+                        </h1>
                         <p class="card-subtitle">Cadastre e gerencie seus atletas</p>
                     </div>
                     <button class="btn-primary" onclick="openAthleteModal()">
@@ -135,7 +844,15 @@
                 </div>
 
                 <div id="athletesList" class="athletes-grid">
-                    <!-- Lista de atletas será inserida aqui -->
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>Nenhum atleta cadastrado</h3>
+                        <p>Comece cadastrando seu primeiro atleta para criar periodizações.</p>
+                        <button class="btn-primary" onclick="openAthleteModal()">
+                            <i class="fas fa-user-plus"></i>
+                            Cadastrar Primeiro Atleta
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,51 +862,41 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2 class="card-title">
+                        <h1 class="card-title">
                             <i class="fas fa-brain"></i>
                             Criar Periodização com IA
-                        </h2>
+                        </h1>
                         <p class="card-subtitle">GPT Bastos Run Coach criará a periodização completa</p>
                     </div>
                 </div>
 
                 <!-- Progresso -->
                 <div class="progress-steps">
-                    <div class="step active" id="step1">1</div>
-                    <div class="step" id="step2">2</div>
-                    <div class="step" id="step3">3</div>
-                    <div class="step" id="step4">4</div>
+                    <div class="step active">1</div>
+                    <div class="step">2</div>
+                    <div class="step">3</div>
+                    <div class="step">4</div>
                 </div>
 
-                <!-- Status da IA -->
-                <div id="aiStatus" class="ai-status" style="display: none;">
-                    <div class="ai-thinking">
-                        <div class="ai-spinner"></div>
-                        <h3>🧠 IA Criando Periodização...</h3>
-                        <p id="aiStatusText">Analisando dados do atleta...</p>
-                    </div>
-                </div>
-
-                <!-- Formulário de Periodização -->
+                <!-- Formulário -->
                 <form id="periodizationForm">
                     <div class="form-section">
                         <h3><i class="fas fa-user-circle"></i> Dados do Atleta</h3>
-                        
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="selectedAthlete">🏃‍♂️ Selecionar Atleta:</label>
+                                <label for="selectedAthlete">Selecionar Atleta</label>
                                 <select id="selectedAthlete" required>
                                     <option value="">Escolha um atleta</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="currentLevel">📊 Nível Atual:</label>
+                                <label for="currentLevel">Nível Atual</label>
                                 <select id="currentLevel" required>
                                     <option value="">Avaliar nível</option>
-                                    <option value="iniciante">🌱 Iniciante (0-1 ano)</option>
-                                    <option value="intermediario">📈 Intermediário (1-3 anos)</option>
-                                    <option value="avancado">🚀 Avançado (3+ anos)</option>
-                                    <option value="elite">👑 Elite/Competitivo</option>
+                                    <option value="iniciante">Iniciante (0-1 ano)</option>
+                                    <option value="intermediario">Intermediário (1-3 anos)</option>
+                                    <option value="avancado">Avançado (3+ anos)</option>
+                                    <option value="elite">Elite/Competitivo</option>
                                 </select>
                             </div>
                         </div>
@@ -197,23 +904,22 @@
 
                     <div class="form-section">
                         <h3><i class="fas fa-target"></i> Objetivo e Planejamento</h3>
-                        
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="mainGoal">🎯 Objetivo Principal:</label>
+                                <label for="mainGoal">Objetivo Principal</label>
                                 <select id="mainGoal" required>
                                     <option value="">Selecione o objetivo</option>
-                                    <option value="5k">🏃‍♂️ Preparação 5K</option>
-                                    <option value="10k">🏃‍♂️ Preparação 10K</option>
-                                    <option value="21k">🏃‍♂️ Preparação 21K</option>
-                                    <option value="42k">🏃‍♂️ Preparação Maratona</option>
-                                    <option value="ultra">🏔️ Ultra Trail</option>
-                                    <option value="base-aerobica">💪 Desenvolver Base Aeróbica</option>
-                                    <option value="performance">⚡ Melhorar Performance</option>
+                                    <option value="5k">Preparação 5K</option>
+                                    <option value="10k">Preparação 10K</option>
+                                    <option value="21k">Preparação 21K</option>
+                                    <option value="42k">Preparação Maratona</option>
+                                    <option value="ultra">Ultra Trail</option>
+                                    <option value="base-aerobica">Desenvolver Base Aeróbica</option>
+                                    <option value="performance">Melhorar Performance</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="timeFrame">⏰ Período de Treinamento:</label>
+                                <label for="timeFrame">Período de Treinamento</label>
                                 <select id="timeFrame" required>
                                     <option value="">Duração do plano</option>
                                     <option value="8">8 semanas (2 meses)</option>
@@ -227,11 +933,11 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="targetTime">🏆 Tempo Objetivo (opcional):</label>
+                                <label for="targetTime">Tempo Objetivo (opcional)</label>
                                 <input type="text" id="targetTime" placeholder="Ex: Sub 3h30min na maratona">
                             </div>
                             <div class="form-group">
-                                <label for="competitionDate">📅 Data da Prova (opcional):</label>
+                                <label for="competitionDate">Data da Prova (opcional)</label>
                                 <input type="date" id="competitionDate">
                             </div>
                         </div>
@@ -239,10 +945,9 @@
 
                     <div class="form-section">
                         <h3><i class="fas fa-cogs"></i> Configurações do Treino</h3>
-                        
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="weeklyFrequency">📆 Frequência Semanal:</label>
+                                <label for="weeklyFrequency">Frequência Semanal</label>
                                 <select id="weeklyFrequency" required>
                                     <option value="">Treinos por semana</option>
                                     <option value="3">3x por semana</option>
@@ -252,18 +957,18 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="preferredTerrain">🌍 Terreno Preferido:</label>
+                                <label for="preferredTerrain">Terreno Preferido</label>
                                 <select id="preferredTerrain">
-                                    <option value="misto">🌍 Misto (Asfalto + Trail)</option>
-                                    <option value="asfalto">🏙️ Principalmente Asfalto</option>
-                                    <option value="trail">🏔️ Principalmente Trail</option>
-                                    <option value="pista">🏃‍♂️ Pista de Atletismo</option>
+                                    <option value="misto">Misto (Asfalto + Trail)</option>
+                                    <option value="asfalto">Principalmente Asfalto</option>
+                                    <option value="trail">Principalmente Trail</option>
+                                    <option value="pista">Pista de Atletismo</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="limitationsNotes">📝 Limitações e Observações:</label>
+                            <label for="limitationsNotes">Limitações e Observações</label>
                             <textarea id="limitationsNotes" rows="3" placeholder="Ex: Lesão prévia, disponibilidade de horários, equipamentos, preferências específicas..."></textarea>
                         </div>
                     </div>
@@ -288,17 +993,17 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2 class="card-title">
-                            <i class="fas fa-tasks"></i>
+                        <h1 class="card-title">
+                            <i class="fas fa-calendar-week"></i>
                             Gerenciar Semanas de Treino
-                        </h2>
+                        </h1>
                         <p class="card-subtitle">Libere semanas para seus atletas executarem</p>
                     </div>
                 </div>
 
                 <div id="weeksManagement">
                     <div class="empty-state">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-calendar-alt"></i>
                         <h3>Nenhuma periodização encontrada</h3>
                         <p>Crie uma periodização primeiro para gerenciar as semanas de treino.</p>
                         <button class="btn-primary" onclick="showPage('periodization')">
@@ -315,10 +1020,10 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2 class="card-title">
+                        <h1 class="card-title">
                             <i class="fas fa-comments"></i>
                             Feedbacks dos Atletas
-                        </h2>
+                        </h1>
                         <p class="card-subtitle">Analise o retorno dos treinos executados</p>
                     </div>
                 </div>
@@ -344,60 +1049,58 @@
             
             <form id="athleteForm">
                 <div class="form-section">
-                    <h4><i class="fas fa-user"></i> Dados Pessoais</h4>
-                    
+                    <h3><i class="fas fa-user"></i> Dados Pessoais</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="athleteName">👤 Nome Completo:</label>
+                            <label for="athleteName">Nome Completo</label>
                             <input type="text" id="athleteName" required placeholder="Ex: João Silva">
                         </div>
                         <div class="form-group">
-                            <label for="athleteEmail">📧 E-mail:</label>
+                            <label for="athleteEmail">E-mail</label>
                             <input type="email" id="athleteEmail" required placeholder="joao@email.com">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="athleteAge">🎂 Idade:</label>
+                            <label for="athleteAge">Idade</label>
                             <input type="number" id="athleteAge" required min="16" max="80" placeholder="30">
                         </div>
                         <div class="form-group">
-                            <label for="athletePhone">📱 Telefone:</label>
+                            <label for="athletePhone">Telefone</label>
                             <input type="tel" id="athletePhone" placeholder="(11) 99999-9999">
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h4><i class="fas fa-heartbeat"></i> Dados Físicos e Histórico</h4>
-                    
+                    <h3><i class="fas fa-heartbeat"></i> Dados Físicos e Histórico</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="athleteWeight">⚖️ Peso (kg):</label>
+                            <label for="athleteWeight">Peso (kg)</label>
                             <input type="number" id="athleteWeight" min="40" max="150" step="0.1" placeholder="70">
                         </div>
                         <div class="form-group">
-                            <label for="athleteHeight">📏 Altura (cm):</label>
+                            <label for="athleteHeight">Altura (cm)</label>
                             <input type="number" id="athleteHeight" min="140" max="220" placeholder="175">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="runningExperience">🏃‍♂️ Experiência em Corrida:</label>
+                            <label for="runningExperience">Experiência em Corrida</label>
                             <select id="runningExperience" required>
                                 <option value="">Selecione</option>
-                                <option value="sedentario">🚫 Sedentário</option>
-                                <option value="iniciante">🌱 Iniciante (0-6 meses)</option>
-                                <option value="recreativo">🚶‍♂️ Recreativo (6m-2 anos)</option>
-                                <option value="intermediario">📈 Intermediário (2-5 anos)</option>
-                                <option value="avancado">🚀 Avançado (5+ anos)</option>
-                                <option value="competitivo">🏆 Competitivo</option>
+                                <option value="sedentario">Sedentário</option>
+                                <option value="iniciante">Iniciante (0-6 meses)</option>
+                                <option value="recreativo">Recreativo (6m-2 anos)</option>
+                                <option value="intermediario">Intermediário (2-5 anos)</option>
+                                <option value="avancado">Avançado (5+ anos)</option>
+                                <option value="competitivo">Competitivo</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="weeklyFrequencyAthlete">📅 Frequência Atual:</label>
+                            <label for="weeklyFrequencyAthlete">Frequência Atual</label>
                             <select id="weeklyFrequencyAthlete">
                                 <option value="">Treinos por semana</option>
                                 <option value="0">Nenhum</option>
@@ -413,25 +1116,24 @@
                 </div>
 
                 <div class="form-section">
-                    <h4><i class="fas fa-target"></i> Objetivos e Records</h4>
-                    
+                    <h3><i class="fas fa-target"></i> Objetivos e Records</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="primaryGoal">🎯 Objetivo Principal:</label>
+                            <label for="primaryGoal">Objetivo Principal</label>
                             <select id="primaryGoal">
                                 <option value="">Selecione o objetivo</option>
-                                <option value="saude">💚 Saúde e Bem-estar</option>
-                                <option value="emagrecimento">⚖️ Emagrecimento</option>
-                                <option value="5k">🏃‍♂️ Correr 5K</option>
-                                <option value="10k">🏃‍♂️ Correr 10K</option>
-                                <option value="21k">🏃‍♂️ Meia Maratona</option>
-                                <option value="42k">🏃‍♂️ Maratona</option>
-                                <option value="ultra">🏔️ Ultra Maratona</option>
-                                <option value="performance">⚡ Melhorar Performance</option>
+                                <option value="saude">Saúde e Bem-estar</option>
+                                <option value="emagrecimento">Emagrecimento</option>
+                                <option value="5k">Correr 5K</option>
+                                <option value="10k">Correr 10K</option>
+                                <option value="21k">Meia Maratona</option>
+                                <option value="42k">Maratona</option>
+                                <option value="ultra">Ultra Maratona</option>
+                                <option value="performance">Melhorar Performance</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="timeAvailable">⏰ Tempo Disponível:</label>
+                            <label for="timeAvailable">Tempo Disponível</label>
                             <select id="timeAvailable">
                                 <option value="">Tempo por treino</option>
                                 <option value="30">30 minutos</option>
@@ -446,26 +1148,25 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="best5k">🏃‍♂️ Melhor 5K:</label>
+                            <label for="best5k">Melhor 5K</label>
                             <input type="text" id="best5k" placeholder="Ex: 25:30 ou 'Nunca corri'">
                         </div>
                         <div class="form-group">
-                            <label for="best10k">🏃‍♂️ Melhor 10K:</label>
+                            <label for="best10k">Melhor 10K</label>
                             <input type="text" id="best10k" placeholder="Ex: 52:15 ou 'Nunca corri'">
                         </div>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h4><i class="fas fa-exclamation-triangle"></i> Limitações e Observações</h4>
-                    
+                    <h3><i class="fas fa-exclamation-triangle"></i> Limitações e Observações</h3>
                     <div class="form-group">
-                        <label for="healthLimitations">🏥 Limitações de Saúde:</label>
+                        <label for="healthLimitations">Limitações de Saúde</label>
                         <textarea id="healthLimitations" rows="2" placeholder="Ex: Lesão no joelho, problemas cardíacos, medicamentos..."></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="additionalNotes">📝 Observações Adicionais:</label>
+                        <label for="additionalNotes">Observações Adicionais</label>
                         <textarea id="additionalNotes" rows="2" placeholder="Horários preferenciais, equipamentos disponíveis, motivações especiais..."></textarea>
                     </div>
                 </div>
@@ -498,9 +1199,252 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/storage.js"></script>
-    <script src="js/gpt-integration.js"></script>
-    <script src="js/app.js"></script>
+    <script>
+        // Dados do sistema
+        let athletes = JSON.parse(localStorage.getItem('athletes') || '[]');
+        let periodizations = JSON.parse(localStorage.getItem('periodizations') || '[]');
+        let releasedWeeks = JSON.parse(localStorage.getItem('releasedWeeks') || '[]');
+        let feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            loadAthletes();
+            loadAthletesForSelect();
+            
+            // Event listeners
+            document.getElementById('athleteForm').addEventListener('submit', saveAthlete);
+            document.getElementById('periodizationForm').addEventListener('submit', generatePeriodization);
+            
+            // Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.getAttribute('data-page');
+                    showPage(page);
+                });
+            });
+        });
+
+        // Navegação
+        function showPage(pageId) {
+            // Atualizar botões
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            
+            // Mostrar página
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId + 'Page').classList.add('active');
+            
+            // Recarregar dados específicos
+            if (pageId === 'athletes') {
+                loadAthletes();
+            } else if (pageId === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            document.getElementById('totalAthletes').textContent = athletes.length;
+            document.getElementById('athleteCount').textContent = athletes.length;
+            document.getElementById('totalPeriodizations').textContent = periodizations.length;
+            document.getElementById('activeWeeks').textContent = releasedWeeks.length;
+            document.getElementById('pendingFeedbacks').textContent = feedbacks.filter(f => !f.analyzed).length;
+            document.getElementById('feedbackCount').textContent = feedbacks.filter(f => !f.analyzed).length;
+        }
+
+        // Modal de Atleta
+        function openAthleteModal() {
+            document.getElementById('athleteModal').classList.add('active');
+        }
+
+        function closeAthleteModal() {
+            document.getElementById('athleteModal').classList.remove('active');
+            document.getElementById('athleteForm').reset();
+        }
+
+        // Salvar Atleta
+        function saveAthlete(e) {
+            e.preventDefault();
+            
+            const athleteData = {
+                id: Date.now(),
+                name: document.getElementById('athleteName').value,
+                email: document.getElementById('athleteEmail').value,
+                age: document.getElementById('athleteAge').value,
+                phone: document.getElementById('athletePhone').value,
+                weight: document.getElementById('athleteWeight').value,
+                height: document.getElementById('athleteHeight').value,
+                experience: document.getElementById('runningExperience').value,
+                weeklyFrequency: document.getElementById('weeklyFrequencyAthlete').value,
+                primaryGoal: document.getElementById('primaryGoal').value,
+                timeAvailable: document.getElementById('timeAvailable').value,
+                best5k: document.getElementById('best5k').value,
+                best10k: document.getElementById('best10k').value,
+                healthLimitations: document.getElementById('healthLimitations').value,
+                additionalNotes: document.getElementById('additionalNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            athletes.push(athleteData);
+            localStorage.setItem('athletes', JSON.stringify(athletes));
+            
+            closeAthleteModal();
+            loadAthletes();
+            loadAthletesForSelect();
+            updateDashboard();
+            
+            alert('✅ Atleta cadastrado com sucesso!');
+        }
+
+        // Carregar Atletas
+        function loadAthletes() {
+            const container = document.getElementById('athletesList');
+            
+            if (athletes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>Nenhum atleta cadastrado</h3>
+                        <p>Comece cadastrando seu primeiro atleta para criar periodizações.</p>
+                        <button class="btn-primary" onclick="openAthleteModal()">
+                            <i class="fas fa-user-plus"></i>
+                            Cadastrar Primeiro Atleta
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = athletes.map(athlete => `
+                <div class="athlete-card">
+                    <div class="athlete-header">
+                        <div class="athlete-avatar">
+                            ${athlete.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="athlete-info">
+                            <h3>${athlete.name}</h3>
+                            <p>${athlete.email}</p>
+                            <p>${athlete.age} anos • ${getExperienceLabel(athlete.experience)}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="athlete-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${athlete.weeklyFrequency || 0}x</div>
+                            <div class="stat-label">Freq. Semanal</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${athlete.best5k || 'N/A'}</div>
+                            <div class="stat-label">Melhor 5K</div>
+                        </div>
+                    </div>
+                    
+                    <div class="athlete-actions">
+                        <button class="btn-success" onclick="createPeriodizationFor(${athlete.id})">
+                            <i class="fas fa-calendar-plus"></i>
+                            Periodização
+                        </button>
+                        <button class="btn-secondary" onclick="editAthlete(${athlete.id})">
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </button>
+                        <button class="btn-danger" onclick="deleteAthlete(${athlete.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Funções auxiliares
+        function getExperienceLabel(experience) {
+            const labels = {
+                'sedentario': 'Sedentário',
+                'iniciante': 'Iniciante',
+                'recreativo': 'Recreativo',
+                'intermediario': 'Intermediário',
+                'avancado': 'Avançado',
+                'competitivo': 'Competitivo'
+            };
+            return labels[experience] || experience;
+        }
+
+        // Carregar atletas para select
+        function loadAthletesForSelect() {
+            const select = document.getElementById('selectedAthlete');
+            select.innerHTML = '<option value="">Escolha um atleta</option>';
+            
+            athletes.forEach(athlete => {
+                select.innerHTML += `<option value="${athlete.id}">${athlete.name}</option>`;
+            });
+        }
+
+        // Criar periodização para atleta específico
+        function createPeriodizationFor(athleteId) {
+            showPage('periodization');
+            document.getElementById('selectedAthlete').value = athleteId;
+        }
+
+        // Editar atleta
+        function editAthlete(athleteId) {
+            alert('Funcionalidade de edição será implementada em breve!');
+        }
+
+        // Deletar atleta
+        function deleteAthlete(athleteId) {
+            const athlete = athletes.find(a => a.id === athleteId);
+            if (!athlete) return;
+            
+            if (confirm(`Tem certeza que deseja excluir o atleta ${athlete.name}?`)) {
+                athletes = athletes.filter(a => a.id !== athleteId);
+                localStorage.setItem('athletes', JSON.stringify(athletes));
+                
+                loadAthletes();
+                loadAthletesForSelect();
+                updateDashboard();
+                
+                alert('✅ Atleta excluído com sucesso!');
+            }
+        }
+
+        // Gerar Periodização
+        function generatePeriodization(e) {
+            e.preventDefault();
+            
+            const formData = {
+                athleteId: document.getElementById('selectedAthlete').value,
+                currentLevel: document.getElementById('currentLevel').value,
+                mainGoal: document.getElementById('mainGoal').value,
+                timeFrame: document.getElementById('timeFrame').value,
+                targetTime: document.getElementById('targetTime').value,
+                competitionDate: document.getElementById('competitionDate').value,
+                weeklyFrequency: document.getElementById('weeklyFrequency').value,
+                preferredTerrain: document.getElementById('preferredTerrain').value,
+                limitationsNotes: document.getElementById('limitationsNotes').value
+            };
+            
+            // Encontrar atleta
+            const athlete = athletes.find(a => a.id == formData.athleteId);
+            if (!athlete) {
+                alert('❌ Selecione um atleta válido!');
+                return;
+            }
+            
+            // Simular chamada para GPT
+            alert('🧠 IA criando periodização... (Integração com GPT será implementada a seguir)');
+            
+            // Aqui será integrado seu GPT Bastos Run Coach
+            console.log('Dados para GPT:', { formData, athlete });
+        }
+
+        function closeWeekModal() {
+            document.getElementById('weekModal').classList.remove('active');
+        }
+    </script>
 </body>
 </html>
