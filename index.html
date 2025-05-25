@@ -1,4 +1,344 @@
-<!DOCTYPE html>
+function loadMicrocycles(period) {
+            const tbody = document.getElementById('microcyclesTableBody');
+            const startDate = new Date(period.startDate);
+            const endDate = new Date(period.endDate);
+            const totalWeeks = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
+            
+            let microcycles = [];
+            for (let i = 0; i < totalWeeks; i++) {
+                const microStart = new Date(startDate);
+                microStart.setDate(microStart.getDate() + (i * 7));
+                
+                const microEnd = new Date(microStart);
+                microEnd.setDate(microEnd.getDate() + 6);
+                
+                microcycles.push({
+                    number: i + 1,
+                    type: getMicrocycleType(i + 1, totalWeeks),
+                    startDate: microStart,
+                    endDate: microEnd,
+                    status: getMicrocycleStatus(microStart, microEnd)
+                });
+            }
+            
+            tbody.innerHTML = microcycles.map(micro => `
+                <tr>
+                    <td><input type="checkbox" value="${micro.number}"></td>
+                    <td>${micro.number}</td>
+                    <td><span class="cycle-type-badge type-${micro.type.toLowerCase().replace(' ', '-')}">${micro.type}</span></td>
+                    <td>${formatDate(micro.startDate)}</td>
+                    <td>${formatDate(micro.endDate)}</td>
+                    <td><span class="micro-status ${micro.status.class}">${micro.status.text}</span></td>
+                    <td>
+                        <button class="action-btn edit" title="Editar microciclo">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn" title="Ver planilha">
+                            <i class="fas fa-file-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getMicrocycleType(weekNumber, totalWeeks) {
+            // Lógica simples para determinar tipos de microciclos
+            if (weekNumber === 1) return 'Base Geral';
+            if (weekNumber === totalWeeks) return 'Recuperação';
+            if (weekNumber % 4 === 0) return 'Recuperação';
+            if (weekNumber > totalWeeks - 4) return 'Específico';
+            return 'Base Geral';
+        }
+
+        function getMicrocycleStatus(startDate, endDate) {
+            const now = new Date();
+            
+            if (now < startDate) {
+                return { class: 'status-planned', text: 'Liberado' };
+            } else if (now >= startDate && now <= endDate) {
+                return { class: 'status-active', text: 'Liberado' };
+            } else {
+                return { class: 'status-completed', text: 'Liberado' };
+            }
+        }
+
+        function openCycleModal(cycleId = null) {
+            if (cycleId) {
+                // Modo edição
+                document.getElementById('cycleModalTitle').textContent = 'Editar Macrociclo';
+                document.getElementById('submitCycleBtn').textContent = 'Salvar Alterações';
+                // Carregar dados do ciclo...
+            } else {
+                // Modo criação
+                document.getElementById('cycleModalTitle').textContent = 'Novo Macrociclo';
+                document.getElementById('submitCycleBtn').textContent = 'Criar Macrociclo';
+                document.getElementById('cycleForm').reset();
+            }
+            
+            document.getElementById('cycleModal').classList.add('active');
+        }
+
+        function closeCycleModal() {
+            document.getElementById('cycleModal').classList.remove('active');
+            document.getElementById('cycleForm').reset();
+        }
+
+        function calculateCycleEndDate() {
+            const startDate = document.getElementById('cycleStartDate').value;
+            const duration = parseInt(document.getElementById('cycleDuration').value);
+            
+            if (startDate && duration) {
+                const start = new Date(startDate);
+                const end = new Date(start);
+                end.setDate(end.getDate() + (duration * 7) - 1);
+                
+                document.getElementById('cycleEndDate').value = end.toISOString().split('T')[0];
+            }
+        }
+
+        function handleCycleSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const cycleData = {
+                id: Date.now().toString(),
+                number: parseInt(document.getElementById('cycleNumber').value),
+                startDate: document.getElementById('cycleStartDate').value,
+                endDate: document.getElementById('cycleEndDate').value,
+                duration: parseInt(document.getElementById('cycleDuration').value),
+                orientation: document.getElementById('cycleOrientation').value
+            };
+            
+            if (!cycles[athleteId]) {
+                cycles[athleteId] = [];
+            }
+            
+            cycles[athleteId].push(cycleData);
+            cycles[athleteId].sort((a, b) => a.number - b.number);
+            
+            localStorage.setItem('cycles', JSON.stringify(cycles));
+            
+            closeCycleModal();
+            loadAthleteCycles();
+            alert('Macrociclo criado com sucesso!');
+        }
+
+        function editPeriod(periodId) {
+            if (periodId) {
+                openCycleModal(periodId);
+            } else {
+                // Editar período selecionado
+                if (selectedPeriodId) {
+                    openCycleModal(selectedPeriodId);
+                }
+            }
+        }
+
+        function deletePeriod(periodId) {
+            if (confirm('Tem certeza que deseja excluir este período? Todos os microciclos serão perdidos.')) {
+                const athleteId = Object.keys(athletesData).find(id => 
+                    athletesData[id].name === currentAthlete.name
+                );
+                
+                if (cycles[athleteId]) {
+                    cycles[athleteId] = cycles[athleteId].filter(cycle => cycle.id !== periodId);
+                    localStorage.setItem('cycles', JSON.stringify(cycles));
+                    
+                    if (selectedPeriodId === periodId) {
+                        selectedPeriodId = null;
+                        document.getElementById('periodDetails').style.display = 'none';
+                    }
+                    
+                    loadAthleteCycles();
+                    alert('Período excluído com sucesso!');
+                }
+            }
+        }
+
+        function editOrientation() {
+            const newOrientation = prompt('Digite a nova orientação para este período:', 
+                document.getElementById('orientationContent').textContent);
+            
+            if (newOrientation !== null) {
+                document.getElementById('orientationContent').innerHTML = `<p>${newOrientation}</p>`;
+                
+                // Salvar no localStorage
+                const athleteId = Object.keys(athletesData).find(id => 
+                    athletesData[id].name === currentAthlete.name
+                );
+                
+                if (cycles[athleteId] && selectedPeriodId) {
+                    const period = cycles[athleteId].find(p => p.id === selectedPeriodId);
+                    if (period) {
+                        period.orientation = newOrientation;
+                        localStorage.setItem('cycles', JSON.stringify(cycles));
+                    }
+                }
+            }
+        }
+
+        function copyCycleFromAthlete() {
+            const athleteNames = Object.values(athletesData).map(athlete => athlete.name);
+            const currentAthleteName = currentAthlete.name;
+            const otherAthletes = athleteNames.filter(name => name !== currentAthleteName);
+            
+            if (otherAthletes.length === 0) {
+                alert('Não há outros atletas para copiar o planejamento.');
+                return;
+            }
+            
+            const selectedAthlete = prompt(`Copiar planejamento de qual atleta?\n\n${otherAthletes.map((name, index) => `${index + 1}. ${name}`).join('\n')}\n\nDigite o número:`);
+            
+            if (selectedAthlete && selectedAthlete > 0 && selectedAthlete <= otherAthletes.length) {
+                const sourceAthleteName = otherAthletes[selectedAthlete - 1];
+                const sourceAthleteId = Object.keys(athletesData).find(id => 
+                    athletesData[id].name === sourceAthleteName
+                );
+                
+                const sourceCycles = cycles[sourceAthleteId];
+                if (sourceCycles && sourceCycles.length > 0) {
+                    const currentAthleteId = Object.keys(athletesData).find(id => 
+                        athletesData[id].name === currentAthlete.name
+                    );
+                    
+                    // Copiar ciclos ajustando IDs
+                    const copiedCycles = sourceCycles.map(cycle => ({
+                        ...cycle,
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+                    }));
+                    
+                    cycles[currentAthleteId] = copiedCycles;
+                    localStorage.setItem('cycles', JSON.stringify(cycles));
+                    
+                    loadAthleteCycles();
+                    alert(`Planejamento copiado de ${sourceAthleteName} com sucesso!`);
+                } else {
+                    alert(`${sourceAthleteName} não possui planejamento para copiar.`);
+                }
+            }
+        }
+
+        // Limpar busca quando campo estiver vazio
+        document.addEventListener('DOMContentLoaded', function() {
+
+        // Funções de Planejamento
+        function loadAthleteCycles() {
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const athleteCycles = cycles[athleteId] || [];
+            loadPeriods(athleteCycles);
+        }
+
+        function loadPeriods(periods) {
+            const tbody = document.getElementById('periodsTableBody');
+            const noPeriodsMessage = document.getElementById('noPeriodsMessage');
+            
+            if (periods.length === 0) {
+                tbody.innerHTML = '';
+                noPeriodsMessage.style.display = 'block';
+                document.getElementById('periodDetails').style.display = 'none';
+                return;
+            }
+            
+            noPeriodsMessage.style.display = 'none';
+            
+            tbody.innerHTML = periods.map((period, index) => {
+                const startDate = new Date(period.startDate);
+                const endDate = new Date(period.endDate);
+                const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
+                const status = getpériodStatus(period);
+                
+                return `
+                    <tr onclick="selectPeriod('${period.id}')" ${selectedPeriodId === period.id ? 'class="selected"' : ''}>
+                        <td>${period.number}</td>
+                        <td>${formatDate(startDate)}</td>
+                        <td>${formatDate(endDate)}</td>
+                        <td>${duration} semanas</td>
+                        <td><span class="period-status ${status.class}">${status.text}</span></td>
+                        <td>
+                            <button class="action-btn edit" onclick="event.stopPropagation(); editPeriod('${period.id}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="event.stopPropagation(); deletePeriod('${period.id}')" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Selecionar primeiro período se nenhum estiver selecionado
+            if (!selectedPeriodId && periods.length > 0) {
+                selectPeriod(periods[0].id);
+            }
+        }
+
+        function getpériodStatus(period) {
+            const now = new Date();
+            const start = new Date(period.startDate);
+            const end = new Date(period.endDate);
+            
+            if (now < start) {
+                return { class: 'status-planned', text: 'Planejado' };
+            } else if (now >= start && now <= end) {
+                return { class: 'status-active', text: 'Ativo' };
+            } else {
+                return { class: 'status-completed', text: 'Concluído' };
+            }
+        }
+
+        function selectPeriod(periodId) {
+            selectedPeriodId = periodId;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const period = cycles[athleteId]?.find(p => p.id === periodId);
+            if (!period) return;
+            
+            // Atualizar seleção visual
+            document.querySelectorAll('.periods-table tr').forEach(tr => tr.classList.remove('selected'));
+            event?.target?.closest('tr')?.classList.add('selected');
+            
+            // Mostrar detalhes do período
+            document.getElementById('periodDetails').style.display = 'block';
+            document.getElementById('periodDetailsTitle').textContent = `Período ${period.number}`;
+            
+            const startDate = new Date(period.startDate);
+            const endDate = new Date(period.endDate);
+            const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
+            
+            document.getElementById('periodDuration').textContent = `${duration} semanas`;
+            document.getElementById('periodDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+            document.getElementById('orientationContent').innerHTML = `<p>${period.orientation || 'Nenhuma orientação definida.'}</p>`;
+            
+            // Carregar microciclos
+            loadMicrocycles(period);
+        }
+
+        function loadMicrocycles(period) {
+            const tbody = document.getElementById('microcyclesTableBody');
+            const startDate = new Date(period.startDate);
+            const endDate = new Date(period.endDate);
+            const totalWeeks = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
+            
+            let microcycles = [];
+            for (let i = 0; i < totalWeeks; i++) {
+                const microStart = new Date(startDate);
+                microStart.setDate(microStart.getDate() + (i * 7));
+                
+                const microEnd = new Date(microStart);
+                micro<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -1145,6 +1485,306 @@
             margin-top: 12px;
         }
 
+        /* PLANEJAMENTO */
+        .planning-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .planning-title h2 {
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .planning-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .planning-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-small {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-small:hover {
+            background: #4b5563;
+        }
+
+        .planning-section {
+            margin-bottom: 32px;
+        }
+
+        .periods-table-container,
+        .microcycles-table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .periods-table,
+        .microcycles-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .periods-table th,
+        .microcycles-table th {
+            background: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .periods-table td,
+        .microcycles-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+            vertical-align: middle;
+        }
+
+        .periods-table tr:hover,
+        .microcycles-table tr:hover {
+            background: #f9fafb;
+            cursor: pointer;
+        }
+
+        .periods-table tr.selected,
+        .microcycles-table tr.selected {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .period-status,
+        .micro-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-planned {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .empty-state-small {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .empty-state-small i {
+            font-size: 32px;
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
+
+        .empty-state-small h4 {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .period-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .period-duration {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .period-dates {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .period-orientation {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .period-orientation h4 {
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .orientation-content {
+            margin-bottom: 12px;
+        }
+
+        .orientation-content p {
+            color: #374151;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .mesocycles-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .mesocycles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .mesocycles-header h4 {
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cycle-type-select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 200px;
+        }
+
+        .cycle-type-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .action-btn.edit:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .action-btn.delete:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .cycle-type-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-base {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .type-especifico {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .type-competitivo {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .type-recuperacao {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .type-transicao {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
         @media (max-width: 768px) {
             .nav {
                 flex-direction: column;
@@ -1694,10 +2334,114 @@
 
                         <!-- Aba Planejamento -->
                         <div id="planejamentoTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-alt"></i>
-                                <h3>Planejamento em Desenvolvimento</h3>
-                                <p>Esta seção conterá o planejamento de treinos, periodização e objetivos</p>
+                            <!-- Header do Planejamento -->
+                            <div class="planning-header">
+                                <div class="planning-title">
+                                    <h2><i class="fas fa-calendar-alt"></i> Ciclos de Treinamento</h2>
+                                    <p>Gerencie macrociclos, mesociclos e microciclos do atleta</p>
+                                </div>
+                                <div class="planning-actions">
+                                    <button class="btn-primary" onclick="openCycleModal()">
+                                        <i class="fas fa-plus"></i> Novo Macrociclo
+                                    </button>
+                                    <button class="btn-secondary" onclick="copyCycleFromAthlete()">
+                                        <i class="fas fa-copy"></i> Copiar de outro atleta
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Períodos (Macrociclos) -->
+                            <div class="planning-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-layer-group"></i> Períodos (Macrociclos)
+                                </h3>
+                                
+                                <div class="periods-table-container">
+                                    <table class="periods-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Número</th>
+                                                <th>Início</th>
+                                                <th>Término</th>
+                                                <th>Duração</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="periodsTableBody">
+                                            <!-- Períodos serão carregados aqui -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="noPeriodsMessage" class="empty-state-small" style="display: none;">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <h4>Nenhum período cadastrado</h4>
+                                    <p>Clique em "Novo Macrociclo" para começar o planejamento</p>
+                                </div>
+                            </div>
+
+                            <!-- Detalhes do Período Selecionado -->
+                            <div id="periodDetails" class="planning-section" style="display: none;">
+                                <div class="section-header">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-calendar-week"></i> <span id="periodDetailsTitle">Período 1</span>
+                                    </h3>
+                                    <div class="period-info">
+                                        <span class="period-duration" id="periodDuration">16 semanas</span>
+                                        <span class="period-dates" id="periodDates">03/02/2025 - 22/06/2025</span>
+                                        <button class="btn-small" onclick="editPeriod()">
+                                            <i class="fas fa-edit"></i> Editar Período
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Orientação/Objetivo -->
+                                <div class="period-orientation">
+                                    <h4><i class="fas fa-bullseye"></i> Orientação do Período</h4>
+                                    <div class="orientation-content" id="orientationContent">
+                                        <p>Preparação de base aeróbia com foco no desenvolvimento da resistência geral e adaptação aos estímulos de treino.</p>
+                                    </div>
+                                    <button class="btn-small" onclick="editOrientation()">
+                                        <i class="fas fa-edit"></i> Editar Orientação
+                                    </button>
+                                </div>
+
+                                <!-- Mesociclos -->
+                                <div class="mesocycles-section">
+                                    <div class="mesocycles-header">
+                                        <h4><i class="fas fa-calendar"></i> Mesociclos</h4>
+                                        <select class="cycle-type-select" id="cycleTypeSelect">
+                                            <option value="">Alterar tipo para:</option>
+                                            <option value="base">Base Geral</option>
+                                            <option value="especifico">Específico</option>
+                                            <option value="competitivo">Competitivo</option>
+                                            <option value="recuperacao">Recuperação</option>
+                                            <option value="transicao">Transição</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="microcycles-table-container">
+                                        <table class="microcycles-table">
+                                            <thead>
+                                                <tr>
+                                                    <th width="50">
+                                                        <input type="checkbox" id="selectAllMicros">
+                                                    </th>
+                                                    <th>Número</th>
+                                                    <th>Tipo</th>
+                                                    <th>Início</th>
+                                                    <th>Término</th>
+                                                    <th>Situação</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="microcyclesTableBody">
+                                                <!-- Microciclos serão carregados aqui -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1768,6 +2512,51 @@
         </div>
     </div>
 
+    <!-- MODAL CADASTRO/EDIÇÃO DE CICLO -->
+    <div id="cycleModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="cycleModalTitle">Novo Macrociclo</h2>
+                <button class="modal-close" onclick="closeCycleModal()">&times;</button>
+            </div>
+            
+            <form id="cycleForm">
+                <input type="hidden" id="cycleId" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cycleNumber">Número do Período</label>
+                        <input type="number" id="cycleNumber" required placeholder="Ex: 1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleDuration">Duração (semanas)</label>
+                        <input type="number" id="cycleDuration" required placeholder="Ex: 16" min="1" max="52">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cycleStartDate">Data de Início</label>
+                        <input type="date" id="cycleStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleEndDate">Data de Término</label>
+                        <input type="date" id="cycleEndDate" readonly style="background: #f3f4f6;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cycleOrientation">Orientação/Objetivo do Período</label>
+                    <textarea id="cycleOrientation" rows="4" placeholder="Descreva os objetivos e orientações para este período de treinamento..."></textarea>
+                </div>
+                
+                <div style="text-align: right; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" onclick="closeCycleModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="submitCycleBtn">Criar Macrociclo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Estado do sistema
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -1776,8 +2565,11 @@
         let currentAthlete = null;
         let events = JSON.parse(localStorage.getItem('events') || '[]');
         let editingEventId = null;
+        let cycles = JSON.parse(localStorage.getItem('cycles') || '{}'); // Armazenar por atleta
+        let selectedPeriodId = null;
 
         // Dados dos atletas
+        const athletesData = {
         const athletesData = {
             'adao-oliveira': {
                 name: 'Adão Aparecido de Oliveira',
@@ -1813,10 +2605,15 @@
             
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+            document.getElementById('cycleForm').addEventListener('submit', handleCycleSubmit);
             
             // Adicionar listeners para cálculo automático do IMC
             document.getElementById('height').addEventListener('input', calculateIMC);
             document.getElementById('weight').addEventListener('input', calculateIMC);
+            
+            // Listener para calcular data de término automática
+            document.getElementById('cycleStartDate').addEventListener('change', calculateCycleEndDate);
+            document.getElementById('cycleDuration').addEventListener('input', calculateCycleEndDate);
         });
 
         // Função para calcular IMC automaticamente
@@ -2036,6 +2833,11 @@
             // Se for aba de eventos, carregar eventos do atleta
             if (tabName === 'eventos') {
                 loadAthleteEvents();
+            }
+            
+            // Se for aba de planejamento, carregar ciclos do atleta
+            if (tabName === 'planejamento') {
+                loadAthleteCycles();
             }
         }
 
