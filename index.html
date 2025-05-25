@@ -339,31 +339,18 @@
         
         .period-selector {
             display: flex;
-            gap: 8px;
+            gap: 16px;
             margin-bottom: 16px;
-        }
-        
-        .period-btn {
-            background: #f3f4f6;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #6b7280;
-        }
-        
-        .period-btn.active {
-            background: #2563eb;
-            color: white;
+            align-items: center;
+            justify-content: center;
         }
         
         .period-navigation {
             background: #3b82f6;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -371,12 +358,42 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
         
         .period-navigation:hover {
             background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+        }
+        
+        .current-period {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .period-btn {
+            background: #f3f4f6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+        
+        .period-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .period-btn:hover:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
         }
         
         .filters-bar {
@@ -564,6 +581,15 @@
             .search-input {
                 min-width: 100%;
             }
+            
+            .period-selector {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .current-period {
+                order: -1;
+            }
         }
     </style>
 </head>
@@ -711,14 +737,14 @@
                             <button class="period-navigation" onclick="previousWeek()">
                                 <i class="fas fa-chevron-left"></i> Semana Anterior
                             </button>
-                            <span style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 16px;">
+                            <div class="current-period" id="currentPeriod">
                                 26/05 a 01/06/2025
-                            </span>
+                            </div>
                             <button class="period-navigation" onclick="nextWeek()">
                                 Próxima Semana <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
-                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
                             <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
                             <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
                             <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
@@ -944,7 +970,7 @@
             const startStr = formatDate(currentWeekStart);
             const endStr = formatDate(weekEnd);
             
-            document.querySelector('.period-selector span').textContent = `${startStr} a ${endStr}`;
+            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
         }
 
         function formatDate(date) {
