@@ -238,6 +238,12 @@
             const password = document.getElementById('loginPassword').value;
             const loginBtn = document.getElementById('loginBtn');
             
+            // Verificar se campos estão preenchidos
+            if (!email || !password) {
+                alert('⚠️ Preencha todos os campos!');
+                return;
+            }
+            
             // Desabilitar botão durante login
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
@@ -258,6 +264,10 @@
                     // Mostrar aplicação
                     showApp();
                     initializeApp();
+                    
+                    // Restaurar botão ANTES de mostrar mensagem
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
                     
                     // Mostrar mensagem de sucesso
                     setTimeout(() => {
@@ -286,6 +296,11 @@
                 document.getElementById('loginEmail').value = '';
                 document.getElementById('loginPassword').value = '';
                 
+                // Garantir que o botão de login seja restaurado
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+                
                 showLogin();
                 alert('👋 Logout realizado com sucesso!');
             }
@@ -293,75 +308,99 @@
 
         // Inicializar aplicação após login
         function initializeApp() {
-            updateDashboard();
-            loadAthletes();
-            loadChatAthletes();
-            checkApiKey();
-            
-            // Event listeners da aplicação
-            document.getElementById('athleteForm').addEventListener('submit', saveAthlete);
-            document.getElementById('chatInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            // Navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = btn.getAttribute('data-page');
-                    showPage(page);
-                });
-            });
+            // Aguardar um pouco para garantir que a DOM está carregada
+            setTimeout(() => {
+                try {
+                    updateDashboard();
+                    loadAthletes();
+                    
+                    // Event listeners da aplicação (verificar se elementos existem)
+                    const athleteForm = document.getElementById('athleteForm');
+                    const chatInput = document.getElementById('chatInput');
+                    
+                    if (athleteForm) {
+                        athleteForm.addEventListener('submit', saveAthlete);
+                    }
+                    
+                    if (chatInput) {
+                        chatInput.addEventListener('keypress', function(e) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessage();
+                            }
+                        });
+                    }
+                    
+                    // Navigation
+                    document.querySelectorAll('.nav-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const page = btn.getAttribute('data-page');
+                            if (page) {
+                                showPage(page);
+                            }
+                        });
+                    });
 
-            // Carregar API key salva
-            if (apiKey) {
-                document.getElementById('apiKeyInput').value = apiKey;
-            }
-            
-            console.log('Sistema inicializado para:', currentUser.name);
+                    // Carregar API key salva
+                    const apiKeyInput = document.getElementById('apiKeyInput');
+                    if (apiKey && apiKeyInput) {
+                        apiKeyInput.value = apiKey;
+                    }
+                    
+                    console.log('Sistema inicializado para:', currentUser.name);
+                } catch (error) {
+                    console.error('Erro na inicialização:', error);
+                }
+            }, 100);
         }
 
         // Navegação
         function showPage(pageId) {
             console.log('Navegando para:', pageId);
             
-            // Remover classe active de todos os botões
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Adicionar classe active no botão correto
-            const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
-            
-            // Esconder todas as páginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Mostrar página específica
-            const targetPage = document.getElementById(pageId + 'Page');
-            if (targetPage) {
-                targetPage.classList.add('active');
-                console.log('Página mostrada:', pageId);
-            } else {
-                console.error('Página não encontrada:', pageId + 'Page');
-            }
-            
-            // Ações específicas por página
-            if (pageId === 'athletes') {
-                loadAthletes();
-            } else if (pageId === 'dashboard') {
-                updateDashboard();
-            } else if (pageId === 'gpt-chat') {
-                loadChatAthletes();
-                console.log('Carregando página GPT Chat');
-            } else if (pageId === 'config') {
-                checkApiKey();
+            try {
+                // Remover classe active de todos os botões
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Adicionar classe active no botão correto
+                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+                
+                // Esconder todas as páginas
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Mostrar página específica
+                const targetPage = document.getElementById(pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    console.log('Página mostrada:', pageId);
+                } else {
+                    console.error('Página não encontrada:', pageId + 'Page');
+                    // Voltar para dashboard se página não existir
+                    showPage('dashboard');
+                    return;
+                }
+                
+                // Ações específicas por página
+                if (pageId === 'athletes') {
+                    loadAthletes();
+                } else if (pageId === 'dashboard') {
+                    updateDashboard();
+                } else if (pageId === 'gpt-chat') {
+                    console.log('Página GPT Chat carregada');
+                } else if (pageId === 'config') {
+                    checkApiKey();
+                }
+            } catch (error) {
+                console.error('Erro na navegação:', error);
+                // Voltar para dashboard em caso de erro
+                showPage('dashboard');
             }
         }
 
@@ -1908,143 +1947,335 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
 
     <!-- APLICAÇÃO PRINCIPAL -->
     <div id="appContainer" class="app-container">
-    <header class="header">
-        <nav class="nav">
-            <div class="logo">
-                <i class="fas fa-user-tie"></i>
-                <span>Bastos Run Coach</span>
-                <span class="badge-trainer">TREINADOR</span>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn active" data-page="dashboard">
-                    <i class="fas fa-home"></i> Dashboard
-                </button>
-                <button class="nav-btn" data-page="athletes">
-                    <i class="fas fa-users"></i> Atletas (<span id="athleteCount">0</span>)
-                </button>
-                <button class="nav-btn" data-page="gpt-chat">
-                    <i class="fas fa-brain"></i> GPT Bastos Coach
-                </button>
-                <button class="nav-btn" data-page="config">
-                    <i class="fas fa-cog"></i> Configurações
-                </button>
-                <button class="nav-btn" onclick="logout()" style="margin-left: 20px; background: #ef4444; color: white;">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <!-- DASHBOARD -->
-        <div id="dashboardPage" class="page active">
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <h1 class="card-title">
-                            <i class="fas fa-home"></i>
-                            Dashboard do Treinador
-                            <span style="color: #64748b; font-size: 18px; font-weight: normal; margin-left: 16px;" id="trainerWelcome">
-                                Bem-vindo!
-                            </span>
-                        </h1>
-                        <p class="card-subtitle">Visão geral dos seus atletas e planejamentos</p>
-                    </div>
-                    <button class="btn-primary" onclick="showPage('athletes')">
-                        <i class="fas fa-user-plus"></i>
-                        Adicionar Atleta
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Bastos Run Coach</span>
+                    <span class="badge-trainer">TREINADOR</span>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" data-page="dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-page="athletes">
+                        <i class="fas fa-users"></i> Atletas (<span id="athleteCount">0</span>)
+                    </button>
+                    <button class="nav-btn" data-page="gpt-chat">
+                        <i class="fas fa-brain"></i> GPT Bastos Coach
+                    </button>
+                    <button class="nav-btn" data-page="config">
+                        <i class="fas fa-cog"></i> Configurações
+                    </button>
+                    <button class="nav-btn" onclick="logout()" style="margin-left: 20px; background: #ef4444; color: white;">
+                        <i class="fas fa-sign-out-alt"></i> Sair
                     </button>
                 </div>
+            </nav>
+        </header>
 
-                <!-- Estatísticas -->
-                <div class="stats-grid">
-                    <div class="stat-card stat-primary">
-                        <h3><i class="fas fa-users"></i> Total de Atletas</h3>
-                        <div class="stat-number" id="totalAthletes">0</div>
-                        <p>Cadastrados no sistema</p>
+        <div class="container">
+            <!-- DASHBOARD -->
+            <div id="dashboardPage" class="page active">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h1 class="card-title">
+                                <i class="fas fa-home"></i>
+                                Dashboard do Treinador
+                                <span style="color: #64748b; font-size: 18px; font-weight: normal; margin-left: 16px;" id="trainerWelcome">
+                                    Bem-vindo!
+                                </span>
+                            </h1>
+                            <p class="card-subtitle">Visão geral dos seus atletas e planejamentos</p>
+                        </div>
+                        <button class="btn-primary" onclick="showPage('athletes')">
+                            <i class="fas fa-user-plus"></i>
+                            Adicionar Atleta
+                        </button>
                     </div>
-                    
-                    <div class="stat-card stat-success">
-                        <h3><i class="fas fa-brain"></i> Conversas GPT</h3>
-                        <div class="stat-number" id="totalConversations">0</div>
-                        <p>Interações com IA</p>
+
+                    <!-- Estatísticas -->
+                    <div class="stats-grid">
+                        <div class="stat-card stat-primary">
+                            <h3><i class="fas fa-users"></i> Total de Atletas</h3>
+                            <div class="stat-number" id="totalAthletes">0</div>
+                            <p>Cadastrados no sistema</p>
+                        </div>
+                        
+                        <div class="stat-card stat-success">
+                            <h3><i class="fas fa-brain"></i> Conversas GPT</h3>
+                            <div class="stat-number" id="totalConversations">0</div>
+                            <p>Interações com IA</p>
+                        </div>
+                        
+                        <div class="stat-card stat-warning">
+                            <h3><i class="fas fa-calendar-check"></i> Periodizações</h3>
+                            <div class="stat-number" id="totalPeriodizations">0</div>
+                            <p>Planos criados</p>
+                        </div>
+                        
+                        <div class="stat-card stat-danger">
+                            <h3><i class="fas fa-comment-dots"></i> Feedbacks</h3>
+                            <div class="stat-number" id="pendingFeedbacks">0</div>
+                            <p>Aguardando análise</p>
+                        </div>
                     </div>
-                    
-                    <div class="stat-card stat-warning">
-                        <h3><i class="fas fa-calendar-check"></i> Periodizações</h3>
-                        <div class="stat-number" id="totalPeriodizations">0</div>
-                        <p>Planos criados</p>
-                    </div>
-                    
-                    <div class="stat-card stat-danger">
-                        <h3><i class="fas fa-comment-dots"></i> Feedbacks</h3>
-                        <div class="stat-number" id="pendingFeedbacks">0</div>
-                        <p>Aguardando análise</p>
+
+                    <!-- Ações Rápidas Dashboard -->
+                    <div class="card">
+                        <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-bolt" style="color: #fbbf24;"></i>
+                            Ações Rápidas
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                            <button class="btn-primary" onclick="showPage('athletes')" style="padding: 16px; justify-content: center;">
+                                <i class="fas fa-user-plus"></i>
+                                Cadastrar Atleta
+                            </button>
+                            <button class="btn-primary" onclick="showPage('gpt-chat')" style="padding: 16px; justify-content: center;">
+                                <i class="fas fa-brain"></i>
+                                Usar GPT Coach
+                            </button>
+                            <button class="btn-secondary" onclick="showPage('config')" style="padding: 16px; justify-content: center;">
+                                <i class="fas fa-cog"></i>
+                                Configurações
+                            </button>
+                            <button class="btn-secondary" onclick="exportData()" style="padding: 16px; justify-content: center;">
+                                <i class="fas fa-download"></i>
+                                Exportar Dados
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Ações Rápidas Dashboard -->
+            <!-- CONFIGURAÇÕES -->
+            <div id="configPage" class="page">
                 <div class="card">
-                    <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-bolt" style="color: #fbbf24;"></i>
-                        Ações Rápidas
-                    </h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
-                        <button class="btn-primary" onclick="showPage('athletes')" style="padding: 16px; justify-content: center;">
+                    <div class="card-header">
+                        <div>
+                            <h1 class="card-title">
+                                <i class="fas fa-cog"></i>
+                                Configurações do Sistema
+                            </h1>
+                            <p class="card-subtitle">Configure sua API Key do OpenAI para usar o GPT</p>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="config-title">
+                            <i class="fas fa-key"></i>
+                            API Key OpenAI
+                        </div>
+                        <input 
+                            type="password" 
+                            id="apiKeyInput" 
+                            class="api-key-input"
+                            placeholder="Cole sua API Key aqui (sk-proj-...)"
+                            value=""
+                        >
+                        <button class="btn-primary" onclick="saveApiKey()">
+                            <i class="fas fa-save"></i>
+                            Salvar Configuração
+                        </button>
+                        <div class="api-status" id="apiStatus">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>API Key não configurada</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
+                        <h3 style="color: #1e293b; margin-bottom: 16px;">📋 Como obter sua API Key:</h3>
+                        <ol style="color: #64748b; line-height: 1.8;">
+                            <li>Acesse: <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #3b82f6;">https://platform.openai.com/api-keys</a></li>
+                            <li>Faça login com sua conta OpenAI</li>
+                            <li>Clique em "Create new secret key"</li>
+                            <li>Copie a chave e cole aqui</li>
+                            <li>Salve a configuração</li>
+                        </ol>
+                        <p style="color: #dc2626; font-size: 14px; margin-top: 12px;">
+                            <i class="fas fa-shield-alt"></i>
+                            <strong>Segurança:</strong> Sua API Key é salva apenas no seu navegador e nunca é compartilhada.
+                        </p>
+                    </div>
+
+                    <!-- Seção de Dados -->
+                    <div class="card">
+                        <h3 style="color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-database" style="color: #3b82f6;"></i>
+                            Gerenciar Dados
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                            <button class="btn-secondary" onclick="exportData()">
+                                <i class="fas fa-download"></i>
+                                Exportar Dados
+                            </button>
+                            <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
+                                <i class="fas fa-upload"></i>
+                                Importar Dados
+                            </button>
+                            <button class="btn-secondary" onclick="clearAllData()" style="color: #dc2626; border-color: #dc2626;">
+                                <i class="fas fa-trash"></i>
+                                Limpar Tudo
+                            </button>
+                        </div>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATLETAS -->
+            <div id="athletesPage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h1 class="card-title">
+                                <i class="fas fa-users"></i>
+                                Gestão de Atletas
+                            </h1>
+                            <p class="card-subtitle">Cadastre e gerencie seus atletas</p>
+                        </div>
+                        <button class="btn-primary" onclick="openAthleteModal()">
                             <i class="fas fa-user-plus"></i>
-                            Cadastrar Atleta
+                            Novo Atleta
                         </button>
-                        <button class="btn-primary" onclick="showPage('gpt-chat')" style="padding: 16px; justify-content: center;">
-                            <i class="fas fa-brain"></i>
-                            Usar GPT Coach
+                    </div>
+
+                    <div id="athletesList">
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <h3>Nenhum atleta cadastrado</h3>
+                            <p>Comece cadastrando seu primeiro atleta para usar o GPT Coach.</p>
+                            <button class="btn-primary" onclick="openAthleteModal()">
+                                <i class="fas fa-user-plus"></i>
+                                Cadastrar Primeiro Atleta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPT CHAT -->
+            <div id="gpt-chatPage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h1 class="card-title">
+                                <i class="fas fa-brain"></i>
+                                GPT Bastos Run Coach
+                            </h1>
+                            <p class="card-subtitle">Link direto para seu GPT personalizado</p>
+                        </div>
+                        <button class="btn-secondary" onclick="showPage('dashboard')">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar ao Dashboard
                         </button>
-                        <button class="btn-secondary" onclick="showPage('config')" style="padding: 16px; justify-content: center;">
-                            <i class="fas fa-cog"></i>
-                            Configurações
+                    </div>
+
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-brain" style="font-size: 64px; color: #3b82f6; margin-bottom: 24px;"></i>
+                        <h2 style="color: #1e293b; margin-bottom: 16px;">Acesse seu GPT Personalizado</h2>
+                        <p style="color: #64748b; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            Clique no botão abaixo para abrir seu GPT Bastos Run Coach em uma nova janela. 
+                            Lá você pode criar periodizações e planos de treino personalizados.
+                        </p>
+                        
+                        <button class="btn-primary" onclick="window.open('https://chatgpt.com/g/g-682c900256908191b965282855160eb2-time-bastos-run-coach', '_blank')" style="font-size: 18px; padding: 20px 32px; margin-bottom: 24px;">
+                            <i class="fas fa-external-link-alt"></i>
+                            Abrir GPT Bastos Run Coach
                         </button>
-                        <button class="btn-secondary" onclick="exportData()" style="padding: 16px; justify-content: center;">
-                            <i class="fas fa-download"></i>
-                            Exportar Dados
-                        </button>
+                        
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; text-align: left; max-width: 500px; margin: 0 auto;">
+                            <h4 style="color: #1e293b; margin-bottom: 12px;">💡 Dicas para usar o GPT:</h4>
+                            <ul style="color: #64748b; line-height: 1.8;">
+                                <li>Mencione dados específicos do seu atleta</li>
+                                <li>Solicite periodizações completas (16-20 semanas)</li>
+                                <li>Peça ajustes baseados em feedbacks</li>
+                                <li>Use para análise de progressos</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CONFIGURAÇÕES -->
-        <div id="configPage" class="page">
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <h1 class="card-title">
-                            <i class="fas fa-cog"></i>
-                            Configurações do Sistema
-                        </h1>
-                        <p class="card-subtitle">Configure sua API Key do OpenAI para usar o GPT</p>
-                    </div>
+        <!-- Modal para Cadastro de Atleta -->
+        <div id="athleteModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-user-plus"></i> Cadastrar Novo Atleta</h3>
+                    <button class="modal-close" onclick="closeAthleteModal()">&times;</button>
                 </div>
+                
+                <form id="athleteForm">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nome Completo</label>
+                        <input type="text" id="athleteName" required placeholder="Ex: João Silva" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">E-mail</label>
+                        <input type="email" id="athleteEmail" required placeholder="joao@email.com" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Idade</label>
+                            <input type="number" id="athleteAge" required min="16" max="80" placeholder="30" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Telefone</label>
+                            <input type="tel" id="athletePhone" placeholder="(11) 99999-9999" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Experiência em Corrida</label>
+                        <select id="runningExperience" required style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <option value="">Selecione</option>
+                            <option value="sedentario">Sedentário</option>
+                            <option value="iniciante">Iniciante (0-6 meses)</option>
+                            <option value="recreativo">Recreativo (6m-2 anos)</option>
+                            <option value="intermediario">Intermediário (2-5 anos)</option>
+                            <option value="avancado">Avançado (5+ anos)</option>
+                            <option value="competitivo">Competitivo</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Objetivo Principal</label>
+                        <select id="primaryGoal" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <option value="">Selecione o objetivo</option>
+                            <option value="saude">Saúde e Bem-estar</option>
+                            <option value="5k">Correr 5K</option>
+                            <option value="10k">Correr 10K</option>
+                            <option value="21k">Meia Maratona</option>
+                            <option value="42k">Maratona</option>
+                            <option value="ultra">Ultra Maratona</option>
+                            <option value="performance">Melhorar Performance</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Observações</label>
+                        <textarea id="additionalNotes" rows="3" placeholder="Limitações, horários, equipamentos, experiências anteriores..." style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; resize: vertical;"></textarea>
+                    </div>
 
-                <div class="config-section">
-                    <div class="config-title">
-                        <i class="fas fa-key"></i>
-                        API Key OpenAI
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                        <button type="button" class="btn-secondary" onclick="closeAthleteModal()">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Cadastrar Atleta
+                        </button>
                     </div>
-                    <input 
-                        type="password" 
-                        id="apiKeyInput" 
-                        class="api-key-input"
-                        placeholder="Cole sua API Key aqui (sk-proj-...)"
-                        value=""
-                    >
-                    <button class="btn-primary" onclick="saveApiKey()">
-                        <i class="fas fa-save"></i>
-                        Salvar Configuração
-                    </button>
-                    <div class="api-status" id="apiStatus">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>API Key não configurada</span>
-                    </div>
-                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
                 <div style="background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;">
                     <h3 style="color: #1e293b; margin-bottom: 16px;">📋 Como obter sua API Key:</h3>
