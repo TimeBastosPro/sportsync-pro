@@ -185,6 +185,9 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            // LIMPEZA FORÇADA DE ELEMENTOS INDESEJADOS
+            forceCleanup();
+            
             updateDashboard();
             loadAthletes();
             loadChatAthletes();
@@ -213,7 +216,65 @@
             }
             
             console.log('Sistema inicializado com sucesso!');
+            
+            // Limpeza contínua para garantir que nenhum elemento indesejado apareça
+            setInterval(forceCleanup, 1000);
         });
+
+        // Função para forçar limpeza de elementos indesejados
+        function forceCleanup() {
+            // Remover qualquer div que não deveria estar na tela
+            const allDivs = document.querySelectorAll('div');
+            allDivs.forEach(div => {
+                // Se não está dentro do container, header ou modal, remover
+                if (!div.closest('.container') && 
+                    !div.closest('.header') && 
+                    !div.closest('.modal') &&
+                    div !== document.querySelector('.container') &&
+                    div !== document.querySelector('.header')) {
+                    
+                    // Verificar se é um elemento suspeito (com position fixed ou absolute)
+                    const style = window.getComputedStyle(div);
+                    if (style.position === 'fixed' || style.position === 'absolute') {
+                        if (!div.classList.contains('modal') && 
+                            !div.classList.contains('modal-content') &&
+                            !div.closest('.modal')) {
+                            div.remove();
+                        }
+                    }
+                }
+            });
+            
+            // Remover elementos de texto suspeitos
+            const textNodes = document.evaluate(
+                '//text()[contains(., "O que você gostaria de fazer") or contains(., "Preciso de uma periodização")]',
+                document,
+                null,
+                XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+                null
+            );
+            
+            for (let i = 0; i < textNodes.snapshotLength; i++) {
+                const node = textNodes.snapshotItem(i);
+                if (node.parentNode && 
+                    !node.parentNode.closest('.chat-messages') && 
+                    !node.parentNode.closest('.message-content')) {
+                    node.parentNode.remove();
+                }
+            }
+            
+            // Remover qualquer elemento com z-index muito alto que não deveria estar lá
+            document.querySelectorAll('*').forEach(el => {
+                const style = window.getComputedStyle(el);
+                const zIndex = parseInt(style.zIndex);
+                if (zIndex > 1000 && 
+                    !el.classList.contains('modal') && 
+                    !el.closest('.modal') &&
+                    !el.classList.contains('header')) {
+                    el.style.display = 'none';
+                }
+            });
+        }
 
         // Navegação
         function showPage(pageId) {
@@ -856,6 +917,47 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
             min-height: 100vh;
             color: #334155;
             line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* LIMPEZA COMPLETA - REMOVER QUALQUER ELEMENTO INDESEJADO */
+        body > *:not(.header):not(.container) {
+            display: none !important;
+        }
+        
+        /* GARANTIR QUE NÃO HAJAM ELEMENTOS POSICIONADOS FIXOS INDESEJADOS */
+        *:not(.header):not(.modal) {
+            position: static !important;
+        }
+        
+        .header {
+            position: sticky !important;
+        }
+        
+        .modal {
+            position: fixed !important;
+        }
+        
+        /* REMOVER QUALQUER OVERLAY OU BANNER */
+        body::before,
+        body::after,
+        *::before,
+        *::after {
+            content: none !important;
+            display: none !important;
+        }
+        
+        /* GARANTIR QUE CONTAINERS ESTEJAM CORRETOS */
+        .container {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* ESCONDER QUALQUER ELEMENTO FLUTUANTE */
+        div[style*="position: fixed"]:not(.modal),
+        div[style*="position: absolute"]:not(.message-avatar):not(.modal-content) {
+            display: none !important;
         }
         
         /* HEADER */
