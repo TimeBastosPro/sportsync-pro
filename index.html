@@ -17,6 +17,23 @@
         .zone-2 { background: #3b82f6; }
         .zone-3 { background: #f59e0b; }
         .zone-4 { background: #ef4444; }
+        .zone-5 { background: #8b5cf6; } solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .zone-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .zone-1 { background: #10b981; }
+        .zone-2 { background: #3b82f6; }
+        .zone-3 { background: #f59e0b; }
+        .zone-4 { background: #ef4444; }
         .zone-5 { background: #8b5cf6; }
         
         .calculate-btn {
@@ -528,9 +545,9 @@
                 return;
             }
 
-            // Calcular FC Máxima se não informada
+            // Calcular FC Máxima se não informada - usando fórmula de Tanaka
             if (!fcMax) {
-                fcMax = 220 - age;
+                fcMax = Math.round(208 - (0.7 * age));
             }
 
             // Calcular VO2 máximo
@@ -616,10 +633,19 @@
 
             const tbody = document.getElementById('zonesTableBody');
             tbody.innerHTML = zones.map(zone => {
-                // Calcular FC usando método Karvonen (FC de reserva)
-                const fcReserve = fcMax - fcRest;
-                const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
-                const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                let fcMin, fcMaxZone;
+                
+                // Usar fórmula de Karvonen se FC repouso estiver preenchida, senão usar percentual direto
+                if (fcRest && fcRest > 0) {
+                    // Método Karvonen (FC de reserva)
+                    const fcReserve = fcMax - fcRest;
+                    fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                    fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                } else {
+                    // Percentual direto da FC máxima
+                    fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
+                    fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
+                }
                 
                 // Calcular ritmo baseado na VAM
                 let paceMin = '--', paceMax = '--';
@@ -1047,7 +1073,7 @@
                                             <label>FC Máxima (bpm)</label>
                                             <input type="number" id="fcMax" placeholder="Ex: 185">
                                             <div class="info-note">
-                                                Se não souber, será calculada pela fórmula: 220 - idade
+                                                Se não souber, será calculada pela fórmula de Tanaka: 208 - (0.7 × idade)
                                             </div>
                                         </div>
                                     </div>
