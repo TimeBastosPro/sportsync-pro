@@ -368,37 +368,26 @@
             align-items: center;
         }
         
-        .filter-group {
+        .search-group {
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-right: auto;
         }
         
-        .filter-select {
+        .search-input {
             border: 1px solid #d1d5db;
             border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 12px;
+            padding: 8px 12px;
+            font-size: 14px;
             background: white;
+            min-width: 250px;
+            outline: none;
         }
         
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-left: auto;
-        }
-        
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
         
         .btn-success {
@@ -439,6 +428,10 @@
         
         .table-body tr:hover {
             background: #f9fafb;
+        }
+        
+        .table-body tr.hidden {
+            display: none;
         }
         
         .table-body td {
@@ -490,29 +483,6 @@
             color: #92400e;
         }
         
-        .training-dots {
-            display: flex;
-            gap: 2px;
-        }
-        
-        .training-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-        }
-        
-        .training-dot.released {
-            background: #10b981;
-        }
-        
-        .training-dot.scheduled {
-            background: #3b82f6;
-        }
-        
-        .training-dot.none {
-            background: #e5e7eb;
-        }
-        
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -530,6 +500,18 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 8px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .no-results i {
+            font-size: 32px;
+            color: #d1d5db;
+            margin-bottom: 12px;
         }
         
         /* Responsive */
@@ -553,9 +535,13 @@
                 align-items: stretch;
             }
             
-            .action-buttons {
-                margin-left: 0;
-                margin-top: 12px;
+            .search-group {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+            
+            .search-input {
+                min-width: 100%;
             }
         }
     </style>
@@ -707,35 +693,24 @@
                             <button class="period-btn active">Geral</button>
                             <button class="period-btn">Sem macrociclo</button>
                             <button class="period-btn">Em preparação</button>
-                            <button class="period-btn">Agendado</button>
-                            <button class="period-btn">Liberado</button>
-                            <button class="period-btn">Enviado</button>
                         </div>
                     </div>
 
-                    <!-- Filtros e Ações -->
+                    <!-- Barra de Busca -->
                     <div class="filters-bar">
-                        <div class="filter-group">
-                            <i class="fas fa-filter"></i>
-                            <span style="font-size: 12px; color: #6b7280;">Filtros</span>
+                        <div class="search-group">
+                            <i class="fas fa-search" style="color: #6b7280;"></i>
+                            <input 
+                                type="text" 
+                                id="athleteSearch" 
+                                class="search-input" 
+                                placeholder="Buscar atleta por nome..."
+                                onkeyup="searchAthletes()"
+                            >
                         </div>
-                        <select class="filter-select">
-                            <option>Todas as categorias</option>
-                        </select>
-                        <select class="filter-select">
-                            <option>Todos os grupos</option>
-                        </select>
-                        <select class="filter-select">
-                            <option>Treinador principal e auxiliar</option>
-                        </select>
-                        <div class="action-buttons">
-                            <button class="btn-primary">
-                                <i class="fas fa-copy"></i> Copiar Treinos
-                            </button>
-                            <button class="btn-success">
-                                <i class="fas fa-unlock"></i> Liberar
-                            </button>
-                        </div>
+                        <button class="btn-success">
+                            <i class="fas fa-unlock"></i> Liberar
+                        </button>
                     </div>
 
                     <!-- Tabela de Atletas -->
@@ -745,12 +720,12 @@
                                 <th>Atleta</th>
                                 <th>Situação</th>
                                 <th>Grupo</th>
+                                <th>Mesociclo</th>
                                 <th>Microciclo</th>
-                                <th>Treinos</th>
                             </tr>
                         </thead>
-                        <tbody class="table-body">
-                            <tr>
+                        <tbody class="table-body" id="athletesTableBody">
+                            <tr class="athlete-row">
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
@@ -761,43 +736,10 @@
                                     <span class="status-badge status-preparation">Em preparação</span>
                                 </td>
                                 <td>Projeto Corra</td>
+                                <td>Base Geral</td>
                                 <td>14/27 Choque</td>
-                                <td>
-                                    <div class="training-dots">
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                    </div>
-                                </td>
                             </tr>
-                            <tr>
+                            <tr class="athlete-row">
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
@@ -808,44 +750,18 @@
                                     <span class="status-badge status-active">Ativo</span>
                                 </td>
                                 <td>TIME BASTOS</td>
+                                <td>Específico</td>
                                 <td>22/25</td>
-                                <td>
-                                    <div class="training-dots">
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                        <div class="training-dot scheduled" title="Agendado"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot none" title="Sem treino"></div>
-                                        <div class="training-dot released" title="Liberado"></div>
-                                    </div>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <!-- Mensagem quando não há resultados -->
+                    <div id="noResultsMessage" class="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>Nenhum atleta encontrado</h3>
+                        <p>Tente buscar com um termo diferente</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -871,3 +787,119 @@
             }
             
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+
+        // Funções de autenticação
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Entrando...';
+            
+            setTimeout(() => {
+                if (email === trainerCredentials.email && password === trainerCredentials.password) {
+                    currentUser = {
+                        name: 'Treinador Bastos',
+                        email: email,
+                        role: 'trainer'
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showApp();
+                    initializeApp();
+                } else {
+                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Entrar como Treinador';
+                }
+            }, 1000);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLogin();
+        }
+
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('appContainer').classList.remove('active');
+        }
+
+        function showApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+        }
+
+        function initializeApp() {
+            if (currentUser) {
+                document.getElementById('trainerName').textContent = currentUser.name;
+            }
+            
+            // Navegação
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    switchPage(page);
+                    
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        }
+
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // Função de busca de atletas
+        function searchAthletes() {
+            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
+            const athleteRows = document.querySelectorAll('.athlete-row');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            let visibleRows = 0;
+
+            athleteRows.forEach(row => {
+                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
+                
+                if (athleteName.includes(searchTerm)) {
+                    row.classList.remove('hidden');
+                    visibleRows++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Mostrar/esconder mensagem de "nenhum resultado"
+            if (visibleRows === 0 && searchTerm !== '') {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
+
+        // Limpar busca quando campo estiver vazio
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('athleteSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    if (this.value === '') {
+                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
