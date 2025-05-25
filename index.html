@@ -175,7 +175,12 @@
         </div>
     </div>
 
+    </div>
+
     <script>
+        // Sistema de autenticação
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        
         // Dados do sistema
         let athletes = JSON.parse(localStorage.getItem('athletes') || '[]');
         let periodizations = JSON.parse(localStorage.getItem('periodizations') || '[]');
@@ -183,14 +188,117 @@
         let currentSelectedAthlete = null;
         let apiKey = localStorage.getItem('openai_api_key') || '';
 
+        // Credenciais de teste
+        const testCredentials = {
+            email: 'treinador@bastos.com',
+            password: '123456',
+            name: 'Treinador Bastos',
+            role: 'trainer'
+        };
+
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            
+            // Event listeners para login
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Se já estiver logado, inicializar aplicação
+            if (currentUser) {
+                initializeApp();
+            }
+        });
+
+        // Verificar autenticação
+        function checkAuthentication() {
+            if (currentUser) {
+                showApp();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Mostrar tela de login
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        // Mostrar aplicação
+        function showApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Desabilitar botão durante login
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            
+            // Simular delay de autenticação
+            setTimeout(() => {
+                if (email === testCredentials.email && password === testCredentials.password) {
+                    // Login bem-sucedido
+                    currentUser = {
+                        email: email,
+                        name: testCredentials.name,
+                        role: testCredentials.role,
+                        loginTime: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Mostrar aplicação
+                    showApp();
+                    initializeApp();
+                    
+                    // Mostrar mensagem de sucesso
+                    setTimeout(() => {
+                        alert(`✅ Bem-vindo, ${currentUser.name}!`);
+                    }, 500);
+                    
+                } else {
+                    // Login falhou
+                    alert('❌ E-mail ou senha incorretos!');
+                    
+                    // Restaurar botão
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+                }
+            }, 1000);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Tem certeza que deseja sair do sistema?')) {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                currentSelectedAthlete = null;
+                
+                // Limpar formulários
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+                showLogin();
+                alert('👋 Logout realizado com sucesso!');
+            }
+        }
+
+        // Inicializar aplicação após login
+        function initializeApp() {
             updateDashboard();
             loadAthletes();
             loadChatAthletes();
             checkApiKey();
             
-            // Event listeners
+            // Event listeners da aplicação
             document.getElementById('athleteForm').addEventListener('submit', saveAthlete);
             document.getElementById('chatInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -212,8 +320,8 @@
                 document.getElementById('apiKeyInput').value = apiKey;
             }
             
-            console.log('Sistema inicializado com sucesso!');
-        });
+            console.log('Sistema inicializado para:', currentUser.name);
+        }
 
         // Navegação
         function showPage(pageId) {
@@ -314,6 +422,11 @@
             document.getElementById('totalConversations').textContent = conversations.length;
             document.getElementById('totalPeriodizations').textContent = periodizations.length;
             document.getElementById('pendingFeedbacks').textContent = 0;
+            
+            // Atualizar saudação com nome do treinador
+            if (currentUser) {
+                document.getElementById('trainerWelcome').textContent = `Bem-vindo, ${currentUser.name}!`;
+            }
         }
 
         // Modal de Atleta
@@ -874,6 +987,183 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
             color: #334155;
             line-height: 1.6;
             overflow-x: hidden;
+        }
+        
+        /* LOGIN SCREEN */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="%23ffffff08" points="0,0 0,1000 1000,800 1000,0"/><polygon fill="%23ffffff04" points="0,200 0,1000 1000,1000 1000,400"/></svg>');
+            background-size: cover;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .login-logo i {
+            color: #3b82f6;
+            font-size: 48px;
+        }
+        
+        .login-logo h1 {
+            color: #1e293b;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .login-subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .login-badge {
+            background: #fbbf24;
+            color: #92400e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        
+        .login-form {
+            margin-top: 32px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+        
+        .login-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .login-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .demo-credentials {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        
+        .demo-credentials h4 {
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .demo-credentials p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 4px 0;
+        }
+        
+        /* APLICAÇÃO PRINCIPAL */
+        .app-container {
+            display: none;
+        }
+        
+        .app-container.active {
+            display: block;
         }
         
         /* HEADER */
@@ -1574,6 +1864,50 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
     </style>
 </head>
 <body>
+    <!-- TELA DE LOGIN -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-user-tie"></i>
+                    <h1>Bastos Run Coach</h1>
+                </div>
+                <p class="login-subtitle">Sistema de Gestão para Treinadores</p>
+                <span class="login-badge">Acesso Treinador</span>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginEmail">📧 E-mail do Treinador</label>
+                    <input type="email" id="loginEmail" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">🔒 Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar no Sistema
+                </button>
+            </form>
+            
+            <div class="demo-credentials">
+                <h4>🧪 Credenciais para Teste:</h4>
+                <p><strong>E-mail:</strong> treinador@bastos.com</p>
+                <p><strong>Senha:</strong> 123456</p>
+                <p style="margin-top: 8px; font-style: italic;">Use essas credenciais para testar o sistema</p>
+            </div>
+            
+            <div class="login-footer">
+                <p>© 2024 Bastos Run Coach - Sistema para Treinadores de Corrida</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- APLICAÇÃO PRINCIPAL -->
+    <div id="appContainer" class="app-container">
     <header class="header">
         <nav class="nav">
             <div class="logo">
@@ -1594,6 +1928,9 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
                 <button class="nav-btn" data-page="config">
                     <i class="fas fa-cog"></i> Configurações
                 </button>
+                <button class="nav-btn" onclick="logout()" style="margin-left: 20px; background: #ef4444; color: white;">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
             </div>
         </nav>
     </header>
@@ -1607,6 +1944,9 @@ Responda como se fosse uma conversa natural entre treinador e atleta.`;
                         <h1 class="card-title">
                             <i class="fas fa-home"></i>
                             Dashboard do Treinador
+                            <span style="color: #64748b; font-size: 18px; font-weight: normal; margin-left: 16px;" id="trainerWelcome">
+                                Bem-vindo!
+                            </span>
                         </h1>
                         <p class="card-subtitle">Visão geral dos seus atletas e planejamentos</p>
                     </div>
