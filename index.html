@@ -639,7 +639,7 @@
                             </div>
                             <div class="stat-title">Atletas Ativos</div>
                         </div>
-                        <div class="stat-value" id="activeAthletes">2</div>
+                        <div class="stat-value">2</div>
                         <div class="stat-description">Total de atletas cadastrados</div>
                     </div>
 
@@ -650,7 +650,7 @@
                             </div>
                             <div class="stat-title">Sem Planejamento</div>
                         </div>
-                        <div class="stat-value" id="withoutPlanning">0</div>
+                        <div class="stat-value">0</div>
                         <div class="stat-description">Atletas sem plano de treino</div>
                     </div>
 
@@ -661,7 +661,7 @@
                             </div>
                             <div class="stat-title">Planilhas Vazias</div>
                         </div>
-                        <div class="stat-value" id="emptySheets">0</div>
+                        <div class="stat-value">0</div>
                         <div class="stat-description">Planilhas sem treinos</div>
                     </div>
 
@@ -672,7 +672,7 @@
                             </div>
                             <div class="stat-title">Sem Feedback</div>
                         </div>
-                        <div class="stat-value" id="withoutFeedback">1</div>
+                        <div class="stat-value">1</div>
                         <div class="stat-description">Treinos aguardando feedback</div>
                     </div>
                 </div>
@@ -750,7 +750,7 @@
                                 <th>Treinos</th>
                             </tr>
                         </thead>
-                        <tbody class="table-body" id="athletesTableBody">
+                        <tbody class="table-body">
                             <tr>
                                 <td>
                                     <div class="athlete-info">
@@ -765,8 +765,83 @@
                                 <td>14/27 Choque</td>
                                 <td>
                                     <div class="training-dots">
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name">Adriana Duque de Freitas</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active">Ativo</span>
+                                </td>
+                                <td>TIME BASTOS</td>
+                                <td>22/25</td>
+                                <td>
+                                    <div class="training-dots">
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
+                                        <div class="training-dot scheduled" title="Agendado"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot none" title="Sem treino"></div>
+                                        <div class="training-dot released" title="Liberado"></div>
                                     </div>
                                 </td>
                             </tr>
@@ -876,7 +951,6 @@
             if (currentUser) {
                 document.getElementById('trainerName').textContent = currentUser.name;
             }
-            updateDashboard();
         }
 
         // Navegação
@@ -904,15 +978,6 @@
             }
         }
 
-        // Dashboard
-        function updateDashboard() {
-            // Métricas fixas baseadas nos dados de exemplo
-            document.getElementById('activeAthletes').textContent = '2';
-            document.getElementById('withoutPlanning').textContent = '0';
-            document.getElementById('emptySheets').textContent = '0';
-            document.getElementById('withoutFeedback').textContent = '1';
-        }
-
         // Função placeholder para seletor de período
         function setPeriod(start, end) {
             console.log(`Período selecionado: ${start} - ${end}`);
@@ -922,79 +987,4 @@
         console.log('Login: treinador@bastos.com / 123456');
     </script>
 </body>
-</html>dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot" title="Descanso"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot" title="Descanso"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="athlete-info">
-                                        <div class="athlete-avatar">A</div>
-                                        <div class="athlete-name">Adriana Duque de Freitas</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-active">Ativo</span>
-                                </td>
-                                <td>TIME BASTOS</td>
-                                <td>22/25</td>
-                                <td>
-                                    <div class="training-dots">
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot" title="Descanso"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot" title="Descanso"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot completed" title="Treino realizado"></div>
-                                        <div class="training-dot scheduled" title="Treino agendado"></div>
-                                        <div class="training-dot missed" title="Treino perdido"></div>
-                                        <div class="training-
+</html>
