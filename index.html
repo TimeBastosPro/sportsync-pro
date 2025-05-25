@@ -707,6 +707,243 @@
             font-size: 14px;
         }
         
+        /* EVENTOS */
+        .event-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .event-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .event-date {
+            font-size: 14px;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+        
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .event-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .event-detail-item i {
+            color: #3b82f6;
+            width: 16px;
+        }
+        
+        .event-participants {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .participants-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .participants-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .participant-badge {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .modal-close:hover {
+            color: #374151;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .athletes-selection {
+            margin-top: 24px;
+        }
+        
+        .athletes-selection h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        
+        .athlete-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .athlete-checkbox:hover {
+            background: #f9fafb;
+        }
+        
+        .athlete-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .add-event-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .add-event-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav {
@@ -868,13 +1105,12 @@
                     <div class="card-header">
                         <h2 class="card-title">Próximos Eventos</h2>
                         <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
+                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
+                            <i class="fas fa-plus"></i> Cadastrar Evento
+                        </button>
                     </div>
                     <div id="eventsContent">
-                        <div class="empty-state">
-                            <i class="fas fa-calendar-alt"></i>
-                            <h3>Nenhum evento próximo</h3>
-                            <p>Cadastre eventos para seus atletas</p>
-                        </div>
+                        <!-- Eventos serão carregados aqui -->
                     </div>
                 </div>
             </div>
@@ -1121,15 +1357,58 @@
 
                         <!-- Aba Eventos -->
                         <div id="eventosTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-trophy"></i>
-                                <h3>Eventos em Desenvolvimento</h3>
-                                <p>Esta seção conterá provas, competições e resultados do atleta</p>
+                            <div id="athleteEvents">
+                                <!-- Eventos do atleta serão carregados aqui -->
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO DE EVENTO -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Cadastrar Novo Evento</h2>
+                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventName">Nome do Evento</label>
+                    <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Data do Evento</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDistance">Distância</label>
+                        <input type="text" id="eventDistance" required placeholder="Ex: 10km, 21km, 42km">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventLocation">Local</label>
+                    <input type="text" id="eventLocation" required placeholder="Ex: Parque Ibirapuera, São Paulo">
+                </div>
+                
+                <div class="athletes-selection">
+                    <h3>Selecionar Atletas Participantes</h3>
+                    <div id="athletesList">
+                        <!-- Lista de atletas será carregada aqui -->
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Cadastrar Evento</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1139,6 +1418,7 @@
         let currentWeekStart = new Date('2025-05-26'); // Data inicial
         let currentFilter = 'geral';
         let currentAthlete = null;
+        let events = JSON.parse(localStorage.getItem('events') || '[]');
 
         // Dados dos atletas
         const athletesData = {
@@ -1169,11 +1449,13 @@
             if (currentUser) {
                 showApp();
                 initializeApp();
+                loadEvents();
             } else {
                 showLogin();
             }
             
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
         });
 
         // Funções de autenticação
@@ -1374,6 +1656,169 @@
             // Ativar aba selecionada
             event.target.classList.add('active');
             document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Se for aba de eventos, carregar eventos do atleta
+            if (tabName === 'eventos') {
+                loadAthleteEvents();
+            }
+        }
+
+        // Funções de Eventos
+        function openEventModal() {
+            document.getElementById('eventModal').classList.add('active');
+            loadAthletesForSelection();
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            document.getElementById('eventForm').reset();
+        }
+
+        function loadAthletesForSelection() {
+            const athletesList = document.getElementById('athletesList');
+            athletesList.innerHTML = '';
+            
+            Object.keys(athletesData).forEach(athleteId => {
+                const athlete = athletesData[athleteId];
+                const div = document.createElement('div');
+                div.className = 'athlete-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}">
+                    <label for="athlete_${athleteId}">${athlete.name}</label>
+                `;
+                athletesList.appendChild(div);
+            });
+        }
+
+        function handleEventSubmit(e) {
+            e.preventDefault();
+            
+            const eventData = {
+                id: Date.now().toString(),
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                distance: document.getElementById('eventDistance').value,
+                location: document.getElementById('eventLocation').value,
+                participants: []
+            };
+            
+            // Pegar atletas selecionados
+            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                eventData.participants.push(checkbox.value);
+            });
+            
+            events.push(eventData);
+            localStorage.setItem('events', JSON.stringify(events));
+            
+            closeEventModal();
+            loadEvents();
+            alert('Evento cadastrado com sucesso!');
+        }
+
+        function loadEvents() {
+            const eventsContent = document.getElementById('eventsContent');
+            
+            if (events.length === 0) {
+                eventsContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            eventsContent.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                const participantNames = event.participants.map(id => athletesData[id]?.name || 'Atleta').join(', ');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                        <div class="event-participants">
+                            <div class="participants-title">Participantes</div>
+                            <div class="participants-list">
+                                ${event.participants.map(id => 
+                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadAthleteEvents() {
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const athleteEvents = events.filter(event => 
+                event.participants.includes(athleteId)
+            );
+            
+            const athleteEventsContainer = document.getElementById('athleteEvents');
+            
+            if (athleteEvents.length === 0) {
+                athleteEventsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Limpar busca quando campo estiver vazio
