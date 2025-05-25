@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportSync Pro - v0.1</title>
+    <title>Bastos Run Coach - Treinos Inteligentes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,44 +16,127 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
+            line-height: 1.6;
         }
         
         .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                margin: 1rem auto;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-header {
             text-align: center;
             margin-bottom: 2rem;
         }
         
-        .logo {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        h1 {
+        .card-header h2 {
             color: #333;
-            margin-bottom: 0.5rem;
             font-size: 1.8rem;
+            margin-bottom: 0.5rem;
         }
         
-        .subtitle {
+        .card-header p {
             color: #666;
             font-size: 1rem;
         }
         
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
         .form-group {
             margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
         
         label {
@@ -65,94 +149,128 @@
         
         input, select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 12px 16px;
             border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: white;
         }
         
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
         }
         
-        .btn-generate {
+        .btn-primary {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-generate:disabled {
+        .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
         
-        .result {
-            margin-top: 2rem;
-            padding: 1.5rem;
+        .btn-secondary {
             background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
+            color: #333;
+            border: 2px solid #e1e5e9;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .specialty-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .specialty-btn {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .specialty-btn:hover, .specialty-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .result-card {
             display: none;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .loading {
             text-align: center;
-            color: #667eea;
-            font-style: italic;
+            padding: 2rem;
         }
         
-        .workout-section {
-            background: white;
-            margin: 1rem 0;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #28a745;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
         }
         
-        .workout-section h4 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        
-        .duration-badge {
-            background: #667eea;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .ai-note {
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-            border: 1px solid #d1c4e9;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .progress-bar {
             width: 100%;
-            height: 4px;
+            height: 6px;
             background: #e1e5e9;
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
             margin: 1rem 0;
         }
@@ -161,451 +279,1134 @@
             height: 100%;
             background: linear-gradient(90deg, #667eea, #764ba2);
             width: 0%;
-            transition: width 2s ease;
+            transition: width 0.5s ease;
+        }
+        
+        .workout-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            margin: 1rem 0;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .workout-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .duration-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .workout-content {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .intensity-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .intensity-dots {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e1e5e9;
+        }
+        
+        .dot.active {
+            background: #667eea;
+        }
+        
+        .coach-note {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #d1c4e9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-share {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-new {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .saved-workouts {
+            margin-top: 2rem;
+        }
+        
+        .workout-item {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .workout-item:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+        
+        .workout-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .workout-preview {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
 <body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-running"></i>
+                <span>Bastos Run Coach</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" data-tab="generator">
+                    <i class="fas fa-magic"></i> Gerar Treino
+                </button>
+                <button class="nav-btn" data-tab="saved">
+                    <i class="fas fa-bookmark"></i> Salvos (<span id="savedCount">0</span>)
+                </button>
+                <button class="nav-btn" data-tab="profile">
+                    <i class="fas fa-user"></i> Perfil
+                </button>
+            </div>
+        </nav>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <div class="logo">🤖</div>
-            <h1>SportSync Pro</h1>
-            <p class="subtitle">Gerador Inteligente de Treinos Personalizados</p>
+        <!-- Gerador de Treinos -->
+        <div id="generatorTab" class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-brain"></i> IA Bastos Run Coach</h2>
+                <p>Treinos personalizados para corrida e trail running</p>
+            </div>
+
+            <form id="workoutForm">
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Dados do Corredor
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="runnerName">👤 Nome do Corredor:</label>
+                        <input type="text" id="runnerName" required placeholder="Ex: Luiz Bastos" autocomplete="name">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age">🎂 Idade:</label>
+                            <input type="number" id="age" min="16" max="80" placeholder="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="experience">📊 Experiência:</label>
+                            <select id="experience" required>
+                                <option value="">Selecione</option>
+                                <option value="iniciante">🌱 Iniciante (0-1 ano)</option>
+                                <option value="intermediario">📈 Intermediário (1-3 anos)</option>
+                                <option value="avancado">🚀 Avançado (3+ anos)</option>
+                                <option value="elite">👑 Elite/Competitivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-route"></i>
+                        Modalidade & Objetivo
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>🏃‍♂️ Especialidade:</label>
+                        <div class="specialty-buttons">
+                            <div class="specialty-btn" data-specialty="corrida">
+                                <i class="fas fa-road"></i><br>
+                                <strong>Corrida de Rua</strong><br>
+                                <small>Asfalto, pista, urbano</small>
+                            </div>
+                            <div class="specialty-btn" data-specialty="trail">
+                                <i class="fas fa-mountain"></i><br>
+                                <strong>Trail Running</strong><br>
+                                <small>Montanha, trilha, natureza</small>
+                            </div>
+                        </div>
+                        <input type="hidden" id="specialty" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goal">🎯 Objetivo Principal:</label>
+                        <select id="goal" required>
+                            <option value="">Selecione seu objetivo</option>
+                            <option value="base-aerobica">💪 Desenvolver Base Aeróbica</option>
+                            <option value="velocidade">⚡ Melhorar Velocidade/Ritmo</option>
+                            <option value="resistencia">🔥 Aumentar Resistência</option>
+                            <option value="perda-peso">⚖️ Perda de Peso</option>
+                            <option value="5k">🏃‍♂️ Preparação 5K</option>
+                            <option value="10k">🏃‍♂️ Preparação 10K</option>
+                            <option value="21k">🏃‍♂️ Preparação 21K</option>
+                            <option value="42k">🏃‍♂️ Preparação Maratona</option>
+                            <option value="ultra">🏔️ Ultra Trail</option>
+                            <option value="recuperacao">🧘 Recuperação Ativa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Configurações do Treino
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="duration">⏱️ Duração (minutos):</label>
+                            <input type="number" id="duration" required min="20" max="240" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label for="intensity">🌡️ Intensidade Desejada:</label>
+                            <select id="intensity">
+                                <option value="leve">😌 Leve/Recuperação</option>
+                                <option value="moderada" selected>😊 Moderada</option>
+                                <option value="alta">😤 Alta</option>
+                                <option value="maxima">🔥 Máxima</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="terrain">🌍 Terreno Disponível:</label>
+                        <select id="terrain">
+                            <option value="asfalto">🏙️ Asfalto/Pista</option>
+                            <option value="parque">🌳 Parque/Terra</option>
+                            <option value="trilha">🏔️ Trilha/Montanha</option>
+                            <option value="misto">🌍 Misto</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">📝 Observações (opcional):</label>
+                        <textarea id="notes" rows="3" placeholder="Ex: Lesão prévia, preferências, limitações, equipamentos disponíveis..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="generateBtn">
+                    <i class="fas fa-magic"></i>
+                    Gerar Treino Personalizado
+                </button>
+            </form>
         </div>
-        
-        <form id="workoutForm">
-            <div class="form-group">
-                <label for="athlete">👤 Nome do Atleta:</label>
-                <input type="text" id="athlete" required placeholder="Ex: João Silva" autocomplete="name">
-            </div>
-            
-            <div class="form-group">
-                <label for="sport">🏃 Esporte Principal:</label>
-                <select id="sport" required>
-                    <option value="">Selecione o esporte</option>
-                    <option value="corrida">🏃‍♂️ Corrida</option>
-                    <option value="ciclismo">🚴‍♂️ Ciclismo</option>
-                    <option value="natacao">🏊‍♂️ Natação</option>
-                    <option value="futebol">⚽ Futebol</option>
-                    <option value="basquete">🏀 Basquete</option>
-                    <option value="crossfit">🏋️‍♂️ CrossFit</option>
-                    <option value="tenis">🎾 Tênis</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="goal">🎯 Objetivo Principal:</label>
-                <select id="goal" required>
-                    <option value="">Selecione o objetivo</option>
-                    <option value="resistencia">💪 Melhorar Resistência</option>
-                    <option value="velocidade">⚡ Aumentar Velocidade</option>
-                    <option value="forca">🏋️ Ganhar Força</option>
-                    <option value="peso">🔥 Perder Peso</option>
-                    <option value="competicao">🏆 Preparar para Competição</option>
-                    <option value="recuperacao">🧘 Recuperação Ativa</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="duration">⏱️ Duração (minutos):</label>
-                <input type="number" id="duration" required min="20" max="180" placeholder="60" value="60">
-            </div>
-            
-            <div class="form-group">
-                <label for="level">📊 Nível Atual:</label>
-                <select id="level" required>
-                    <option value="">Selecione o nível</option>
-                    <option value="iniciante">🌱 Iniciante (0-6 meses)</option>
-                    <option value="intermediario">📈 Intermediário (6-24 meses)</option>
-                    <option value="avancado">🚀 Avançado (2+ anos)</option>
-                    <option value="elite">👑 Elite/Profissional</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="notes">📝 Observações (opcional):</label>
-                <textarea id="notes" rows="3" placeholder="Ex: Lesão no joelho, prefere manhã, equipamentos disponíveis..."></textarea>
-            </div>
-            
-            <button type="submit" class="btn-generate" id="generateBtn">
-                🚀 Gerar Treino Personalizado
-            </button>
-        </form>
-        
-        <div id="result" class="result">
+
+        <!-- Resultado do Treino -->
+        <div id="resultCard" class="card result-card">
             <div id="loading" class="loading" style="display: none;">
-                <p>🤖 IA analisando seu perfil e criando treino personalizado...</p>
+                <div class="loading-spinner"></div>
+                <h3 style="color: #667eea; margin-bottom: 1rem;">🧠 Bastos Run Coach analisando...</h3>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <p id="loadingText">Processando dados do atleta...</p>
+                <p id="loadingText">Processando seu perfil de corredor...</p>
             </div>
-            <div id="workout" style="display: none;"></div>
+            
+            <div id="workoutResult" style="display: none;">
+                <!-- Resultado será inserido aqui -->
+            </div>
+        </div>
+
+        <!-- Treinos Salvos -->
+        <div id="savedTab" class="card" style="display: none; grid-column: 1 / -1;">
+            <div class="card-header">
+                <h2><i class="fas fa-bookmark"></i> Meus Treinos Salvos</h2>
+                <p>Histórico dos treinos gerados pelo Bastos Run Coach</p>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalWorkouts">0</div>
+                    <div class="stat-label">Treinos Gerados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDistance">0</div>
+                    <div class="stat-label">Km Planejados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTime">0</div>
+                    <div class="stat-label">Horas Programadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgIntensity">-</div>
+                    <div class="stat-label">Intensidade Média</div>
+                </div>
+            </div>
+            
+            <div class="saved-workouts" id="savedWorkouts">
+                <p style="text-align: center; color: #666; padding: 2rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Nenhum treino salvo ainda. Gere seu primeiro treino!
+                </p>
+            </div>
+        </div>
+
+        <!-- Perfil -->
+        <div id="profileTab" class="card" style="display: none; grid-column: 1 / -1;">
+            <div class="card-header">
+                <h2><i class="fas fa-user"></i> Perfil do Corredor</h2>
+                <p>Suas informações e histórico</p>
+            </div>
+            
+            <div style="text-align: center; color: #666; padding: 2rem;">
+                <i class="fas fa-user-cog" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h3>Perfil em Desenvolvimento</h3>
+                <p>Em breve: dados pessoais, métricas, progressão e muito mais!</p>
+            </div>
         </div>
     </div>
 
     <script>
         // Estado da aplicação
         let currentWorkout = null;
+        let savedWorkouts = JSON.parse(localStorage.getItem('bastosRunWorkouts') || '[]');
+        let selectedSpecialty = '';
         
-        // Event listeners
-        document.getElementById('workoutForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            generateWorkout();
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSavedCount();
+            updateStats();
+            renderSavedWorkouts();
+            
+            // Event listeners
+            setupEventListeners();
         });
         
-        // Função principal de geração
+        function setupEventListeners() {
+            // Navegação por abas
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    switchTab(tab);
+                });
+            });
+            
+            // Seleção de especialidade
+            document.querySelectorAll('.specialty-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.specialty-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedSpecialty = this.dataset.specialty;
+                    document.getElementById('specialty').value = selectedSpecialty;
+                });
+            });
+            
+            // Formulário
+            document.getElementById('workoutForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateWorkout();
+            });
+        }
+        
+        function switchTab(tabName) {
+            // Atualizar botões
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Mostrar/ocultar conteúdo
+            document.getElementById('generatorTab').style.display = tabName === 'generator' ? 'block' : 'none';
+            document.getElementById('resultCard').style.display = tabName === 'generator' ? 'block' : 'none';
+            document.getElementById('savedTab').style.display = tabName === 'saved' ? 'block' : 'none';
+            document.getElementById('profileTab').style.display = tabName === 'profile' ? 'block' : 'none';
+            
+            if (tabName === 'saved') {
+                renderSavedWorkouts();
+            }
+        }
+        
         async function generateWorkout() {
-            // Coletar dados do formulário
-            const athleteData = {
-                name: document.getElementById('athlete').value,
-                sport: document.getElementById('sport').value,
-                goal: document.getElementById('goal').value,
-                duration: parseInt(document.getElementById('duration').value),
-                level: document.getElementById('level').value,
-                notes: document.getElementById('notes').value
-            };
+            if (!selectedSpecialty) {
+                alert('⚠️ Selecione uma especialidade: Corrida de Rua ou Trail Running');
+                return;
+            }
             
-            // Validar dados
-            if (!validateForm(athleteData)) return;
+            const formData = collectFormData();
+            if (!validateFormData(formData)) return;
             
-            // Iniciar processo de geração
+            // Iniciar loading
             startLoading();
             
             try {
-                // Simular processamento IA (2-3 segundos)
-                await simulateAIProcessing();
-                
-                // Gerar treino
-                const workout = await createPersonalizedWorkout(athleteData);
-                
-                // Exibir resultado
+                await simulateCoachProcessing();
+                const workout = await createAdvancedWorkout(formData);
                 displayWorkout(workout);
-                
+                currentWorkout = workout;
             } catch (error) {
                 showError('Erro ao gerar treino. Tente novamente.');
             }
         }
         
-        // Validação do formulário
-        function validateForm(data) {
-            if (!data.name.trim()) {
-                alert('❌ Por favor, insira o nome do atleta');
+        function collectFormData() {
+            return {
+                runnerName: document.getElementById('runnerName').value,
+                age: parseInt(document.getElementById('age').value) || null,
+                experience: document.getElementById('experience').value,
+                specialty: selectedSpecialty,
+                goal: document.getElementById('goal').value,
+                duration: parseInt(document.getElementById('duration').value),
+                intensity: document.getElementById('intensity').value,
+                terrain: document.getElementById('terrain').value,
+                notes: document.getElementById('notes').value
+            };
+        }
+        
+        function validateFormData(data) {
+            if (!data.runnerName.trim()) {
+                alert('❌ Por favor, insira o nome do corredor');
                 return false;
             }
-            if (data.duration < 20 || data.duration > 180) {
-                alert('❌ Duração deve ser entre 20 e 180 minutos');
+            if (!data.experience) {
+                alert('❌ Selecione o nível de experiência');
+                return false;
+            }
+            if (!data.goal) {
+                alert('❌ Selecione um objetivo');
+                return false;
+            }
+            if (data.duration < 20 || data.duration > 240) {
+                alert('❌ Duração deve ser entre 20 e 240 minutos');
                 return false;
             }
             return true;
         }
         
-        // Simular processamento da IA
-        async function simulateAIProcessing() {
+        async function simulateCoachProcessing() {
             const steps = [
-                'Analisando perfil do atleta...',
-                'Aplicando metodologias científicas...',
-                'Personalizando estrutura do treino...',
-                'Calculando zonas de intensidade...',
-                'Finalizando recomendações...'
+                'Analisando perfil do corredor...',
+                'Avaliando especialidade e terreno...',
+                'Aplicando metodologia científica...',
+                'Personalizando zonas de intensidade...',
+                'Estruturando periodização...',
+                'Calculando volumes e cargas...',
+                'Finalizando recomendações técnicas...'
             ];
             
             for (let i = 0; i < steps.length; i++) {
                 document.getElementById('loadingText').textContent = steps[i];
                 document.getElementById('progressFill').style.width = ((i + 1) / steps.length * 100) + '%';
-                await sleep(400);
+                await sleep(600);
             }
         }
         
-        // Função sleep para delays
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
         
-        // Iniciar loading
         function startLoading() {
-            document.getElementById('result').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'block';
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('workout').style.display = 'none';
+            document.getElementById('workoutResult').style.display = 'none';
             document.getElementById('generateBtn').disabled = true;
-            document.getElementById('generateBtn').textContent = '⏳ Gerando...';
-        }
-        
-        // Gerar treino personalizado
-        async function createPersonalizedWorkout(data) {
-            const warmupTime = Math.round(data.duration * 0.15);
-            const mainTime = Math.round(data.duration * 0.70);
-            const cooldownTime = data.duration - warmupTime - mainTime;
-            
-            // Base de conhecimento para treinos
-            const workoutDatabase = {
-                corrida: {
-                    resistencia: {
-                        iniciante: {
-                            main: "Corrida contínua em ritmo confortável (Zona 2). Mantenha conversa possível durante todo o treino.",
-                            intensity: "65-75% FC Máxima",
-                            tips: "Foque na postura e respiração. Não se preocupe com velocidade."
-                        },
-                        intermediario: {
-                            main: "Corrida base com 3 blocos de 8 minutos em ritmo moderado, recuperação de 2 min entre blocos.",
-                            intensity: "70-80% FC Máxima",
-                            tips: "Mantenha ritmo constante nos blocos. Use a recuperação para se recompor."
-                        },
-                        avancado: {
-                            main: "Corrida progressiva: 20min Z2, 15min Z3, 10min Z2. Aumente 10 seg/km a cada segmento.",
-                            intensity: "70-85% FC Máxima",
-                            tips: "Controle o esforço na progressão. Finalize forte mas controlado."
-                        }
-                    },
-                    velocidade: {
-                        iniciante: {
-                            main: "4 x 2 minutos em ritmo ligeiramente desconfortável, recuperação 2 min caminhando.",
-                            intensity: "80-85% FC Máxima",
-                            tips: "Recupere completamente entre tiros. Qualidade > Quantidade."
-                        },
-                        intermediario: {
-                            main: "6 x 3 minutos em ritmo de 10km, recuperação 90 seg trote leve.",
-                            intensity: "85-90% FC Máxima",
-                            tips: "Mantenha ritmo uniforme nos tiros. Recuperação ativa."
-                        },
-                        avancado: {
-                            main: "8 x 400m em ritmo de 5km, recuperação 200m trote (1:1). Foque na economia de movimento.",
-                            intensity: "90-95% FC Máxima",
-                            tips: "Relaxe braços e ombros. Mantenha cadência alta."
-                        }
-                    }
-                },
-                ciclismo: {
-                    resistencia: {
-                        iniciante: {
-                            main: "Pedalada contínua em cadência 80-90 rpm, esforço confortável.",
-                            intensity: "65-75% FC Máxima",
-                            tips: "Mantenha cadência constante. Hidrate regularmente."
-                        },
-                        intermediario: {
-                            main: "Base aeróbica com 4 x 5min em tempo de 40km (Z3), recuperação 3min Z1.",
-                            intensity: "75-85% FC Máxima",
-                            tips: "Foque na eficiência da pedalada. Mantenha posição aerodinâmica."
-                        }
-                    }
-                }
-            };
-            
-            // Buscar treino específico ou usar padrão
-            const sportData = workoutDatabase[data.sport] || {};
-            const goalData = sportData[data.goal] || {};
-            const levelData = goalData[data.level] || {
-                main: `Treino específico de ${data.sport} focado em ${data.goal}`,
-                intensity: "Intensidade moderada",
-                tips: "Adapte conforme sua experiência"
-            };
-            
-            // Gerar aquecimento específico
-            const warmups = {
-                corrida: "Caminhada rápida (3 min) + Corrida leve progressiva + Educativos (skipping, anfersen)",
-                ciclismo: "Pedalada suave aumentando cadência gradualmente + Sprints curtos de ativação",
-                natacao: "Nado livre fácil + Exercícios técnicos (puxada, chute, respiração bilateral)",
-                futebol: "Trote + Alongamento dinâmico + Controle de bola + Passes curtos",
-                basquete: "Corrida lateral + Drible + Arremessos próximos + Movimentação sem bola"
-            };
-            
-            const cooldowns = {
-                corrida: "Caminhada progressivamente mais lenta + Alongamento estático (panturrilha, quadríceps, isquios)",
-                ciclismo: "Pedalada muito leve diminuindo cadência + Alongamento (lombar, quadríceps, glúteos)",
-                natacao: "Nado costas fácil + Respiração + Alongamento aquático",
-                futebol: "Trote leve + Alongamento + Relaxamento muscular",
-                basquete: "Caminhada + Alongamento + Arremessos livres relaxados"
-            };
-            
-            return {
-                athlete: data.name,
-                sport: data.sport,
-                goal: data.goal,
-                level: data.level,
-                title: `Treino de ${data.sport.charAt(0).toUpperCase() + data.sport.slice(1)} - ${data.goal.charAt(0).toUpperCase() + data.goal.slice(1)}`,
-                totalDuration: data.duration,
-                createdAt: new Date().toLocaleString('pt-BR'),
-                structure: {
-                    warmup: {
-                        duration: warmupTime,
-                        description: warmups[data.sport] || "Aquecimento progressivo específico",
-                        intensity: "50-65% FC Máxima"
-                    },
-                    main: {
-                        duration: mainTime,
-                        description: levelData.main,
-                        intensity: levelData.intensity,
-                        tips: levelData.tips
-                    },
-                    cooldown: {
-                        duration: cooldownTime,
-                        description: cooldowns[data.sport] || "Volta à calma com alongamento",
-                        intensity: "Baixa intensidade"
-                    }
-                },
-                scientificBasis: generateScientificBasis(data.goal),
-                adaptations: generateExpectedAdaptations(data.goal),
-                notes: data.notes
-            };
-        }
-        
-        // Gerar base científica
-        function generateScientificBasis(goal) {
-            const bases = {
-                resistencia: "Treino aeróbico estimula a biogênese mitocondrial, aumenta a densidade capilar e melhora a eficiência do sistema cardiovascular, resultando em maior capacidade de utilização de oxigênio pelos músculos ativos.",
-                velocidade: "Intervalos de alta intensidade desenvolvem a potência anaeróbica através da melhoria do sistema de fosfato de creatina e glicólise anaeróbica, além de aumentar a capacidade de tamponamento do lactato.",
-                forca: "Treino de força promove hipertrofia muscular e melhora da coordenação neuromuscular através do aumento do recrutamento de unidades motoras e sincronização neural.",
-                peso: "Exercício aeróbico em intensidade moderada maximiza a oxidação de ácidos graxos, promovendo déficit calórico e mudanças na composição corporal quando combinado com dieta adequada.",
-                competicao: "Treino específico desenvolve as demandas metabólicas e neuromusculares da modalidade, preparando os sistemas energéticos predominantes na competição.",
-                recuperacao: "Exercício de baixa intensidade facilita a remoção de metabólitos, aumenta o fluxo sanguíneo e promove recuperação ativa dos sistemas fisiológicos."
-            };
-            return bases[goal] || "Treino baseado em princípios científicos de adaptação fisiológica.";
-        }
-        
-        // Gerar adaptações esperadas
-        function generateExpectedAdaptations(goal) {
-            const adaptations = {
-                resistencia: ["Aumento do VO2 máximo", "Melhora da eficiência cardíaca", "Maior densidade mitocondrial", "Economia de movimento"],
-                velocidade: ["Aumento da potência anaeróbica", "Melhora da coordenação neuromuscular", "Maior tolerância ao lactato", "Velocidade de contração"],
-                forca: ["Hipertrofia muscular", "Aumento da força máxima", "Melhora da potência", "Coordenação intermuscular"],
-                peso: ["Redução do percentual de gordura", "Aumento do gasto calórico", "Melhora da composição corporal", "Aceleração metabólica"],
-                competicao: ["Preparação psicológica", "Adaptação específica", "Pico de performance", "Estratégia de prova"],
-                recuperacao: ["Redução da fadiga", "Melhora da circulação", "Relaxamento muscular", "Preparação para próximo treino"]
-            };
-            return adaptations[goal] || ["Melhora geral da condição física"];
-        }
-        
-        // Exibir treino
-        function displayWorkout(workout) {
-            const workoutHTML = `
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <h3 style="color: #333; margin-bottom: 0.5rem;">🎯 ${workout.title}</h3>
-                    <p style="color: #666;"><strong>Atleta:</strong> ${workout.athlete} | <strong>Criado:</strong> ${workout.createdAt}</p>
-                    <p style="color: #667eea; font-weight: 600; font-size: 1.1rem;">⏱️ Duração Total: ${workout.totalDuration} minutos</p>
-                </div>
-                
-                <div class="workout-section" style="border-left-color: #ffc107;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h4>🔥 Aquecimento</h4>
-                        <span class="duration-badge" style="background: #ffc107;">${workout.structure.warmup.duration} min</span>
-                    </div>
-                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.warmup.intensity}</p>
-                    <p>${workout.structure.warmup.description}</p>
-                </div>
-                
-                <div class="workout-section" style="border-left-color: #dc3545;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h4>💪 Parte Principal</h4>
-                        <span class="duration-badge" style="background: #dc3545;">${workout.structure.main.duration} min</span>
-                    </div>
-                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.main.intensity}</p>
-                    <p style="margin-bottom: 1rem;">${workout.structure.main.description}</p>
-                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 0.75rem;">
-                        <strong>💡 Dica do Treinador:</strong> ${workout.structure.main.tips}
-                    </div>
-                </div>
-                
-                <div class="workout-section" style="border-left-color: #28a745;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h4>🧘 Volta à Calma</h4>
-                        <span class="duration-badge" style="background: #28a745;">${workout.structure.cooldown.duration} min</span>
-                    </div>
-                    <p style="margin: 0.5rem 0;"><strong>Intensidade:</strong> ${workout.structure.cooldown.intensity}</p>
-                    <p>${workout.structure.cooldown.description}</p>
-                </div>
-                
-                <div class="ai-note">
-                    <h4 style="color: #6f42c1; margin-bottom: 1rem;">🧬 Base Científica</h4>
-                    <p style="margin-bottom: 1rem; line-height: 1.5;">${workout.scientificBasis}</p>
-                    
-                    <h5 style="color: #6f42c1; margin-bottom: 0.5rem;">🎯 Adaptações Esperadas:</h5>
-                    <ul style="margin-left: 1rem; line-height: 1.6;">
-                        ${workout.adaptations.map(adaptation => `<li>${adaptation}</li>`).join('')}
-                    </ul>
-                    
-                    ${workout.notes ? `
-                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #d1c4e9;">
-                            <strong>📝 Observações:</strong> ${workout.notes}
-                        </div>
-                    ` : ''}
-                </div>
-                
-                <div style="text-align: center; margin-top: 1.5rem;">
-                    <button onclick="exportWorkout()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
-                        📄 Exportar PDF
-                    </button>
-                    <button onclick="shareWorkout()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
-                        📤 Compartilhar
-                    </button>
-                    <button onclick="resetForm()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
-                        🔄 Novo Treino
-                    </button>
-                </div>
-            `;
-            
-            // Finalizar loading e mostrar resultado
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('workout').style.display = 'block';
-            document.getElementById('workout').innerHTML = workoutHTML;
-            document.getElementById('generateBtn').disabled = false;
-            document.getElementById('generateBtn').textContent = '🚀 Gerar Treino Personalizado';
-            
-            // Salvar treino atual
-            currentWorkout = workout;
+            document.getElementById('generateBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
             
             // Scroll para resultado
-            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
         }
         
-        // Funções adicionais
-        function exportWorkout() {
-            if (!currentWorkout) return;
+        async function createAdvancedWorkout(data) {
+            const warmupTime = Math.round(data.duration * 0.15);
+            const mainTime = Math.round(data.duration * 0.75);
+            const cooldownTime = data.duration - warmupTime - mainTime;
             
-            // Simular export (por enquanto)
-            alert('🚧 Funcionalidade de exportação será implementada em breve!\n\nPor enquanto, você pode copiar o texto do treino.');
-        }
-        
-        function shareWorkout() {
-            if (!currentWorkout) return;
-            
-            const shareText = `🤖 Treino gerado pelo SportSync Pro!\n\n${currentWorkout.title}\n⏱️ ${currentWorkout.totalDuration} minutos\n\n💪 Aquecimento: ${currentWorkout.structure.warmup.duration}min\n🎯 Principal: ${currentWorkout.structure.main.duration}min\n🧘 Volta à calma: ${currentWorkout.structure.cooldown.duration}min`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'SportSync Pro - Treino Personalizado',
-                    text: shareText
-                });
-            } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert('✅ Treino copiado para a área de transferência!');
-                });
-            }
-        }
-        
-        function resetForm() {
-            document.getElementById('workoutForm').reset();
-            document.getElementById('result').style.display = 'none';
-            currentWorkout = null;
-            
-            // Scroll para o topo
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        function showError(message) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('workout').innerHTML = `
-                <div style="text-align: center; color: #dc3545;">
-                    <h3>❌ Ops!</h3>
-                    <p>${message}</p>
-                    <button onclick="resetForm()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 1rem; cursor: pointer;">
-                        Tentar Novamente
-                    </button>
-                </div>
-            `;
-            document.getElementById('workout').style.display = 'block';
-            document.getElementById('generateBtn').disabled = false;
-            document.getElementById('generateBtn').textContent = '🚀 Gerar Treino Personalizado';
-        }
-    </script>
+            // Base de conhecimento especializada
+            const workoutDatabase = {
+                corrida: {
+                    'base-aerobica': {
+                        iniciante: {
+                            main: "Corrida contínua em ritmo confortável (Zona 2). Mantenha conversa possível durante todo o treino. Foque na construção da base aeróbica.",
+                            intensity: "65-75% FC Máx",
+                            pace: "Ritmo conversa",
+                           tips: "Respiração nasal nos primeiros 10 minutos, postura ereta, passada eficiente."
+                       },
+                       intermediario: {
+                           main: "Corrida base com variações: 15min Z2 + 20min Z2-Z3 + 15min Z2. Ritmo progressivo controlado.",
+                           intensity: "70-80% FC Máx",
+                           pace: "Ritmo moderado",
+                           tips: "Mantenha cadência entre 170-180 spm. Controle cardíaco constante."
+                       },
+                       avancado: {
+                           main: "Corrida aeróbica com blocos de tempo: 3x12min em limiar aeróbico (Z2 alta), recuperação 3min Z1 entre blocos.",
+                           intensity: "75-85% FC Máx",
+                           pace: "Ritmo de maratona",
+                           tips: "Economia de movimento. Foque na eficiência energética e postura."
+                       }
+                   },
+                   'velocidade': {
+                       iniciante: {
+                           main: "4 x 3min em ritmo ligeiramente desconfortável (Z3-Z4), recuperação 2min trote suave entre tiros.",
+                           intensity: "80-90% FC Máx",
+                           pace: "Ritmo 10K",
+                           tips: "Recuperação completa entre tiros. Qualidade > Quantidade."
+                       },
+                       intermediario: {
+                           main: "6 x 4min em ritmo de 10K (Z4), recuperação 90seg trote leve. Foque na manutenção do ritmo.",
+                           intensity: "85-92% FC Máx",
+                           pace: "Ritmo 10K atual",
+                           tips: "Cadência alta (180+ spm), relaxe ombros, respiração ritmada."
+                       },
+                       avancado: {
+                           main: "8 x 800m em ritmo de 5K (Z5), recuperação 400m trote. Trabalho neuromuscular específico.",
+                           intensity: "90-95% FC Máx",
+                           pace: "Ritmo 5K-3K",
+                           tips: "Explosão na saída, manutenção, relaxamento muscular."
+                       }
+                   },
+                   '21k': {
+                       iniciante: {
+                           main: "Corrida progressiva: 20min Z2 + 15min Z3 + 10min Z2. Simulação de estratégia de prova.",
+                           intensity: "70-85% FC Máx",
+                           pace: "Progressivo",
+                           tips: "Simule hidratação e nutrição da prova. Controle mental."
+                       },
+                       intermediario: {
+                           main: "Tempo run: 25min em ritmo de meia maratona alvo (Z3-Z4). Treino específico da distância.",
+                           intensity: "80-88% FC Máx",
+                           pace: "Ritmo 21K objetivo",
+                           tips: "Concentração mental, respiração controlada, cadência constante."
+                       },
+                       avancado: {
+                           main: "Treino específico: 3x8min em ritmo de prova + 2x4min em ritmo 10K. Simulação competitiva.",
+                           intensity: "85-92% FC Máx",
+                           pace: "Ritmo competição",
+                           tips: "Mentalidade de prova, estratégia de largada e final."
+                       }
+                   }
+               },
+               trail: {
+                   'resistencia': {
+                       iniciante: {
+                           main: "Trail contínuo em terreno variado. Alternar corrida e caminhada rápida nas subidas (power hiking).",
+                           intensity: "65-80% FC Máx",
+                           pace: "Por esforço",
+                           tips: "Adapte-se ao terreno, use bastões se disponível, hidratação constante."
+                       },
+                       intermediario: {
+                           main: "Trail com fartlek natural: acelere nas descidas seguras, mantenha esforço nas subidas, recupere nos planos.",
+                           intensity: "70-85% FC Máx",
+                           pace: "Variado",
+                           tips: "Técnica de descida, passada curta nas subidas, olhar sempre à frente."
+                       },
+                       avancado: {
+                           main: "Trail longo com blocos de intensidade: 4x6min de esforço controlado em subidas, descida técnica ativa.",
+                           intensity: "75-90% FC Máx",
+                           pace: "Por potência",
+                           tips: "Power hiking eficiente, técnica de corrida em descida, nutrição esportiva."
+                       }
+                   },
+                   'ultra': {
+                       iniciante: {
+                           main: "Trail de volume com caminhada estratégica. Alternância run/walk 4:1, adaptação ao terreno técnico.",
+                           intensity: "60-75% FC Máx",
+                           pace: "Conservador",
+                           tips: "Estratégia de hidratação/nutrição, técnica de caminhada, gestão de energia."
+                       },
+                       intermediario: {
+                           main: "Trail de resistência específica: corrida contínua 45min com variações de terreno e elevação.",
+                           intensity: "65-80% FC Máx",
+                           pace: "Esforço controlado",
+                           tips: "Economia energética, adaptação muscular, resistência mental."
+                       },
+                       avancado: {
+                           main: "Simulação ultra: 60min de trail variado, incluindo técnica, subidas longas e gestão nutricional.",
+                           intensity: "70-85% FC Máx",
+                           pace: "Ritmo ultra",
+                           tips: "Estratégia de prova, teste de nutrição, fortalecimento específico."
+                       }
+                   }
+               }
+           };
+           
+           // Selecionar treino específico
+           const specialty = data.specialty;
+           const goal = data.goal;
+           const level = data.experience;
+           
+           let workoutData = workoutDatabase[specialty]?.[goal]?.[level];
+           
+           // Fallback para objetivos não mapeados
+           if (!workoutData) {
+               workoutData = {
+                   main: `Treino específico de ${specialty} focado em ${goal}. Intensidade ${data.intensity} adaptada ao nível ${level}.`,
+                   intensity: getDefaultIntensity(data.intensity),
+                   pace: "Conforme objetivo",
+                   tips: "Adapte conforme suas sensações e experiência no esporte."
+               };
+           }
+           
+           // Gerar aquecimento específico
+           const warmups = {
+               corrida: `Caminhada dinâmica (3min) → Trote leve progressivo (${warmupTime-5}min) → Educativos: skipping baixo, calcitrante, progressões`,
+               trail: `Caminhada ativa com mobilidade (5min) → Trote adaptativo ao terreno (${warmupTime-5}min) → Ativação muscular específica`
+           };
+           
+           const cooldowns = {
+               corrida: `Trote muito leve (${Math.round(cooldownTime*0.6)}min) → Caminhada (${Math.round(cooldownTime*0.4)}min) → Alongamento: panturrilha, quadríceps, isquios, glúteos`,
+               trail: `Caminhada ativa descendente (${Math.round(cooldownTime*0.5)}min) → Alongamento específico + mobilidade articular (${Math.round(cooldownTime*0.5)}min)`
+           };
+           
+           const workout = {
+               id: Date.now(),
+               athlete: data.runnerName,
+               specialty: data.specialty,
+               goal: data.goal,
+               level: data.experience,
+               title: `${specialty === 'corrida' ? '🏃‍♂️ Corrida de Rua' : '🏔️ Trail Running'} - ${getGoalName(data.goal)}`,
+               totalDuration: data.duration,
+               terrain: data.terrain,
+               intensityLevel: data.intensity,
+               createdAt: new Date().toLocaleString('pt-BR'),
+               structure: {
+                   warmup: {
+                       duration: warmupTime,
+                       description: warmups[data.specialty],
+                       intensity: "50-65% FC Máx",
+                       focus: "Preparação corporal e ativação"
+                   },
+                   main: {
+                       duration: mainTime,
+                       description: workoutData.main,
+                       intensity: workoutData.intensity,
+                       pace: workoutData.pace,
+                       tips: workoutData.tips,
+                       focus: getGoalName(data.goal)
+                   },
+                   cooldown: {
+                       duration: cooldownTime,
+                       description: cooldowns[data.specialty],
+                       intensity: "< 60% FC Máx",
+                       focus: "Recuperação e flexibilidade"
+                   }
+               },
+               coachNotes: generateCoachNotes(data),
+               scientificBasis: generateScientificBasis(data.goal, data.specialty),
+               estimatedDistance: estimateDistance(data.duration, data.goal, data.experience),
+               estimatedCalories: Math.round(data.duration * getCalorieRate(data.intensity)),
+               notes: data.notes
+           };
+           
+           return workout;
+       }
+       
+       function getGoalName(goal) {
+           const goals = {
+               'base-aerobica': 'Base Aeróbica',
+               'velocidade': 'Velocidade',
+               'resistencia': 'Resistência',
+               'perda-peso': 'Perda de Peso',
+               '5k': 'Preparação 5K',
+               '10k': 'Preparação 10K',
+               '21k': 'Preparação 21K',
+               '42k': 'Preparação Maratona',
+               'ultra': 'Ultra Trail',
+               'recuperacao': 'Recuperação'
+           };
+           return goals[goal] || goal;
+       }
+       
+       function getDefaultIntensity(level) {
+           const intensities = {
+               'leve': '60-70% FC Máx',
+               'moderada': '70-80% FC Máx',
+               'alta': '80-90% FC Máx',
+               'maxima': '90-95% FC Máx'
+           };
+           return intensities[level] || '70-80% FC Máx';
+       }
+       
+       function getCalorieRate(intensity) {
+           const rates = {
+               'leve': 8,
+               'moderada': 11,
+               'alta': 14,
+               'maxima': 17
+           };
+           return rates[intensity] || 11;
+       }
+       
+       function estimateDistance(duration, goal, experience) {
+           let baseKmH = {
+               'iniciante': 8,
+               'intermediario': 10,
+               'avancado': 12,
+               'elite': 14
+           }[experience] || 10;
+           
+           // Ajustar por objetivo
+           if (goal.includes('velocidade')) baseKmH *= 0.8; // Treinos de velocidade são mais lentos em média
+           if (goal.includes('ultra')) baseKmH *= 0.7; // Ultra é mais conservador
+           if (goal.includes('recuperacao')) baseKmH *= 0.6; // Recuperação é bem leve
+           
+           return ((duration / 60) * baseKmH).toFixed(1);
+       }
+       
+       function generateCoachNotes(data) {
+           const notes = [];
+           
+           // Notas por experiência
+           if (data.experience === 'iniciante') {
+               notes.push("🎯 Foque na progressão gradual e escute sempre seu corpo");
+               notes.push("💧 Hidrate-se bem antes, durante e após o treino");
+           } else if (data.experience === 'avancado' || data.experience === 'elite') {
+               notes.push("📊 Monitore métricas de carga e recuperação");
+               notes.push("🎯 Mantenha consistência técnica mesmo em alta intensidade");
+           }
+           
+           // Notas por especialidade
+           if (data.specialty === 'trail') {
+               notes.push("🏔️ Adapte sempre o ritmo ao terreno - não force em subidas íngremes");
+               notes.push("👀 Mantenha atenção redobrada ao terreno para evitar lesões");
+           } else {
+               notes.push("🏃‍♂️ Mantenha cadência entre 170-180 passos por minuto");
+               notes.push("⚡ Trabalhe economia de movimento - eficiência energética");
+           }
+           
+           // Notas por terreno
+           if (data.terrain === 'trilha') {
+               notes.push("🥾 Use calçado apropriado com boa aderência");
+               notes.push("🧗 Power hiking nas subidas longas (>8% inclinação)");
+           }
+           
+           // Observações personalizadas
+           if (data.notes) {
+               notes.push(`📝 Observação pessoal: ${data.notes}`);
+           }
+           
+           return notes;
+       }
+       
+       function generateScientificBasis(goal, specialty) {
+           const bases = {
+               'base-aerobica': `Desenvolvimento da capacidade aeróbica através do estímulo às adaptações mitocondriais e cardiovasculares. 
+                                Zona 2 maximiza a utilização de ácidos graxos como substrato energético, melhorando a eficiência metabólica 
+                                e aumentando a densidade capilar muscular.`,
+               
+               'velocidade': `Treino anaeróbico desenvolve a potência neuromuscular e melhora a capacidade de tamponamento do lactato. 
+                             Intervalos de alta intensidade estimulam adaptações no sistema fosfato de creatina e glicólise anaeróbica, 
+                             resultando em maior velocidade e economia de corrida.`,
+               
+               'resistencia': `Estímulo prolongado às fibras de contração lenta (Tipo I) e melhora da função cardiovascular central. 
+                              O treinamento contínuo aumenta o volume sistólico cardíaco e melhora a extração de oxigênio pelos músculos ativos.`,
+               
+               'ultra': `Adaptações metabólicas para exercício ultra-endurance: maior oxidação de gorduras, eficiência mitocondrial 
+                        e resistência à fadiga muscular. Desenvolvimento da capacidade de manter intensidade submáxima por períodos prolongados.`
+           };
+           
+           let base = bases[goal] || 'Adaptações fisiológicas específicas ao estímulo de treinamento aplicado.';
+           
+           if (specialty === 'trail') {
+               base += ` O trail running adiciona demandas específicas de coordenação neuromuscular, propriocepção e 
+                        fortalecimento excêntrico devido às variações de terreno e elevação.`;
+           }
+           
+           return base;
+       }
+       
+       function displayWorkout(workout) {
+           const intensityLevel = {
+               'leve': 2,
+               'moderada': 3,
+               'alta': 4,
+               'maxima': 5
+           }[workout.intensityLevel] || 3;
+           
+           const workoutHTML = `
+               <div style="text-align: center; margin-bottom: 2rem;">
+                   <h3 style="color: #333; margin-bottom: 0.5rem; font-size: 1.4rem;">
+                       ${workout.title}
+                   </h3>
+                   <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin: 1rem 0;">
+                       <span style="color: #667eea; font-weight: 600;">
+                           <i class="fas fa-user"></i> ${workout.athlete}
+                       </span>
+                       <span style="color: #667eea; font-weight: 600;">
+                           <i class="fas fa-clock"></i> ${workout.totalDuration} min
+                       </span>
+                       <span style="color: #667eea; font-weight: 600;">
+                           <i class="fas fa-route"></i> ~${workout.estimatedDistance} km
+                       </span>
+                       <span style="color: #667eea; font-weight: 600;">
+                           <i class="fas fa-fire"></i> ~${workout.estimatedCalories} cal
+                       </span>
+                   </div>
+               </div>
+               
+               <div class="workout-section" style="border-left-color: #ffc107;">
+                   <div class="workout-header">
+                       <div class="workout-title">
+                           <i class="fas fa-play-circle" style="color: #ffc107;"></i>
+                           <span>Aquecimento</span>
+                       </div>
+                       <span class="duration-badge" style="background: #ffc107;">${workout.structure.warmup.duration} min</span>
+                   </div>
+                   <div class="workout-content">
+                       <div class="intensity-indicator">
+                           <strong>Intensidade:</strong> ${workout.structure.warmup.intensity}
+                           <div class="intensity-dots">
+                               ${[1,2,3,4,5].map(i => `<div class="dot ${i <= 2 ? 'active' : ''}"></div>`).join('')}
+                           </div>
+                       </div>
+                       <p><strong>Foco:</strong> ${workout.structure.warmup.focus}</p>
+                       <p style="margin-top: 1rem;">${workout.structure.warmup.description}</p>
+                   </div>
+               </div>
+               
+               <div class="workout-section" style="border-left-color: #dc3545;">
+                   <div class="workout-header">
+                       <div class="workout-title">
+                           <i class="fas fa-bolt" style="color: #dc3545;"></i>
+                           <span>Parte Principal</span>
+                       </div>
+                       <span class="duration-badge" style="background: #dc3545;">${workout.structure.main.duration} min</span>
+                   </div>
+                   <div class="workout-content">
+                       <div class="intensity-indicator">
+                           <strong>Intensidade:</strong> ${workout.structure.main.intensity} | <strong>Ritmo:</strong> ${workout.structure.main.pace}
+                           <div class="intensity-dots">
+                               ${[1,2,3,4,5].map(i => `<div class="dot ${i <= intensityLevel ? 'active' : ''}"></div>`).join('')}
+                           </div>
+                       </div>
+                       <p><strong>Foco:</strong> ${workout.structure.main.focus}</p>
+                       <p style="margin-top: 1rem;">${workout.structure.main.description}</p>
+                       
+                       <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                           <strong style="color: #856404;"><i class="fas fa-lightbulb"></i> Dica Técnica:</strong>
+                           <p style="color: #856404; margin-top: 0.5rem;">${workout.structure.main.tips}</p>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="workout-section" style="border-left-color: #28a745;">
+                   <div class="workout-header">
+                       <div class="workout-title">
+                           <i class="fas fa-leaf" style="color: #28a745;"></i>
+                           <span>Volta à Calma</span>
+                       </div>
+                       <span class="duration-badge" style="background: #28a745;">${workout.structure.cooldown.duration} min</span>
+                   </div>
+                   <div class="workout-content">
+                       <div class="intensity-indicator">
+                           <strong>Intensidade:</strong> ${workout.structure.cooldown.intensity}
+                           <div class="intensity-dots">
+                               ${[1,2,3,4,5].map(i => `<div class="dot ${i <= 1 ? 'active' : ''}"></div>`).join('')}
+                           </div>
+                       </div>
+                       <p><strong>Foco:</strong> ${workout.structure.cooldown.focus}</p>
+                       <p style="margin-top: 1rem;">${workout.structure.cooldown.description}</p>
+                   </div>
+               </div>
+               
+               <div class="coach-note">
+                   <h4 style="color: #6f42c1; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+                       <i class="fas fa-user-tie"></i>
+                       Orientações do Bastos Run Coach
+                   </h4>
+                   <ul style="margin-left: 1rem; line-height: 1.8;">
+                       ${workout.coachNotes.map(note => `<li style="margin-bottom: 0.5rem;">${note}</li>`).join('')}
+                   </ul>
+                   
+                   <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #d1c4e9;">
+                       <h5 style="color: #6f42c1; margin-bottom: 0.75rem;"><i class="fas fa-flask"></i> Base Científica:</h5>
+                       <p style="color: #6f42c1; font-size: 0.95rem; line-height: 1.6;">${workout.scientificBasis}</p>
+                   </div>
+                   
+                   <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; text-align: center;">
+                       <small style="color: #667eea;">
+                           <i class="fas fa-calendar"></i> Criado em ${workout.createdAt} | 
+                           <i class="fas fa-mountain"></i> Terreno: ${workout.terrain} |
+                           <i class="fas fa-chart-line"></i> Nível: ${workout.level}
+                       </small>
+                   </div>
+               </div>
+               
+               <div class="action-buttons">
+                   <button class="action-btn btn-save" onclick="saveWorkout()">
+                       <i class="fas fa-bookmark"></i> Salvar Treino
+                   </button>
+                   <button class="action-btn btn-share" onclick="shareWorkout()">
+                       <i class="fas fa-share-alt"></i> Compartilhar
+                   </button>
+                   <button class="action-btn btn-new" onclick="resetForm()">
+                       <i class="fas fa-plus"></i> Novo Treino
+                   </button>
+               </div>
+           `;
+           
+           // Finalizar loading e mostrar resultado
+           document.getElementById('loading').style.display = 'none';
+           document.getElementById('workoutResult').style.display = 'block';
+           document.getElementById('workoutResult').innerHTML = workoutHTML;
+           document.getElementById('generateBtn').disabled = false;
+           document.getElementById('generateBtn').innerHTML = '<i class="fas fa-magic"></i> Gerar Treino Personalizado';
+       }
+       
+       // Funções de gerenciamento de treinos salvos
+       function saveWorkout() {
+           if (!currentWorkout) return;
+           
+           // Verificar se já existe
+           const exists = savedWorkouts.find(w => w.id === currentWorkout.id);
+           if (exists) {
+               alert('✅ Este treino já foi salvo!');
+               return;
+           }
+           
+           savedWorkouts.push(currentWorkout);
+           localStorage.setItem('bastosRunWorkouts', JSON.stringify(savedWorkouts));
+           updateSavedCount();
+           updateStats();
+           
+           // Feedback visual
+           const btn = event.target.closest('.btn-save');
+           const originalText = btn.innerHTML;
+           btn.innerHTML = '<i class="fas fa-check"></i> Salvo!';
+           btn.style.background = '#28a745';
+           
+           setTimeout(() => {
+               btn.innerHTML = originalText;
+               btn.style.background = '#28a745';
+           }, 2000);
+       }
+       
+       function shareWorkout() {
+           if (!currentWorkout) return;
+           
+           const shareText = `🏃‍♂️ Treino gerado pelo Bastos Run Coach!
+           
+${currentWorkout.title}
+👤 ${currentWorkout.athlete}
+⏱️ ${currentWorkout.totalDuration} min | 📍 ~${currentWorkout.estimatedDistance} km
+
+🔥 Aquecimento: ${currentWorkout.structure.warmup.duration}min
+💪 Principal: ${currentWorkout.structure.main.duration}min  
+🧘 Volta à calma: ${currentWorkout.structure.cooldown.duration}min
+
+🎯 ${currentWorkout.structure.main.focus}
+📊 ${currentWorkout.structure.main.intensity}
+
+Criado em: ${currentWorkout.createdAt}
+
+#BastosRunCoach #CorridaDeBrasil #TreinoPersonalizado`;
+           
+           if (navigator.share) {
+               navigator.share({
+                   title: 'Bastos Run Coach - Treino Personalizado',
+                   text: shareText,
+                   url: window.location.href
+               });
+           } else {
+               navigator.clipboard.writeText(shareText).then(() => {
+                   alert('✅ Treino copiado para a área de transferência!');
+               });
+           }
+       }
+       
+       function resetForm() {
+           document.getElementById('workoutForm').reset();
+           document.getElementById('resultCard').style.display = 'none';
+           document.querySelectorAll('.specialty-btn').forEach(btn => btn.classList.remove('active'));
+           selectedSpecialty = '';
+           document.getElementById('specialty').value = '';
+           currentWorkout = null;
+           
+           // Scroll para o topo
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+       
+       function updateSavedCount() {
+           document.getElementById('savedCount').textContent = savedWorkouts.length;
+       }
+       
+       function updateStats() {
+           const totalWorkouts = savedWorkouts.length;
+           const totalDistance = savedWorkouts.reduce((sum, w) => sum + parseFloat(w.estimatedDistance), 0);
+           const totalTime = savedWorkouts.reduce((sum, w) => sum + w.totalDuration, 0);
+           
+           document.getElementById('totalWorkouts').textContent = totalWorkouts;
+           document.getElementById('totalDistance').textContent = totalDistance.toFixed(1);
+           document.getElementById('totalTime').textContent = (totalTime / 60).toFixed(1);
+           
+           // Calcular intensidade média
+           if (totalWorkouts > 0) {
+               const intensityMap = { 'leve': 1, 'moderada': 2, 'alta': 3, 'maxima': 4 };
+               const avgIntensity = savedWorkouts.reduce((sum, w) => sum + (intensityMap[w.intensityLevel] || 2), 0) / totalWorkouts;
+               const intensityLabels = ['', 'Leve', 'Moderada', 'Alta', 'Máxima'];
+               document.getElementById('avgIntensity').textContent = intensityLabels[Math.round(avgIntensity)] || 'Moderada';
+           }
+       }
+       
+       function renderSavedWorkouts() {
+           const container = document.getElementById('savedWorkouts');
+           
+           if (savedWorkouts.length === 0) {
+               container.innerHTML = `
+                   <p style="text-align: center; color: #666; padding: 2rem;">
+                       <i class="fas fa-info-circle"></i>
+                       Nenhum treino salvo ainda. Gere seu primeiro treino!
+                   </p>
+               `;
+               return;
+           }
+           
+           const workoutsHTML = savedWorkouts
+               .sort((a, b) => b.id - a.id) // Mais recentes primeiro
+               .map(workout => `
+                   <div class="workout-item" onclick="loadWorkout(${workout.id})">
+                       <div class="workout-meta">
+                           <span>${workout.createdAt}</span>
+                           <span style="font-weight: 600; color: #667eea;">${workout.totalDuration}min • ~${workout.estimatedDistance}km</span>
+                       </div>
+                       <div class="workout-preview">
+                           ${workout.title}
+                       </div>
+                       <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                           ${workout.athlete} • ${workout.specialty === 'corrida' ? '🏃‍♂️ Corrida' : '🏔️ Trail'} • ${workout.intensityLevel}
+                       </div>
+                   </div>
+               `).join('');
+           
+           container.innerHTML = workoutsHTML;
+       }
+       
+       function loadWorkout(workoutId) {
+           const workout = savedWorkouts.find(w => w.id === workoutId);
+           if (!workout) return;
+           
+           currentWorkout = workout;
+           displayWorkout(workout);
+           
+           // Mudar para a aba do gerador
+           switchTab('generator');
+           
+           // Scroll para o resultado
+           setTimeout(() => {
+               document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+           }, 300);
+       }
+       
+       function showError(message) {
+           document.getElementById('loading').style.display = 'none';
+           document.getElementById('workoutResult').innerHTML = `
+               <div style="text-align: center; color: #dc3545; padding: 2rem;">
+                   <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                   <h3>Ops! Algo deu errado</h3>
+                   <p style="margin: 1rem 0;">${message}</p>
+                   <button onclick="resetForm()" style="background: #dc3545; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                       <i class="fas fa-redo"></i> Tentar Novamente
+                   </button>
+               </div>
+           `;
+           document.getElementById('workoutResult').style.display = 'block';
+           document.getElementById('generateBtn').disabled = false;
+           document.getElementById('generateBtn').innerHTML = '<i class="fas fa-magic"></i> Gerar Treino Personalizado';
+       }
+   </script>
 </body>
 </html>
