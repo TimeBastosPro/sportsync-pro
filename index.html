@@ -358,6 +358,27 @@
             color: white;
         }
         
+        .period-navigation {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .period-navigation:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
         .filters-bar {
             display: flex;
             gap: 12px;
@@ -687,12 +708,21 @@
                     <!-- Seletor de Período -->
                     <div class="card-header">
                         <div class="period-selector">
-                            <button class="period-btn">← 26/05 a 01/06/2025 →</button>
+                            <button class="period-navigation" onclick="previousWeek()">
+                                <i class="fas fa-chevron-left"></i> Semana Anterior
+                            </button>
+                            <span style="font-size: 14px; font-weight: 600; color: #374151; margin: 0 16px;">
+                                26/05 a 01/06/2025
+                            </span>
+                            <button class="period-navigation" onclick="nextWeek()">
+                                Próxima Semana <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="period-btn active">Geral</button>
-                            <button class="period-btn">Sem macrociclo</button>
-                            <button class="period-btn">Em preparação</button>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
+                            <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
+                            <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
+                            <button class="period-btn" onclick="filterByStatus('liberado')">Liberado</button>
                         </div>
                     </div>
 
@@ -725,7 +755,7 @@
                             </tr>
                         </thead>
                         <tbody class="table-body" id="athletesTableBody">
-                            <tr class="athlete-row">
+                            <tr class="athlete-row" data-status="preparacao">
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
@@ -739,7 +769,7 @@
                                 <td>Base Geral</td>
                                 <td>14/27 Choque</td>
                             </tr>
-                            <tr class="athlete-row">
+                            <tr class="athlete-row" data-status="liberado">
                                 <td>
                                     <div class="athlete-info">
                                         <div class="athlete-avatar">A</div>
@@ -747,7 +777,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="status-badge status-active">Ativo</span>
+                                    <span class="status-badge status-active">Liberado</span>
                                 </td>
                                 <td>TIME BASTOS</td>
                                 <td>Específico</td>
@@ -770,6 +800,8 @@
     <script>
         // Estado do sistema
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let currentWeekStart = new Date('2025-05-26'); // Data inicial
+        let currentFilter = 'geral';
 
         // Credenciais
         const trainerCredentials = {
@@ -872,8 +904,13 @@
 
             athleteRows.forEach(row => {
                 const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
+                const athleteStatus = row.dataset.status;
                 
-                if (athleteName.includes(searchTerm)) {
+                // Verifica se corresponde à busca e ao filtro atual
+                const matchesSearch = athleteName.includes(searchTerm);
+                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
+                
+                if (matchesSearch && matchesFilter) {
                     row.classList.remove('hidden');
                     visibleRows++;
                 } else {
@@ -882,11 +919,54 @@
             });
 
             // Mostrar/esconder mensagem de "nenhum resultado"
-            if (visibleRows === 0 && searchTerm !== '') {
+            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
                 noResultsMessage.style.display = 'block';
             } else {
                 noResultsMessage.style.display = 'none';
             }
+        }
+
+        // Função para navegar entre semanas
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            updateWeekDisplay();
+        }
+
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            updateWeekDisplay();
+        }
+
+        function updateWeekDisplay() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            const startStr = formatDate(currentWeekStart);
+            const endStr = formatDate(weekEnd);
+            
+            document.querySelector('.period-selector span').textContent = `${startStr} a ${endStr}`;
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Função para filtrar por status
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Aplicar filtro
+            searchAthletes();
         }
 
         // Limpar busca quando campo estiver vazio
