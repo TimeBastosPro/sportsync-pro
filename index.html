@@ -579,14 +579,19 @@
                 fcMax = Math.round(208 - (0.7 * age));
             }
 
-            // Calcular VO2 máximo
+            // Calcular VO2 máximo (prioridade: testes > fórmulas por FC)
             let vo2Max = vo2MaxInput;
             if (!vo2Max && cooperTest > 0) {
                 // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
                 vo2Max = (cooperTest - 504.9) / 44.73;
             }
+            // Se ainda não temos VO2, estimar pela FC (fórmula de Uth)
+            if (!vo2Max && fcMax > 0 && fcRest > 0) {
+                // Fórmula de Uth: VO2 max = 15.3 × (FCmax / FCrepouso)
+                vo2Max = 15.3 * (fcMax / fcRest);
+            }
 
-            // Calcular VAM
+            // Calcular VAM (prioridade: teste direto > tempo 5km > VO2)
             let vam = vamTest;
             if (!vam && test5km) {
                 // Converter tempo de 5km para VAM
@@ -596,8 +601,14 @@
                 vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
             }
             if (!vam && vo2Max > 0) {
-                // Estimar VAM a partir do VO2 (fórmula de Léger)
+                // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
                 vam = vo2Max * 0.278;
+            }
+            // Se ainda não temos VAM, estimar diretamente pela FC
+            if (!vam && fcMax > 0 && fcRest > 0) {
+                // Estimar VAM pela FC usando relação empírica
+                const fcReserve = fcMax - fcRest;
+                vam = (fcReserve * 0.15) + 8; // Fórmula empírica: VAM baseada na FC de reserva
             }
 
             // Calcular FC Reserva
