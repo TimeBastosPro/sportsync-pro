@@ -1024,7 +1024,8 @@
         }
         
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #d1d5db;
@@ -1034,7 +1035,8 @@
         }
         
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -1451,7 +1453,7 @@
 
                     <!-- Conteúdo das Abas -->
                     <div class="profile-content">
-                        <!-- Aba Dados (REMOVIDO O CARD "DADOS FÍSICOS") -->
+                        <!-- Aba Dados -->
                         <div id="dadosTab" class="tab-content active">
                             <div class="info-grid">
                                 <div class="info-card">
@@ -1504,7 +1506,7 @@
                             </div>
                         </div>
 
-                        <!-- Aba Avaliações (COM CAMPO IMC ADICIONADO) -->
+                        <!-- Aba Avaliações -->
                         <div id="avaliacoesTab" class="tab-content">
                             <!-- Dados Físicos -->
                             <div class="evaluation-section">
@@ -1691,239 +1693,58 @@
                                 </div>
                             </div>
                         </div>
-<!-- Planejamento de Macrociclo com Mesociclos e Microciclos Personalizados -->
-<div id="planejamentoTab" class="tab-content">
-  <div class="evaluation-section">
-    <h3 class="section-title">
-      <i class="fas fa-layer-group"></i> Planejamento de Macrociclo
-    </h3>
 
-    <form id="macroForm">
-      <div class="form-group">
-        <label for="macroNome">Nome do Macrociclo</label>
-        <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
-      </div>
+                        <!-- Planejamento de Macrociclo -->
+                        <div id="planejamentoTab" class="tab-content">
+                            <div class="evaluation-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-layer-group"></i> Planejamento de Macrociclo
+                                </h3>
 
-      <div class="form-group">
-        <label for="macroObs">Objetivo / Observação</label>
-        <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..." style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc;"></textarea>
-      </div>
+                                <form id="macroForm">
+                                    <div class="form-group">
+                                        <label for="macroNome">Nome do Macrociclo</label>
+                                        <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
+                                    </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="inicioMacro">Início</label>
-          <input type="date" id="inicioMacro" required>
-        </div>
-        <div class="form-group">
-          <label for="fimMacro">Término</label>
-          <input type="date" id="fimMacro" required>
-        </div>
-        <div class="form-group">
-          <label for="semanasMacro">Semanas</label>
-          <input type="number" id="semanasMacro" min="1" required>
-        </div>
-      </div>
+                                    <div class="form-group">
+                                        <label for="macroObs">Objetivo / Observação</label>
+                                        <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..."></textarea>
+                                    </div>
 
-      <div class="form-group">
-        <label for="mesociclos">Distribuição dos Mesociclos</label>
-        <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc;"></textarea>
-      </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="inicioMacro">Início</label>
+                                            <input type="date" id="inicioMacro" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="fimMacro">Término</label>
+                                            <input type="date" id="fimMacro" required>
+                                        </div>
+                                    </div>
 
-      <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
-        <i class="fas fa-layer-group"></i> Gerar Estrutura
-      </button>
-    </form>
+                                    <div class="form-group">
+                                        <label for="semanasMacro">Semanas</label>
+                                        <input type="number" id="semanasMacro" min="1" required readonly style="background: #f3f4f6;">
+                                    </div>
 
-    <div id="mesoResultado" style="margin-top: 24px; display: none;">
-      <h4 style="margin-bottom: 12px;">Estrutura do Plano:</h4>
-      <div id="estruturaMesociclos"></div>
-    </div>
-  </div>
-</div>
+                                    <div class="form-group">
+                                        <label for="mesociclos">Distribuição dos Mesociclos</label>
+                                        <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)"></textarea>
+                                    </div>
 
-<script>
-function calcularSemanas() {
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const fim = new Date(document.getElementById('fimMacro').value);
-  if (inicio && fim && fim > inicio) {
-    const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
-    const semanas = Math.ceil(diff / 7);
-    document.getElementById('semanasMacro').value = semanas;
-  }
-}
+                                    <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
+                                        <i class="fas fa-layer-group"></i> Gerar Estrutura
+                                    </button>
+                                </form>
 
-function ajustarFimPorSemanas() {
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const semanas = parseInt(document.getElementById('semanasMacro').value);
-  if (inicio && semanas > 0) {
-    const fim = new Date(inicio);
-    fim.setDate(fim.getDate() + (semanas * 7) - 1);
-    document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
-  }
-}
+                                <div id="mesoResultado" style="margin-top: 24px; display: none;">
+                                    <h4 style="margin-bottom: 12px;">Estrutura do Plano:</h4>
+                                    <div id="estruturaMesociclos"></div>
+                                </div>
+                            </div>
+                        </div>
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('inicioMacro')?.addEventListener('change', calcularSemanas);
-  document.getElementById('fimMacro')?.addEventListener('change', calcularSemanas);
-  document.getElementById('semanasMacro')?.addEventListener('input', ajustarFimPorSemanas);
-});
-
-function gerarPlanejamentoPersonalizado() {
-  const nome = document.getElementById('macroNome').value;
-  const obs = document.getElementById('macroObs').value;
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const semanas = parseInt(document.getElementById('semanasMacro').value);
-  const inputMesos = document.getElementById('mesociclos').value;
-
-  if (!nome || !inicio || semanas <= 0 || !inputMesos.trim()) {
-    alert('Preencha todos os campos corretamente.');
-    return;
-  }
-
-  const estrutura = document.getElementById('estruturaMesociclos');
-  estrutura.innerHTML = '';
-
-  const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
-  const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
-
-  const distribuicao = inputMesos.split(',').map(s => parseInt(s.trim())).filter(n => n > 0);
-  const soma = distribuicao.reduce((a, b) => a + b, 0);
-  if (soma !== semanas) {
-    alert('A soma das semanas dos mesociclos não corresponde ao total informado.');
-    return;
-  }
-
-  let semanaAtual = 1;
-  distribuicao.forEach((semanasNeste, m) => {
-    const inicioSemana = semanaAtual;
-    const fimSemana = semanaAtual + semanasNeste - 1;
-    semanaAtual = fimSemana + 1;
-
-    const bloco = document.createElement('div');
-    bloco.className = 'info-card';
-    bloco.style.marginBottom = '16px';
-
-    const selectMesociclo = document.createElement('select');
-    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value=\"${t}\">${t}</option>`).join('');
-
-    const titulo = document.createElement('h3');
-    titulo.textContent = `Mesociclo ${m + 1} (${inicioSemana} a ${fimSemana})`;
-
-    const labelTipo = document.createElement('label');
-    labelTipo.textContent = 'Tipo: ';
-    labelTipo.style.marginRight = '8px';
-
-    const containerTipo = document.createElement('div');
-    containerTipo.className = 'form-group';
-    containerTipo.style.margin = '12px 0';
-    containerTipo.appendChild(labelTipo);
-    containerTipo.appendChild(selectMesociclo);
-
-    const listaSemanas = document.createElement('ul');
-    listaSemanas.style.paddingLeft = '16px';
-
-    for (let i = 0; i < semanasNeste; i++) {
-      const semana = inicioSemana + i;
-      const li = document.createElement('li');
-      li.style.margin = '6px 0';
-      const selectMicro = document.createElement('select');
-      tiposMicro.forEach(tipo => {
-        const opt = document.createElement('option');
-        opt.value = tipo;
-        opt.textContent = tipo;
-        selectMicro.appendChild(opt);
-      });
-      li.innerHTML = `Semana ${semana}: `;
-      li.appendChild(selectMicro);
-      listaSemanas.appendChild(li);
-    }
-
-    bloco.appendChild(titulo);
-    bloco.appendChild(containerTipo);
-    bloco.appendChild(listaSemanas);
-
-    estrutura.appendChild(bloco);
-  });
-
-  document.getElementById('mesoResultado').style.display = 'block';
-}
-</script>
-function calcularSemanas() {
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const fim = new Date(document.getElementById('fimMacro').value);
-  if (inicio && fim && fim > inicio) {
-    const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
-    const semanas = Math.ceil(diff / 7);
-    document.getElementById('semanasMacro').value = semanas;
-  }
-}
-
-function ajustarFimPorSemanas() {
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const semanas = parseInt(document.getElementById('semanasMacro').value);
-  if (inicio && semanas > 0) {
-    const fim = new Date(inicio);
-    fim.setDate(fim.getDate() + (semanas * 7) - 1);
-    document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
-  }
-}
-
-document.getElementById('inicioMacro').addEventListener('change', calcularSemanas);
-document.getElementById('fimMacro').addEventListener('change', calcularSemanas);
-document.getElementById('semanasMacro').addEventListener('input', ajustarFimPorSemanas);
-
-function gerarMesociclos() {
-  const nome = document.getElementById('macroNome').value;
-  const obs = document.getElementById('macroObs').value;
-  const inicio = new Date(document.getElementById('inicioMacro').value);
-  const semanas = parseInt(document.getElementById('semanasMacro').value);
-
-  if (!nome || !inicio || semanas <= 0) {
-    alert('Preencha corretamente os campos.');
-    return;
-  }
-
-  const estrutura = document.getElementById('estruturaMesociclos');
-  estrutura.innerHTML = '';
-
-  const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competição'];
-  const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
-  const semanasPorMeso = 4;
-  const totalMesos = Math.ceil(semanas / semanasPorMeso);
-
-  for (let m = 0; m < totalMesos; m++) {
-    const inicioSemana = m * semanasPorMeso + 1;
-    const fimSemana = Math.min((m + 1) * semanasPorMeso, semanas);
-
-    const bloco = document.createElement('div');
-    bloco.className = 'info-card';
-    bloco.style.marginBottom = '16px';
-
-    bloco.innerHTML = `
-      <h3>Mesociclo ${m + 1} (${inicioSemana} a ${fimSemana})</h3>
-      <div class="form-group" style="margin: 12px 0;">
-        <label>Tipo:</label>
-        <select style="margin-left: 8px;">
-          ${tiposMesociclo.map(t => `<option value="${t}">${t}</option>`).join('')}
-        </select>
-      </div>
-      <ul style="padding-left: 16px;">
-        ${Array.from({ length: fimSemana - inicioSemana + 1 }, (_, i) => {
-          const semana = inicioSemana + i;
-          return `<li style="margin: 6px 0;">Semana ${semana}: 
-            <select style="margin-left: 8px;">
-              ${tiposMicro.map(t => `<option value="${t}">${t}</option>`).join('')}
-            </select></li>`;
-        }).join('')}
-      </ul>
-    `;
-
-    estrutura.appendChild(bloco);
-  }
-
-  document.getElementById('mesoResultado').style.display = 'block';
-}
-</script>
                         <!-- Aba Planilhas -->
                         <div id="planilhasTab" class="tab-content">
                             <div class="empty-state">
@@ -2038,8 +1859,29 @@ function gerarMesociclos() {
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
             
             // Adicionar listeners para cálculo automático do IMC
-            document.getElementById('height').addEventListener('input', calculateIMC);
-            document.getElementById('weight').addEventListener('input', calculateIMC);
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            if (heightInput) heightInput.addEventListener('input', calculateIMC);
+            if (weightInput) weightInput.addEventListener('input', calculateIMC);
+
+            // Listeners para o planejamento de macrociclo
+            const inicioMacroInput = document.getElementById('inicioMacro');
+            const fimMacroInput = document.getElementById('fimMacro');
+            const semanasMacroInput = document.getElementById('semanasMacro');
+            
+            if (inicioMacroInput) inicioMacroInput.addEventListener('change', calcularSemanas);
+            if (fimMacroInput) fimMacroInput.addEventListener('change', calcularSemanas);
+            if (semanasMacroInput) semanasMacroInput.addEventListener('input', ajustarFimPorSemanas);
+
+            // Listener para busca de atletas
+            const searchInput = document.getElementById('athleteSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    if (this.value === '') {
+                        searchAthletes();
+                    }
+                });
+            }
         });
 
         // Função para calcular IMC automaticamente
@@ -2054,6 +1896,135 @@ function gerarMesociclos() {
                 imcField.value = imc.toFixed(1);
             } else {
                 imcField.value = '';
+            }
+        }
+
+        // Funções para o planejamento de macrociclo
+        function calcularSemanas() {
+            const inicio = new Date(document.getElementById('inicioMacro').value);
+            const fim = new Date(document.getElementById('fimMacro').value);
+            if (inicio && fim && fim > inicio) {
+                const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+                const semanas = Math.ceil(diff / 7);
+                document.getElementById('semanasMacro').value = semanas;
+            } else {
+                document.getElementById('semanasMacro').value = '';
+            }
+        }
+
+        function ajustarFimPorSemanas() {
+            const inicio = new Date(document.getElementById('inicioMacro').value);
+            const semanas = parseInt(document.getElementById('semanasMacro').value);
+            if (inicio && semanas > 0) {
+                const fim = new Date(inicio);
+                fim.setDate(fim.getDate() + (semanas * 7) - 1);
+                document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
+            }
+        }
+
+        function gerarPlanejamentoPersonalizado() {
+            try {
+                const nome = document.getElementById('macroNome').value.trim();
+                const obs = document.getElementById('macroObs').value.trim();
+                const inicio = new Date(document.getElementById('inicioMacro').value);
+                const semanas = parseInt(document.getElementById('semanasMacro').value);
+                const inputMesos = document.getElementById('mesociclos').value.trim();
+
+                if (!nome || !inicio || semanas <= 0 || !inputMesos) {
+                    alert('Preencha todos os campos corretamente.');
+                    return;
+                }
+
+                // Processar distribuição dos mesociclos
+                const distribuicao = inputMesos.split(',').map(s => {
+                    const num = parseInt(s.trim());
+                    if (isNaN(num) || num <= 0) {
+                        throw new Error(`Valor inválido: "${s.trim()}". Use apenas números positivos.`);
+                    }
+                    return num;
+                });
+
+                const soma = distribuicao.reduce((a, b) => a + b, 0);
+                if (soma !== semanas) {
+                    alert(`A soma das semanas dos mesociclos (${soma}) não corresponde ao total informado (${semanas}).`);
+                    return;
+                }
+
+                const estrutura = document.getElementById('estruturaMesociclos');
+                estrutura.innerHTML = '';
+
+                const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
+                const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
+
+                let semanaAtual = 1;
+                distribuicao.forEach((semanasNeste, m) => {
+                    const inicioSemana = semanaAtual;
+                    const fimSemana = semanaAtual + semanasNeste - 1;
+                    semanaAtual = fimSemana + 1;
+
+                    const bloco = document.createElement('div');
+                    bloco.className = 'info-card';
+                    bloco.style.marginBottom = '16px';
+
+                    const selectMesociclo = document.createElement('select');
+                    selectMesociclo.style.marginLeft = '8px';
+                    selectMesociclo.style.padding = '4px 8px';
+                    selectMesociclo.style.borderRadius = '4px';
+                    selectMesociclo.style.border = '1px solid #ccc';
+                    
+                    tiposMesociclo.forEach(tipo => {
+                        const opt = document.createElement('option');
+                        opt.value = tipo;
+                        opt.textContent = tipo;
+                        selectMesociclo.appendChild(opt);
+                    });
+
+                    const titulo = document.createElement('h3');
+                    titulo.textContent = `Mesociclo ${m + 1} (Semanas ${inicioSemana} a ${fimSemana})`;
+                    titulo.style.marginBottom = '12px';
+
+                    const containerTipo = document.createElement('div');
+                    containerTipo.style.margin = '12px 0';
+                    containerTipo.innerHTML = '<label style="margin-right: 8px;">Tipo:</label>';
+                    containerTipo.appendChild(selectMesociclo);
+
+                    const listaSemanas = document.createElement('ul');
+                    listaSemanas.style.paddingLeft = '16px';
+                    listaSemanas.style.marginTop = '12px';
+
+                    for (let i = 0; i < semanasNeste; i++) {
+                        const semana = inicioSemana + i;
+                        const li = document.createElement('li');
+                        li.style.margin = '6px 0';
+                        
+                        const selectMicro = document.createElement('select');
+                        selectMicro.style.marginLeft = '8px';
+                        selectMicro.style.padding = '4px 8px';
+                        selectMicro.style.borderRadius = '4px';
+                        selectMicro.style.border = '1px solid #ccc';
+                        
+                        tiposMicro.forEach(tipo => {
+                            const opt = document.createElement('option');
+                            opt.value = tipo;
+                            opt.textContent = tipo;
+                            selectMicro.appendChild(opt);
+                        });
+                        
+                        li.innerHTML = `Semana ${semana}: `;
+                        li.appendChild(selectMicro);
+                        listaSemanas.appendChild(li);
+                    }
+
+                    bloco.appendChild(titulo);
+                    bloco.appendChild(containerTipo);
+                    bloco.appendChild(listaSemanas);
+                    estrutura.appendChild(bloco);
+                });
+
+                document.getElementById('mesoResultado').style.display = 'block';
+                
+            } catch (error) {
+                alert('Erro: ' + error.message);
             }
         }
 
@@ -2531,9 +2502,11 @@ function gerarMesociclos() {
             if (!vam && test5km) {
                 // Converter tempo de 5km para VAM
                 const [minutes, seconds] = test5km.split(':').map(Number);
-                const totalMinutes = minutes + (seconds / 60);
-                const speed = 5 / (totalMinutes / 60); // km/h
-                vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+                if (minutes && !isNaN(seconds)) {
+                    const totalMinutes = minutes + (seconds / 60);
+                    const speed = 5 / (totalMinutes / 60); // km/h
+                    vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+                }
             }
             if (!vam && vo2Max > 0) {
                 // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
@@ -2657,18 +2630,6 @@ function gerarMesociclos() {
                 `;
             }).join('');
         }
-
-        // Limpar busca quando campo estiver vazio
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('athleteSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    if (this.value === '') {
-                        searchAthletes(); // Isso vai mostrar todos os atletas novamente
-                    }
-                });
-            }
-        });
     </script>
 </body>
 </html>
