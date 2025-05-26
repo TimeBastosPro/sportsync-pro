@@ -1691,7 +1691,7 @@
                                 </div>
                             </div>
                         </div>
-<!-- Planejamento de Macrociclo com Mesociclos e Microciclos Personalizados -->
+<!-- Planejamento de Macrociclo com Mesociclos e Microciclos -->
 <div id="planejamentoTab" class="tab-content">
   <div class="evaluation-section">
     <h3 class="section-title">
@@ -1722,14 +1722,13 @@
           <label for="semanasMacro">Semanas</label>
           <input type="number" id="semanasMacro" min="1" required>
         </div>
+        <div class="form-group">
+          <label for="qtdeMesos">Qtd. de Mesociclos</label>
+          <input type="number" id="qtdeMesos" min="1" required>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="mesociclos">Distribuição dos Mesociclos</label>
-        <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc;"></textarea>
-      </div>
-
-      <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
+      <button type="button" class="btn-primary" onclick="gerarPlanejamentoCompleto()">
         <i class="fas fa-layer-group"></i> Gerar Estrutura
       </button>
     </form>
@@ -1740,7 +1739,7 @@
     </div>
   </div>
 </div>
-
+<!-- SCRIPT: coloque isso ao final do <body> -->
 <script>
 function calcularSemanas() {
   const inicio = new Date(document.getElementById('inicioMacro').value);
@@ -1768,14 +1767,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('semanasMacro')?.addEventListener('input', ajustarFimPorSemanas);
 });
 
-function gerarPlanejamentoPersonalizado() {
+function gerarPlanejamentoCompleto() {
   const nome = document.getElementById('macroNome').value;
   const obs = document.getElementById('macroObs').value;
   const inicio = new Date(document.getElementById('inicioMacro').value);
   const semanas = parseInt(document.getElementById('semanasMacro').value);
-  const inputMesos = document.getElementById('mesociclos').value;
+  const qtdeMesos = parseInt(document.getElementById('qtdeMesos').value);
 
-  if (!nome || !inicio || semanas <= 0 || !inputMesos.trim()) {
+  if (!nome || !inicio || semanas <= 0 || qtdeMesos <= 0) {
     alert('Preencha todos os campos corretamente.');
     return;
   }
@@ -1785,16 +1784,12 @@ function gerarPlanejamentoPersonalizado() {
 
   const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
   const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
-
-  const distribuicao = inputMesos.split(',').map(s => parseInt(s.trim())).filter(n => n > 0);
-  const soma = distribuicao.reduce((a, b) => a + b, 0);
-  if (soma !== semanas) {
-    alert('A soma das semanas dos mesociclos não corresponde ao total informado.');
-    return;
-  }
-
+  const semanasPorMeso = Math.floor(semanas / qtdeMesos);
   let semanaAtual = 1;
-  distribuicao.forEach((semanasNeste, m) => {
+
+  for (let m = 0; m < qtdeMesos; m++) {
+    const restante = semanas - semanaAtual + 1;
+    const semanasNeste = m === qtdeMesos - 1 ? restante : semanasPorMeso;
     const inicioSemana = semanaAtual;
     const fimSemana = semanaAtual + semanasNeste - 1;
     semanaAtual = fimSemana + 1;
@@ -1804,7 +1799,7 @@ function gerarPlanejamentoPersonalizado() {
     bloco.style.marginBottom = '16px';
 
     const selectMesociclo = document.createElement('select');
-    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value=\"${t}\">${t}</option>`).join('');
+    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value="${t}">${t}</option>`).join('');
 
     const titulo = document.createElement('h3');
     titulo.textContent = `Mesociclo ${m + 1} (${inicioSemana} a ${fimSemana})`;
@@ -1843,7 +1838,7 @@ function gerarPlanejamentoPersonalizado() {
     bloco.appendChild(listaSemanas);
 
     estrutura.appendChild(bloco);
-  });
+  }
 
   document.getElementById('mesoResultado').style.display = 'block';
 }
