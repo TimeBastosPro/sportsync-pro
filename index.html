@@ -322,53 +322,35 @@ function loadMicrocycles(period) {
             document.getElementById('periodDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
             document.getElementById('orientationContent').innerHTML = `<p>${period.orientation || 'Nenhuma orientação definida.'}</p>`;
             
+            // Carregar microciclos
+            loadMicrocycles(period);
         }
-// Carregar microciclos
-    loadMicrocycles(period);
-}
 
-function loadMicrocycles(period) {
-    const tbody = document.getElementById('microcyclesTableBody');
-    const startDate = new Date(period.startDate);
-    const endDate = new Date(period.endDate);
-    const totalWeeks = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
-    
-    let microcycles = [];
-    for (let i = 0; i < totalWeeks; i++) {
-        const microStart = new Date(startDate);
-        microStart.setDate(microStart.getDate() + (i * 7));
-        
-        const microEnd = new Date(microStart);
-        microEnd.setDate(microEnd.getDate() + 6);
-        
-        microcycles.push({
-            number: i + 1,
-            type: getMicrocycleType(i + 1, totalWeeks),
-            startDate: microStart,
-            endDate: microEnd,
-            status: getMicrocycleStatus(microStart, microEnd)
-        });
-    }
-    
-    tbody.innerHTML = microcycles.map(micro => `
-        <tr>
-            <td><input type="checkbox" value="${micro.number}"></td>
-            <td>${micro.number}</td>
-            <td><span class="cycle-type-badge type-${micro.type.toLowerCase().replace(' ', '-')}">${micro.type}</span></td>
-            <td>${formatDate(micro.startDate)}</td>
-            <td>${formatDate(micro.endDate)}</td>
-            <td><span class="micro-status ${micro.status.class}">${micro.status.text}</span></td>
-            <td>
-                <button class="action-btn edit" title="Editar microciclo">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn" title="Ver planilha">
-                    <i class="fas fa-file-alt"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-}
+        function loadMicrocycles(period) {
+            const tbody = document.getElementById('microcyclesTableBody');
+            const startDate = new Date(period.startDate);
+            const endDate = new Date(period.endDate);
+            const totalWeeks = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
+            
+            let microcycles = [];
+            for (let i = 0; i < totalWeeks; i++) {
+                const microStart = new Date(startDate);
+                microStart.setDate(microStart.getDate() + (i * 7));
+                
+                const microEnd = new Date(microStart);
+                micro<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bastos Run Coach</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
