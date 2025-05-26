@@ -1804,7 +1804,7 @@ function gerarPlanejamentoPersonalizado() {
     bloco.style.marginBottom = '16px';
 
     const selectMesociclo = document.createElement('select');
-    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value="${t}">${t}</option>`).join('');
+    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value=\"${t}\">${t}</option>`).join('');
 
     const titulo = document.createElement('h3');
     titulo.textContent = `Mesociclo ${m + 1} (${inicioSemana} a ${fimSemana})`;
