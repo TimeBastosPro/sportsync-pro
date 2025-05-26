@@ -2719,61 +2719,82 @@ function saveEditedFields(section) {
             }).join('');
         }
 
+        // Funções de Cálculo de Performance
         function calculatePerformanceData() {
-    const age = parseInt(document.getElementById('age').value) || 0;
-    const gender = document.getElementById('gender').value;
-    const height = parseInt(document.getElementById('height').value) || 0;
-    const weight = parseInt(document.getElementById('weight').value) || 0;
-    const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
-    let fcMax = parseInt(document.getElementById('fcMax').value);
-    const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
-    const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
-    const test5km = document.getElementById('test5km').value;
-    let vo2Max = parseFloat(document.getElementById('vo2Max').value) || 0;
+            // Pegar valores dos inputs
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const gender = document.getElementById('gender').value;
+            const height = parseInt(document.getElementById('height').value) || 0;
+            const weight = parseInt(document.getElementById('weight').value) || 0;
+            const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
+            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+            const test5km = document.getElementById('test5km').value;
+            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
 
-    if (!fcMax && age) {
-        fcMax = Math.round(208 - 0.7 * age);
-    }
+            // Validações básicas
+            if (!age || !gender || !height || !weight) {
+                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+                return;
+            }
 
-    // CALCULO VO2 MAX PRIORIZANDO TESTES
-    if (cooperTest > 0) {
-        vo2Max = (cooperTest - 504.9) / 44.73;
-    } else if (vamTest > 0) {
-        vo2Max = vamTest / 0.278; // fórmula inversa de Léger-Boucher
-    } else if (test5km) {
-        const [min, sec] = test5km.split(':').map(Number);
-        const totalMin = min + (sec / 60);
-        const speed = 5 / (totalMin / 60);
-        vo2Max = speed * 3.5;
-    } else if (!vo2Max && fcRest > 0 && fcMax > 0) {
-        vo2Max = 15.3 * (fcMax / fcRest);
-    }
+            // Para estimativas por FC, precisamos pelo menos FC repouso
+            if (!cooperTest && !vamTest && !test5km && !vo2MaxInput && !fcRest) {
+                alert('Por favor, preencha pelo menos um teste de esforço OU a FC de repouso para estimativas');
+                return;
+            }
 
-    // CALCULO VAM A PARTIR DO VO2 SE NÃO INFORMADO
-    let vam = vamTest;
-    if (!vam && test5km) {
-        const [min, sec] = test5km.split(':').map(Number);
-        const totalMin = min + (sec / 60);
-        const speed = 5 / (totalMin / 60);
-        vam = speed * 1.05;
-    } else if (!vam && vo2Max > 0) {
-        vam = vo2Max * 0.278;
-    }
+            // Calcular FC Máxima se não informada - usando fórmula de Tanaka
+            if (!fcMax) {
+                fcMax = Math.round(208 - (0.7 * age));
+            }
 
-    const fcReserve = fcMax - fcRest;
+            // Calcular VO2 máximo (prioridade: testes > fórmulas por FC)
+            let vo2Max = vo2MaxInput;
+            if (!vo2Max && cooperTest > 0) {
+                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
+                vo2Max = (cooperTest - 504.9) / 44.73;
+            }
+            // Se ainda não temos VO2, estimar pela FC (fórmula de Uth)
+            if (!vo2Max && fcMax > 0 && fcRest > 0) {
+                // Fórmula de Uth: VO2 max = 15.3 × (FCmax / FCrepouso)
+                vo2Max = 15.3 * (fcMax / fcRest);
+            }
 
-    // EXIBIR RESULTADOS
-    document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
-    document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
-    document.getElementById('calculatedFCMax').textContent = fcMax;
-    document.getElementById('calculatedFCReserve').textContent = fcReserve;
+            // Calcular VAM (prioridade: teste direto > tempo 5km > VO2)
+            let vam = vamTest;
+            if (!vam && test5km) {
+                // Converter tempo de 5km para VAM
+                const [minutes, seconds] = test5km.split(':').map(Number);
+                if (minutes && !isNaN(seconds)) {
+                    const totalMinutes = minutes + (seconds / 60);
+                    const speed = 5 / (totalMinutes / 60); // km/h
+                    vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+                }
+            }
+            if (!vam && vo2Max > 0) {
+                // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
+                vam = vo2Max * 0.278;
+            }
+            // Se ainda não temos VAM, estimar diretamente pela FC
+            if (!vam && fcMax > 0 && fcRest > 0) {
+                // Estimar VAM pela FC usando relação empírica
+                const fcReserve = fcMax - fcRest;
+                vam = (fcReserve * 0.15) + 8; // Fórmula empírica: VAM baseada na FC de reserva
+            }
 
-    // ATUALIZAR TABELA DE ZONAS
-    generateTrainingZones(fcMax, fcRest, vam);
-    document.getElementById('performanceResults').style.display = 'block';
-}
-</script>
+            // Calcular FC Reserva
+            const fcReserve = fcMax - fcRest;
 
+            // Mostrar resultados
+            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+            document.getElementById('calculatedFCMax').textContent = fcMax;
+            document.getElementById('calculatedFCReserve').textContent = fcReserve;
+
+            // Gerar tabela de zonas
+            generateTrainingZones(fcMax, fcRest, vam);
 
             // Mostrar seção de resultados
             document.getElementById('performanceResults').style.display = 'block';
