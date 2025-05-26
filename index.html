@@ -1691,7 +1691,7 @@
                                 </div>
                             </div>
                         </div>
-<!-- Planejamento de Macrociclo e Microciclos Estruturado -->
+<!-- Planejamento de Macrociclo com controle flexível de Mesociclos e Microciclos -->
 <div id="planejamentoTab" class="tab-content">
   <div class="evaluation-section">
     <h3 class="section-title">
@@ -1722,9 +1722,13 @@
           <label for="semanasMacro">Semanas</label>
           <input type="number" id="semanasMacro" min="1" required>
         </div>
+        <div class="form-group">
+          <label for="qtdeMesos">Qtd. de Mesociclos</label>
+          <input type="number" id="qtdeMesos" min="1" required>
+        </div>
       </div>
 
-      <button type="button" class="btn-primary" onclick="gerarMesociclos()">
+      <button type="button" class="btn-primary" onclick="gerarPlanejamentoCompleto()">
         <i class="fas fa-layer-group"></i> Gerar Estrutura
       </button>
     </form>
@@ -1735,7 +1739,100 @@
     </div>
   </div>
 </div>
+
 <script>
+function calcularSemanas() {
+  const inicio = new Date(document.getElementById('inicioMacro').value);
+  const fim = new Date(document.getElementById('fimMacro').value);
+  if (inicio && fim && fim > inicio) {
+    const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+    const semanas = Math.ceil(diff / 7);
+    document.getElementById('semanasMacro').value = semanas;
+  }
+}
+
+function ajustarFimPorSemanas() {
+  const inicio = new Date(document.getElementById('inicioMacro').value);
+  const semanas = parseInt(document.getElementById('semanasMacro').value);
+  if (inicio && semanas > 0) {
+    const fim = new Date(inicio);
+    fim.setDate(fim.getDate() + (semanas * 7) - 1);
+    document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
+  }
+}
+
+document.getElementById('inicioMacro').addEventListener('change', calcularSemanas);
+document.getElementById('fimMacro').addEventListener('change', calcularSemanas);
+document.getElementById('semanasMacro').addEventListener('input', ajustarFimPorSemanas);
+
+function gerarPlanejamentoCompleto() {
+  const nome = document.getElementById('macroNome').value;
+  const obs = document.getElementById('macroObs').value;
+  const inicio = new Date(document.getElementById('inicioMacro').value);
+  const semanas = parseInt(document.getElementById('semanasMacro').value);
+  const qtdeMesos = parseInt(document.getElementById('qtdeMesos').value);
+
+  if (!nome || !inicio || semanas <= 0 || qtdeMesos <= 0) {
+    alert('Preencha todos os campos corretamente.');
+    return;
+  }
+
+  const estrutura = document.getElementById('estruturaMesociclos');
+  estrutura.innerHTML = '';
+
+  const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
+  const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
+  const semanasPorMeso = Math.floor(semanas / qtdeMesos);
+  let semanaAtual = 1;
+
+  for (let m = 0; m < qtdeMesos; m++) {
+    const restante = semanas - semanaAtual + 1;
+    const semanasNeste = m === qtdeMesos - 1 ? restante : semanasPorMeso;
+    const inicioSemana = semanaAtual;
+    const fimSemana = semanaAtual + semanasNeste - 1;
+    semanaAtual = fimSemana + 1;
+
+    const bloco = document.createElement('div');
+    bloco.className = 'info-card';
+    bloco.style.marginBottom = '16px';
+
+    const selectMesociclo = document.createElement('select');
+    selectMesociclo.innerHTML = tiposMesociclo.map(t => `<option value="${t}">${t}</option>`).join('');
+
+    const titulo = document.createElement('h3');
+    titulo.textContent = `Mesociclo ${m + 1} (${inicioSemana} a ${fimSemana})`;
+
+    const labelTipo = document.createElement('label');
+    labelTipo.textContent = 'Tipo: ';
+    labelTipo.style.marginRight = '8px';
+
+    const containerTipo = document.createElement('div');
+    containerTipo.className = 'form-group';
+    containerTipo.style.margin = '12px 0';
+    containerTipo.appendChild(labelTipo);
+    containerTipo.appendChild(selectMesociclo);
+
+    const listaSemanas = document.createElement('ul');
+    listaSemanas.style.paddingLeft = '16px';
+
+    for (let i = 0; i < semanasNeste; i++) {
+      const semana = inicioSemana + i;
+      const li = document.createElement('li');
+      li.style.margin = '6px 0';
+      li.innerHTML = `Semana ${semana}: <select>${tiposMicro.map(t => `<option value="${t}">${t}</option>`).join('')}</select>`;
+      listaSemanas.appendChild(li);
+    }
+
+    bloco.appendChild(titulo);
+    bloco.appendChild(containerTipo);
+    bloco.appendChild(listaSemanas);
+
+    estrutura.appendChild(bloco);
+  }
+
+  document.getElementById('mesoResultado').style.display = 'block';
+}
+</script>
 function calcularSemanas() {
   const inicio = new Date(document.getElementById('inicioMacro').value);
   const fim = new Date(document.getElementById('fimMacro').value);
