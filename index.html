@@ -1691,7 +1691,7 @@
                                 </div>
                             </div>
                         </div>
-<!-- Planejamento de Macrociclo com sincronização de semanas -->
+<!-- Planejamento de Macrociclo com seleção de tipo de mesociclo e gráfico -->
 <div id="planejamentoTab" class="tab-content">
     <div class="evaluation-section">
         <h3 class="section-title">
@@ -1733,9 +1733,12 @@
             <h4 style="margin-bottom: 12px;">Mesociclos Gerados:</h4>
             <ul id="listaMesos" style="list-style: disc; padding-left: 20px;"></ul>
         </div>
+
+        <canvas id="graficoPlanejamento" width="400" height="200" style="margin-top: 40px;"></canvas>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function calcularSemanas() {
     const inicio = new Date(document.getElementById('inicioMacro').value);
@@ -1773,23 +1776,79 @@ function gerarMesociclos() {
         return;
     }
 
+    const tipos = ['Adaptativa', 'Choque', 'Regenerativa', 'Pré-competitiva'];
+    const volumes = [], intensidades = [];
     const lista = document.getElementById('listaMesos');
     lista.innerHTML = '';
 
     for (let i = 1; i <= semanas; i++) {
+        const tipo = tipos[i % tipos.length];
         const li = document.createElement('li');
-        li.textContent = `Semana ${i} - Tipo: (definir posteriormente)`;
+        const select = document.createElement('select');
+        select.innerHTML = tipos.map(t => `<option value="${t}" ${t === tipo ? 'selected' : ''}>${t}</option>`).join('');
+        select.onchange = updateChart;
+
+        const span = document.createElement('span');
+        span.textContent = `Semana ${i} - Tipo: `;
+
+        li.appendChild(span);
+        li.appendChild(select);
         lista.appendChild(li);
+
+        volumes.push(50 + i * 5);
+        intensidades.push(3 + (i % 4));
     }
 
     document.getElementById('mesoResultado').style.display = 'block';
-    console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
+    gerarGrafico(volumes, intensidades);
+}
+
+function gerarGrafico(volumes, intensidades) {
+    const ctx = document.getElementById('graficoPlanejamento').getContext('2d');
+    if (window.planejamentoChart) window.planejamentoChart.destroy();
+    const semanas = Array.from({ length: volumes.length }, (_, i) => `S${i + 1}`);
+
+    window.planejamentoChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: semanas,
+            datasets: [
+                {
+                    label: 'Volume (km)',
+                    data: volumes,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.3
+                },
+                {
+                    label: 'Intensidade (escala 1-5)',
+                    data: intensidades,
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Distribuição de Volume e Intensidade por Semana'
+                }
+            }
+        }
+    });
+}
+
+function updateChart() {
+    console.log('Tipo de semana alterado');
 }
 </script>
-
-                          </div>
-                        </div>
-
                         <!-- Aba Planilhas -->
                         <div id="planilhasTab" class="tab-content">
                             <div class="empty-state">
