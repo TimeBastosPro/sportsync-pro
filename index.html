@@ -1691,7 +1691,7 @@
                                 </div>
                             </div>
                         </div>
-                            <!-- Planejamento de Macrociclo - Inclusão na aba Planejamento -->
+<!-- Planejamento de Macrociclo com sincronização de semanas -->
 <div id="planejamentoTab" class="tab-content">
     <div class="evaluation-section">
         <h3 class="section-title">
@@ -1718,6 +1718,10 @@
                     <label for="fimMacro">Término</label>
                     <input type="date" id="fimMacro" required>
                 </div>
+                <div class="form-group">
+                    <label for="semanasMacro">Semanas</label>
+                    <input type="number" id="semanasMacro" min="1" required>
+                </div>
             </div>
 
             <button type="button" class="btn-primary" onclick="gerarMesociclos()">
@@ -1731,33 +1735,58 @@
         </div>
     </div>
 </div>
-<script>
-    function gerarMesociclos() {
-          const nome = document.getElementById('macroNome').value;
-          const obs = document.getElementById('macroObs').value;
-          const inicio = new Date(document.getElementById('inicioMacro').value);
-          const fim = new Date(document.getElementById('fimMacro').value);
 
-    if (!nome || !inicio || !fim || fim <= inicio) {
-        alert('Preencha corretamente as datas e o nome do macrociclo.');
+<script>
+function calcularSemanas() {
+    const inicio = new Date(document.getElementById('inicioMacro').value);
+    const fim = new Date(document.getElementById('fimMacro').value);
+    if (inicio && fim && fim > inicio) {
+        const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+        const semanas = Math.ceil(diff / 7);
+        document.getElementById('semanasMacro').value = semanas;
+    }
+}
+
+function ajustarFimPorSemanas() {
+    const inicio = new Date(document.getElementById('inicioMacro').value);
+    const semanas = parseInt(document.getElementById('semanasMacro').value);
+    if (inicio && semanas > 0) {
+        const fim = new Date(inicio);
+        fim.setDate(fim.getDate() + (semanas * 7) - 1);
+        document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
+    }
+}
+
+document.getElementById('inicioMacro').addEventListener('change', calcularSemanas);
+document.getElementById('fimMacro').addEventListener('change', calcularSemanas);
+document.getElementById('semanasMacro').addEventListener('input', ajustarFimPorSemanas);
+
+function gerarMesociclos() {
+    const nome = document.getElementById('macroNome').value;
+    const obs = document.getElementById('macroObs').value;
+    const inicio = new Date(document.getElementById('inicioMacro').value);
+    const fim = new Date(document.getElementById('fimMacro').value);
+    const semanas = parseInt(document.getElementById('semanasMacro').value);
+
+    if (!nome || !inicio || !fim || semanas <= 0 || fim <= inicio) {
+        alert('Preencha corretamente as datas, nome e semanas do macrociclo.');
         return;
     }
 
-        const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
-        const semanas = Math.ceil(diff / 7);
-        const lista = document.getElementById('listaMesos');
-        lista.innerHTML = '';
+    const lista = document.getElementById('listaMesos');
+    lista.innerHTML = '';
 
-        for (let i = 1; i <= semanas; i++) {
+    for (let i = 1; i <= semanas; i++) {
         const li = document.createElement('li');
         li.textContent = `Semana ${i} - Tipo: (definir posteriormente)`;
         lista.appendChild(li);
     }
 
-       document.getElementById('mesoResultado').style.display = 'block';
-       console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
+    document.getElementById('mesoResultado').style.display = 'block';
+    console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
 }
 </script>
+
                           </div>
                         </div>
 
