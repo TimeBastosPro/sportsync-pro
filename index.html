@@ -1691,7 +1691,7 @@
                                 </div>
                             </div>
                         </div>
-<!-- Planejamento de Macrociclo com controle flexível de Mesociclos e Microciclos -->
+<!-- Planejamento de Macrociclo com Mesociclos e Microciclos -->
 <div id="planejamentoTab" class="tab-content">
   <div class="evaluation-section">
     <h3 class="section-title">
@@ -1739,6 +1739,8 @@
     </div>
   </div>
 </div>
+<!-- SCRIPT: coloque isso ao final do <body> -->
+<script>
 function calcularSemanas() {
   const inicio = new Date(document.getElementById('inicioMacro').value);
   const fim = new Date(document.getElementById('fimMacro').value);
@@ -1759,9 +1761,11 @@ function ajustarFimPorSemanas() {
   }
 }
 
-document.getElementById('inicioMacro').addEventListener('change', calcularSemanas);
-document.getElementById('fimMacro').addEventListener('change', calcularSemanas);
-document.getElementById('semanasMacro').addEventListener('input', ajustarFimPorSemanas);
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('inicioMacro')?.addEventListener('change', calcularSemanas);
+  document.getElementById('fimMacro')?.addEventListener('change', calcularSemanas);
+  document.getElementById('semanasMacro')?.addEventListener('input', ajustarFimPorSemanas);
+});
 
 function gerarPlanejamentoCompleto() {
   const nome = document.getElementById('macroNome').value;
@@ -1817,7 +1821,15 @@ function gerarPlanejamentoCompleto() {
       const semana = inicioSemana + i;
       const li = document.createElement('li');
       li.style.margin = '6px 0';
-      li.innerHTML = `Semana ${semana}: <select>${tiposMicro.map(t => `<option value="${t}">${t}</option>`).join('')}</select>`;
+      const selectMicro = document.createElement('select');
+      tiposMicro.forEach(tipo => {
+        const opt = document.createElement('option');
+        opt.value = tipo;
+        opt.textContent = tipo;
+        selectMicro.appendChild(opt);
+      });
+      li.innerHTML = `Semana ${semana}: `;
+      li.appendChild(selectMicro);
       listaSemanas.appendChild(li);
     }
 
