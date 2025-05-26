@@ -1451,76 +1451,136 @@
                         </button>
                     </div>
 
-                    <!-- Conteúdo das Abas -->
-                    <div class="profile-content">
-                        <!-- Aba Dados -->
-                        <div id="dadosTab" class="tab-content active">
-                            <div class="info-grid">
-                                <div class="info-card">
-                                    <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Nome Completo:</span>
-                                        <span class="info-value" id="fullName">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Data de Nascimento:</span>
-                                        <span class="info-value">15/03/1985</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Idade:</span>
-                                        <span class="info-value">40 anos</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">E-mail:</span>
-                                        <span class="info-value">atleta@email.com</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Telefone:</span>
-                                        <span class="info-value">(11) 99999-9999</span>
-                                    </div>
-                                </div>
+<!-- Substituir esse trecho no seu código original dentro da aba 'dadosTab' -->
+<div id="dadosTab" class="tab-content active">
+    <div class="info-grid">
+        <!-- Informacoes Pessoais -->
+        <div class="info-card">
+            <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
 
-                                <div class="info-card">
-                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
-                                    <div class="info-item">
-                                        <span class="info-label">Grupo:</span>
-                                        <span class="info-value" id="athleteGroup">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Nível do Atleta:</span>
-                                        <span class="info-value" id="athleteLevel">A definir</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Tempo de Treino:</span>
-                                        <span class="info-value">2 anos</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Objetivo Principal:</span>
-                                        <span class="info-value" id="mainObjective">-</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Prova Alvo:</span>
-                                        <span class="info-value" id="targetRace">-</span>
-                                    </div>
-                                </div>
+            <div class="info-item">
+                <span class="info-label">Nome Completo:</span>
+                <span class="info-value" id="fullName">-</span>
+                <input type="text" class="edit-field" id="editFullName" style="display: none;" />
+            </div>
 
-                                <div class="info-card">
-                                    <h3><i class="fas fa-trophy"></i> Melhores Resultados</h3>
-                                    <div style="margin-bottom: 12px;">
-                                        <button class="btn-primary" onclick="addBestResult()" style="padding: 6px 12px; font-size: 12px;">
-                                            <i class="fas fa-plus"></i> Adicionar Resultado
-                                        </button>
-                                    </div>
-                                    <div id="bestResultsList">
-                                        <!-- Resultados serão listados aqui -->
-                                        <div class="empty-state" style="padding: 20px;">
-                                            <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
-                                            <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="info-item">
+                <span class="info-label">Data de Nascimento:</span>
+                <span class="info-value">15/03/1985</span>
+                <input type="text" class="edit-field" id="editBirth" value="15/03/1985" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Idade:</span>
+                <span class="info-value">40 anos</span>
+                <input type="text" class="edit-field" id="editAge" value="40 anos" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">E-mail:</span>
+                <span class="info-value">atleta@email.com</span>
+                <input type="email" class="edit-field" id="editEmail" value="atleta@email.com" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Telefone:</span>
+                <span class="info-value">(11) 99999-9999</span>
+                <input type="text" class="edit-field" id="editPhone" value="(11) 99999-9999" style="display: none;" />
+            </div>
+
+            <button class="btn-secondary" onclick="toggleEditFields('pessoais')" id="editDadosBtn">Editar Dados</button>
+            <button class="btn-primary" onclick="saveEditedFields('pessoais')" id="saveDadosBtn" style="display:none;">Salvar</button>
+        </div>
+
+        <!-- Dados Esportivos -->
+        <div class="info-card">
+            <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
+
+            <div class="info-item">
+                <span class="info-label">Grupo:</span>
+                <span class="info-value" id="athleteGroup">-</span>
+                <input type="text" class="edit-field" id="editGroup" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Nível do Atleta:</span>
+                <span class="info-value" id="athleteLevel">A definir</span>
+                <input type="text" class="edit-field" id="editLevel" value="A definir" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Tempo de Treino:</span>
+                <span class="info-value">2 anos</span>
+                <input type="text" class="edit-field" id="editExperience" value="2 anos" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Objetivo Principal:</span>
+                <span class="info-value" id="mainObjective">-</span>
+                <input type="text" class="edit-field" id="editGoal" style="display: none;" />
+            </div>
+
+            <div class="info-item">
+                <span class="info-label">Prova Alvo:</span>
+                <span class="info-value" id="targetRace">-</span>
+                <input type="text" class="edit-field" id="editTargetRace" style="display: none;" />
+            </div>
+
+            <button class="btn-secondary" onclick="toggleEditFields('pessoais')" id="editEsportivosBtn">Editar Dados</button>
+            <button class="btn-primary" onclick="saveEditedFields('pessoais')" id="saveEsportivosBtn" style="display:none;">Salvar</button>
+        </div>
+
+        <!-- Melhores Resultados -->
+        <div class="info-card">
+            <h3><i class="fas fa-trophy"></i> Melhores Resultados</h3>
+            <div style="margin-bottom: 12px;">
+                <button class="btn-primary" onclick="addBestResult()" style="padding: 6px 12px; font-size: 12px;">
+                    <i class="fas fa-plus"></i> Adicionar Resultado
+                </button>
+            </div>
+            <div id="bestResultsList">
+                <!-- Resultados serão listados aqui -->
+                <div class="empty-state" style="padding: 20px;">
+                    <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                    <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEditFields(section) {
+    const inputs = document.querySelectorAll(`#dadosTab .edit-field`);
+    const spans = document.querySelectorAll(`#dadosTab .info-value`);
+
+    inputs.forEach(input => input.style.display = 'inline-block');
+    spans.forEach(span => span.style.display = 'none');
+
+    document.getElementById('editDadosBtn').style.display = 'none';
+    document.getElementById('saveDadosBtn').style.display = 'inline-block';
+    document.getElementById('editEsportivosBtn').style.display = 'none';
+    document.getElementById('saveEsportivosBtn').style.display = 'inline-block';
+}
+
+function saveEditedFields(section) {
+    const inputs = document.querySelectorAll(`#dadosTab .edit-field`);
+    const spans = document.querySelectorAll(`#dadosTab .info-value`);
+
+    inputs.forEach((input, i) => {
+        spans[i].textContent = input.value;
+        input.style.display = 'none';
+        spans[i].style.display = 'inline-block';
+    });
+
+    document.getElementById('editDadosBtn').style.display = 'inline-block';
+    document.getElementById('saveDadosBtn').style.display = 'none';
+    document.getElementById('editEsportivosBtn').style.display = 'inline-block';
+    document.getElementById('saveEsportivosBtn').style.display = 'none';
+
+    alert('Dados atualizados com sucesso!');
+}
+</script>
 
                         <!-- Aba Avaliações -->
                         <div id="avaliacoesTab" class="tab-content">
