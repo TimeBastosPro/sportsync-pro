@@ -305,7 +305,6 @@
         .stat-icon.red { background: #ef4444; }
         .stat-icon.yellow { background: #f59e0b; }
         .stat-icon.green { background: #10b981; }
-        .stat-icon.purple { background: #8b5cf6; }
         
         .stat-title {
             color: #374151;
@@ -332,7 +331,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
             overflow: hidden;
-            margin-bottom: 24px;
+            margin-bottom: 24px; /* Added margin */
         }
         
         .card-header {
@@ -791,76 +790,126 @@
             border: 1px solid #d1d5db;
             border-radius: 4px;
         }
-
-        /* NOVA SEÇÃO - TREINOS */
-        .workout-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .workout-calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .day-card {
-            background: white;
+        
+        /* EVENTOS */
+        .event-card {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: white;
             transition: all 0.2s ease;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
         }
-
-        .day-card:hover {
+        
+        .event-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border-color: #3b82f6;
         }
-
-        .day-card.has-workout {
-            background: #eff6ff;
-            border-color: #3b82f6;
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
-
-        .day-card.today {
-            background: #f0fdf4;
-            border-color: #10b981;
-        }
-
-        .day-header {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .day-date {
+        
+        .event-title {
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 600;
             color: #1f2937;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
-
-        .workout-preview {
-            font-size: 11px;
-            color: #6b7280;
-            text-align: left;
-            flex-grow: 1;
-        }
-
-        .workout-preview.has-content {
+        
+        .event-date {
+            font-size: 14px;
             color: #3b82f6;
             font-weight: 500;
         }
-
-        /* MODAL TREINO */
+        
+        .event-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .event-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .event-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        .event-btn.edit:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .event-btn.delete:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .event-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .event-detail-item i {
+            color: #3b82f6;
+            width: 16px;
+        }
+        
+        .event-participants {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .participants-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .participants-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .participant-badge {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -884,7 +933,7 @@
             border-radius: 12px;
             padding: 24px;
             width: 90%;
-            max-width: 700px;
+            max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
             animation: slideIn 0.3s ease;
@@ -929,165 +978,58 @@
             gap: 16px;
             margin-bottom: 16px;
         }
-
-        .workout-type-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+        
+        .athletes-selection {
+            margin-top: 24px;
         }
-
-        .workout-type-btn {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .workout-type-btn:hover {
-            background: #f3f4f6;
-            border-color: #3b82f6;
-        }
-
-        .workout-type-btn.active {
-            background: #eff6ff;
-            border-color: #3b82f6;
-            color: #3b82f6;
-        }
-
-        .workout-type-btn i {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .workout-type-btn span {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* ZONA DE TREINO */
-        .zone-selector {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .zone-btn {
-            padding: 8px;
-            border: 2px solid;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: center;
+        
+        .athletes-selection h3 {
+            font-size: 16px;
             font-weight: 600;
-            font-size: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .zone-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .zone-btn.zone-1 { border-color: #10b981; color: #10b981; }
-        .zone-btn.zone-1.active { background: #10b981; color: white; }
-        .zone-btn.zone-2 { border-color: #3b82f6; color: #3b82f6; }
-        .zone-btn.zone-2.active { background: #3b82f6; color: white; }
-        .zone-btn.zone-3 { border-color: #f59e0b; color: #f59e0b; }
-        .zone-btn.zone-3.active { background: #f59e0b; color: white; }
-        .zone-btn.zone-4 { border-color: #ef4444; color: #ef4444; }
-        .zone-btn.zone-4.active { background: #ef4444; color: white; }
-        .zone-btn.zone-5 { border-color: #8b5cf6; color: #8b5cf6; }
-        .zone-btn.zone-5.active { background: #8b5cf6; color: white; }
-
-        /* RELATÓRIOS - NOVA SEÇÃO */
-        .reports-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .report-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-        }
-
-        .report-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .report-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .report-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: white;
-        }
-
-        .report-icon.blue { background: linear-gradient(135deg, #3b82f6, #1e40af); }
-        .report-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
-        .report-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .report-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
-
-        .report-title {
-            font-size: 18px;
-            font-weight: 700;
             color: #1f2937;
-            margin-bottom: 4px;
+            margin-bottom: 12px;
         }
-
-        .report-description {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .report-actions {
-            margin-top: 20px;
+        
+        .athlete-checkbox {
             display: flex;
+            align-items: center;
             gap: 8px;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #e5e7eb;
-            color: #374151;
-            padding: 8px 16px;
+            padding: 8px;
             border-radius: 6px;
-            font-size: 12px;
+            margin-bottom: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .athlete-checkbox:hover {
+            background: #f9fafb;
+        }
+        
+        .athlete-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .add-event-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.2s ease;
         }
-
-        .btn-outline:hover {
-            background: #f9fafb;
-            border-color: #3b82f6;
-            color: #3b82f6;
+        
+        .add-event-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
-
-        /* AVALIAÇÕES APRIMORADAS */
+        
+        /* AVALIAÇÕES */
         .evaluation-section {
             margin-bottom: 32px;
         }
@@ -1237,174 +1179,6 @@
             margin-top: 12px;
         }
 
-        /* EVENTOS */
-        .event-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            background: white;
-            transition: all 0.2s ease;
-        }
-        
-        .event-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #3b82f6;
-        }
-        
-        .event-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .event-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-        
-        .event-date {
-            font-size: 14px;
-            color: #3b82f6;
-            font-weight: 500;
-        }
-        
-        .event-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .event-btn {
-            background: none;
-            border: 1px solid #d1d5db;
-            color: #6b7280;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s ease;
-        }
-        
-        .event-btn:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-        
-        .event-btn.edit:hover {
-            color: #3b82f6;
-            border-color: #3b82f6;
-        }
-        
-        .event-btn.delete:hover {
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-        
-        .event-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .event-detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #6b7280;
-        }
-        
-        .event-detail-item i {
-            color: #3b82f6;
-            width: 16px;
-        }
-        
-        .event-participants {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #f3f4f6;
-        }
-        
-        .participants-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        
-        .participants-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        
-        .participant-badge {
-            background: #eff6ff;
-            color: #1e40af;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .athletes-selection {
-            margin-top: 24px;
-        }
-        
-        .athletes-selection h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 12px;
-        }
-        
-        .athlete-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: background 0.2s ease;
-        }
-        
-        .athlete-checkbox:hover {
-            background: #f9fafb;
-        }
-        
-        .athlete-checkbox input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        
-        .add-event-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-        
-        .add-event-btn:hover {
-            background: #059669;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
         /* PLANEJAMENTOS */
         .planning-card {
             border: 1px solid #e5e7eb;
@@ -1448,39 +1222,6 @@
             gap: 8px;
         }
 
-        /* NOTIFICAÇÕES */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-            display: none;
-            animation: slideInRight 0.3s ease;
-        }
-
-        .notification.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .notification.error {
-            border-left: 4px solid #ef4444;
-        }
-
-        .notification.warning {
-            border-left: 4px solid #f59e0b;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* RESPONSIVO */
         @media (max-width: 768px) {
             .nav {
                 flex-direction: column;
@@ -1522,22 +1263,6 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
-
-            .workout-calendar {
-                grid-template-columns: 1fr;
-            }
-
-            .workout-type-selector {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .zone-selector {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .reports-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -1550,6 +1275,226 @@
                     <i class="fas fa-user-tie"></i>
                     <h1>Bastos Run Coach</h1>
                 </div>
+                <div class="role-badge">TREINADOR</div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Entrar como Treinador
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <strong>Credenciais de Teste:</strong><br>
+                E-mail: treinador@bastos.com<br>
+                Senha: 123456
+            </div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appContainer" class="app-container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Bastos Run Coach</span>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" data-page="dashboard">
+                        <i class="fas fa-chart-bar"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-page="athletes">
+                        <i class="fas fa-users"></i> Meus Atletas
+                    </button>
+                    <button class="nav-btn" data-page="planning">
+                        <i class="fas fa-calendar-alt"></i> Planejamentos
+                    </button>
+                    <div class="user-info">
+                        <i class="fas fa-user"></i>
+                        <span id="trainerName">Treinador</span>
+                        <button class="logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- DASHBOARD -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-title">Atletas Ativos</div>
+                        </div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-description">Total de atletas cadastrados</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-title">Sem Planejamento</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Atletas sem plano de treino</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon yellow">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-title">Planilhas Vazias</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Planilhas sem treinos</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="stat-title">Sem Feedback</div>
+                        </div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-description">Treinos aguardando feedback</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Próximos Eventos</h2>
+                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
+                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
+                            <i class="fas fa-plus"></i> Cadastrar Evento
+                        </button>
+                    </div>
+                    <div id="eventsContent">
+                        <!-- Eventos serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEUS ATLETAS -->
+            <div id="athletesPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Meus Atletas</h1>
+                </div>
+
+                <div class="content-card">
+                    <!-- Seletor de Período -->
+                    <div class="card-header">
+                        <div class="period-selector">
+                            <button class="period-navigation" onclick="previousWeek()">
+                                <i class="fas fa-chevron-left"></i> Semana Anterior
+                            </button>
+                            <div class="current-period" id="currentPeriod">
+                                26/05 a 01/06/2025
+                            </div>
+                            <button class="period-navigation" onclick="nextWeek()">
+                                Próxima Semana <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
+                            <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
+                            <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
+                            <button class="period-btn" onclick="filterByStatus('liberado')">Liberado</button>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Busca -->
+                    <div class="filters-bar">
+                        <div class="search-group">
+                            <i class="fas fa-search" style="color: #6b7280;"></i>
+                            <input 
+                                type="text" 
+                                id="athleteSearch" 
+                                class="search-input" 
+                                placeholder="Buscar atleta por nome..."
+                                onkeyup="searchAthletes()"
+                            >
+                        </div>
+                        <button class="btn-success">
+                            <i class="fas fa-unlock"></i> Liberar
+                        </button>
+                    </div>
+
+                    <!-- Tabela de Atletas -->
+                    <table class="athletes-table">
+                        <thead class="table-header">
+                            <tr>
+                                <th>Atleta</th>
+                                <th>Situação</th>
+                                <th>Grupo</th>
+                                <th>Mesociclo</th>
+                                <th>Microciclo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="athletesTableBody">
+                            <tr class="athlete-row" data-status="preparacao">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adao-oliveira')">Adão Aparecido de Oliveira</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-preparation">Em preparação</span>
+                                </td>
+                                <td>Projeto Corra</td>
+                                <td>Base Geral</td>
+                                <td>14/27 Choque</td>
+                            </tr>
+                            <tr class="athlete-row" data-status="liberado">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name" onclick="viewAthleteProfile('adriana-freitas')">Adriana Duque de Freitas</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active">Liberado</span>
+                                </td>
+                                <td>TIME BASTOS</td>
+                                <td>Específico</td>
+                                <td>22/25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Mensagem quando não há resultados -->
+                    <div id="noResultsMessage" class="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>Nenhum atleta encontrado</h3>
+                        <p>Tente buscar com um termo diferente</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- PERFIL DO ATLETA -->
             <div id="athleteProfilePage" class="page">
@@ -1575,7 +1520,6 @@
                         <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">Avaliações</button>
                         <button class="profile-tab" onclick="switchProfileTab('eventos')">Eventos</button>
                         <button class="profile-tab" onclick="switchProfileTab('planejamentoAtleta')">Planejamento</button>
-                        <button class="profile-tab" onclick="switchProfileTab('historico')">Histórico</button>
                     </div>
 
                     <!-- Conteúdo das Abas -->
@@ -1618,31 +1562,31 @@
                                         <span class="info-value" id="athleteGroup">-</span>
                                         <input type="text" class="edit-field" id="editGroup" style="display: none;" />
                                     </div>
+
                                     <div class="info-item">
                                         <span class="info-label">Nível do Atleta:</span>
                                         <span class="info-value" id="athleteLevel">A definir</span>
-                                        <select class="edit-field" id="editLevel" style="display: none;">
-                                            <option value="Iniciante">Iniciante</option>
-                                            <option value="Intermediário">Intermediário</option>
-                                            <option value="Avançado">Avançado</option>
-                                            <option value="Elite">Elite</option>
-                                        </select>
+                                        <input type="text" class="edit-field" id="editLevel" value="A definir" style="display: none;" />
                                     </div>
+
                                     <div class="info-item">
                                         <span class="info-label">Tempo de Treino:</span>
-                                        <span class="info-value" id="athleteExperience">2 anos</span>
-                                        <input type="text" class="edit-field" id="editExperience" style="display: none;" />
+                                        <span class="info-value">2 anos</span>
+                                        <input type="text" class="edit-field" id="editExperience" value="2 anos" style="display: none;" />
                                     </div>
+
                                     <div class="info-item">
                                         <span class="info-label">Objetivo Principal:</span>
                                         <span class="info-value" id="mainObjective">-</span>
                                         <input type="text" class="edit-field" id="editGoal" style="display: none;" />
                                     </div>
+
                                     <div class="info-item">
                                         <span class="info-label">Prova Alvo:</span>
                                         <span class="info-value" id="targetRace">-</span>
                                         <input type="text" class="edit-field" id="editTargetRace" style="display: none;" />
                                     </div>
+
                                     <button class="btn-secondary" onclick="toggleEditFields('esportivos')" id="editEsportivosBtn">Editar Dados</button>
                                     <button class="btn-primary" onclick="saveEditedFields('esportivos')" id="saveEsportivosBtn" style="display:none;">Salvar</button>
                                 </div>
@@ -1915,21 +1859,6 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Aba Histórico (NOVA) -->
-                        <div id="historicoTab" class="tab-content">
-                            <h3 class="section-title">
-                                <i class="fas fa-history"></i> Histórico de Atividades
-                            </h3>
-                            <div id="athleteHistory">
-                                <!-- Histórico do atleta será carregado aqui -->
-                                <div class="empty-state" style="padding: 40px 20px;">
-                                    <i class="fas fa-clock"></i>
-                                    <h3>Histórico vazio</h3>
-                                    <p>As atividades e alterações aparecerão aqui conforme forem sendo registradas.</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -2006,11 +1935,6 @@
 
         </div> <!-- Fim .container -->
     </div> <!-- Fim #appContainer -->
-
-    <!-- NOTIFICAÇÃO -->
-    <div id="notification" class="notification">
-        <div id="notificationContent"></div>
-    </div>
 
     <!-- MODAL DE EVENTOS -->
     <div id="eventModal" class="modal-overlay">
@@ -2099,148 +2023,6 @@
         </div>
     </div>
 
-    <!-- MODAL TREINO (NOVO) -->
-    <div id="workoutModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title" id="workoutModalTitle">Novo Treino</h2>
-                <button class="modal-close" onclick="closeWorkoutModal()">&times;</button>
-            </div>
-            <form id="workoutForm">
-                <input type="hidden" id="workoutId">
-                <input type="hidden" id="workoutAthleteId">
-                <input type="hidden" id="workoutDate">
-                
-                <div class="form-group">
-                    <label>Tipo de Treino</label>
-                    <div class="workout-type-selector">
-                        <div class="workout-type-btn" data-type="corrida">
-                            <i class="fas fa-running"></i>
-                            <span>Corrida</span>
-                        </div>
-                        <div class="workout-type-btn" data-type="forca">
-                            <i class="fas fa-dumbbell"></i>
-                            <span>Força</span>
-                        </div>
-                        <div class="workout-type-btn" data-type="tecnico">
-                            <i class="fas fa-shoe-prints"></i>
-                            <span>Técnico</span>
-                        </div>
-                        <div class="workout-type-btn" data-type="regenerativo">
-                            <i class="fas fa-leaf"></i>
-                            <span>Regenerativo</span>
-                        </div>
-                        <div class="workout-type-btn" data-type="descanso">
-                            <i class="fas fa-bed"></i>
-                            <span>Descanso</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="workoutDetails" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="workoutDuration">Duração (minutos)</label>
-                            <input type="number" id="workoutDuration" placeholder="Ex: 60">
-                        </div>
-                        <div class="form-group">
-                            <label for="workoutDistance">Distância (km)</label>
-                            <input type="number" step="0.1" id="workoutDistance" placeholder="Ex: 10.5">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Zona de Treinamento</label>
-                        <div class="zone-selector">
-                            <div class="zone-btn zone-1" data-zone="1">Z1<br>Rec.</div>
-                            <div class="zone-btn zone-2" data-zone="2">Z2<br>Leve</div>
-                            <div class="zone-btn zone-3" data-zone="3">Z3<br>Mod.</div>
-                            <div class="zone-btn zone-4" data-zone="4">Z4<br>Limiar</div>
-                            <div class="zone-btn zone-5" data-zone="5">Z5<br>VO2</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="workoutDescription">Descrição do Treino</label>
-                        <textarea id="workoutDescription" placeholder="Descreva o treino detalhadamente..." rows="4"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="workoutNotes">Observações</label>
-                        <textarea id="workoutNotes" placeholder="Observações adicionais..." rows="2"></textarea>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 24px; text-align: right;">
-                    <button type="button" class="btn-secondary" onclick="closeWorkoutModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="submitWorkoutBtn">Salvar Treino</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL ADICIONAR ATLETA (NOVO) -->
-    <div id="addAthleteModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Adicionar Novo Atleta</h2>
-                <button class="modal-close" onclick="closeAddAthleteModal()">&times;</button>
-            </div>
-            <form id="addAthleteForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="newAthleteName">Nome Completo</label>
-                        <input type="text" id="newAthleteName" required placeholder="Ex: João Silva">
-                    </div>
-                    <div class="form-group">
-                        <label for="newAthleteEmail">E-mail</label>
-                        <input type="email" id="newAthleteEmail" required placeholder="joao@email.com">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="newAthletePhone">Telefone</label>
-                        <input type="tel" id="newAthletePhone" placeholder="(11) 99999-9999">
-                    </div>
-                    <div class="form-group">
-                        <label for="newAthleteBirthdate">Data de Nascimento</label>
-                        <input type="date" id="newAthleteBirthdate">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="newAthleteGroup">Grupo</label>
-                        <select id="newAthleteGroup" required>
-                            <option value="">Selecione</option>
-                            <option value="Projeto Corra">Projeto Corra</option>
-                            <option value="TIME BASTOS">TIME BASTOS</option>
-                            <option value="Iniciantes">Iniciantes</option>
-                            <option value="Avançados">Avançados</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="newAthleteLevel">Nível</label>
-                        <select id="newAthleteLevel" required>
-                            <option value="">Selecione</option>
-                            <option value="Iniciante">Iniciante</option>
-                            <option value="Intermediário">Intermediário</option>
-                            <option value="Avançado">Avançado</option>
-                            <option value="Elite">Elite</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="newAthleteGoal">Objetivo Principal</label>
-                    <input type="text" id="newAthleteGoal" placeholder="Ex: Completar primeira corrida de 5km">
-                </div>
-                <div style="margin-top: 24px; text-align: right;">
-                    <button type="button" class="btn-secondary" onclick="closeAddAthleteModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Adicionar Atleta</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 <script>
     // --- DADOS MOCKADOS (Substituir por chamadas de API no futuro) ---
     const trainerCredentials = { email: 'treinador@bastos.com', password: '123456' };
@@ -2249,19 +2031,15 @@
     let currentFilter = 'geral';
     let currentWeekStart = new Date();
     let editingEventId = null;
-    let editingPlanningId = null;
-    let editingWorkoutId = null;
-    let selectedWorkoutDate = null;
-    let selectedAthleteForWorkout = null;
+    let editingPlanningId = null; // Para controlar edição de planejamentos
 
     // Define o início da semana atual como a última segunda-feira
     const today = new Date();
-    const dayOfWeek = today.getDay();
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ...
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     currentWeekStart.setDate(today.getDate() + diffToMonday);
 
-    // Dados expandidos dos atletas
-    let athletesData = {
+    const athletesData = {
         'adao-oliveira': {
             id: 'adao-oliveira',
             name: 'Adão Aparecido de Oliveira',
@@ -2276,9 +2054,7 @@
             experience: '3 anos',
             goal: 'Correr 10km abaixo de 50min',
             targetRace: 'Corrida de Rua ABC',
-            bestResults: [],
-            evaluationData: {},
-            workouts: {}
+            bestResults: []
         },
         'adriana-freitas': {
             id: 'adriana-freitas',
@@ -2296,18 +2072,17 @@
             targetRace: 'Maratona Internacional de São Paulo',
             bestResults: [
                 { id: 'br1', distance: '21km', time: '01:55:30', date: '2024-10-15', name: 'Meia Maratona do Rio' }
-            ],
-            evaluationData: {},
-            workouts: {}
+            ]
         }
     };
 
-    // Carregar dados do localStorage
+    // Carregar eventos do localStorage ou usar array vazio
     let events = JSON.parse(localStorage.getItem('events')) || [];
-    let plans = JSON.parse(localStorage.getItem('plans')) || [];
-    let workouts = JSON.parse(localStorage.getItem('workouts')) || {};
 
-    // --- INICIALIZAÇÃO ---
+    // Carregar planejamentos do localStorage ou usar array vazio
+    let plans = JSON.parse(localStorage.getItem('plans')) || [];
+
+    // --- INICIALIZAÇÃO --- 
     document.addEventListener('DOMContentLoaded', () => {
         // Verifica se há usuário logado
         currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -2315,27 +2090,23 @@
             showApp();
             initializeApp();
             loadEvents();
-            loadPlans();
-            updateDashboardStats();
+            loadPlans(); // Carrega os planejamentos salvos
         } else {
             showLogin();
         }
         
-        // Event listeners
         document.getElementById('loginForm').addEventListener('submit', handleLogin);
         document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
         document.getElementById('bestResultForm').addEventListener('submit', handleBestResultSubmit);
-        document.getElementById('planningForm').addEventListener('submit', handlePlanningSubmit);
-        document.getElementById('workoutForm').addEventListener('submit', handleWorkoutSubmit);
-        document.getElementById('addAthleteForm').addEventListener('submit', handleAddAthleteSubmit);
+        document.getElementById('planningForm').addEventListener('submit', handlePlanningSubmit); // Listener para form de planejamento
         
-        // IMC calculator
+        // Adicionar listeners para cálculo automático do IMC
         const heightInput = document.getElementById('height');
         const weightInput = document.getElementById('weight');
         if (heightInput) heightInput.addEventListener('input', calculateIMC);
         if (weightInput) weightInput.addEventListener('input', calculateIMC);
 
-        // Search athletes
+        // Listener para busca de atletas
         const searchInput = document.getElementById('athleteSearch');
         if (searchInput) {
             searchInput.addEventListener('input', function() {
@@ -2345,7 +2116,7 @@
             });
         }
 
-        // Custom distance toggle
+        // Listener para mostrar/esconder campo de distância personalizada (Melhores Resultados)
         const raceDistanceSelect = document.getElementById('raceDistance');
         if (raceDistanceSelect) {
             raceDistanceSelect.addEventListener('change', function() {
@@ -2360,26 +2131,10 @@
             });
         }
 
-        // Workout type selection
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.workout-type-btn')) {
-                const btn = e.target.closest('.workout-type-btn');
-                document.querySelectorAll('.workout-type-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('workoutDetails').style.display = 'block';
-            }
-            
-            if (e.target.closest('.zone-btn')) {
-                const btn = e.target.closest('.zone-btn');
-                document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-        });
-
-        updateWeekDisplay();
+        updateWeekDisplay(); // Atualiza a data da semana inicial
     });
 
-    // --- FUNÇÕES AUXILIARES ---
+    // --- FUNÇÕES AUXILIARES --- 
     function calculateIMC() {
         const height = parseFloat(document.getElementById('height').value);
         const weight = parseFloat(document.getElementById('weight').value);
@@ -2397,6 +2152,7 @@
     function formatDate(date) {
         if (!date) return '--';
         const d = new Date(date);
+        // Adiciona um dia para corrigir possível problema de fuso horário na exibição
         d.setDate(d.getDate() + 1);
         const day = String(d.getDate()).padStart(2, '0');
         const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -2407,24 +2163,12 @@
     function formatDateForInput(dateStr) {
         if (!dateStr) return '';
         const date = new Date(dateStr);
+        // Adiciona um dia para corrigir possível problema de fuso horário ao carregar no input date
         date.setDate(date.getDate() + 1);
         return date.toISOString().split('T')[0];
     }
 
-    function showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        const content = document.getElementById('notificationContent');
-        
-        content.textContent = message;
-        notification.className = `notification ${type}`;
-        notification.style.display = 'block';
-        
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 3000);
-    }
-
-    // --- AUTENTICAÇÃO ---
+    // --- AUTENTICAÇÃO --- 
     function handleLogin(e) {
         e.preventDefault();
         
@@ -2447,11 +2191,9 @@
                 showApp();
                 initializeApp();
                 loadEvents();
-                loadPlans();
-                updateDashboardStats();
-                showNotification('Login realizado com sucesso!');
+                loadPlans(); // Carrega planejamentos após login
             } else {
-                showNotification('Credenciais inválidas! Use: treinador@bastos.com / 123456', 'error');
+                alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Entrar como Treinador';
             }
@@ -2461,8 +2203,10 @@
     function logout() {
         currentUser = null;
         localStorage.removeItem('currentUser');
+        // Limpar dados temporários se necessário
+        // localStorage.removeItem('events'); 
+        // localStorage.removeItem('plans');
         showLogin();
-        showNotification('Logout realizado com sucesso!');
     }
 
     function showLogin() {
@@ -2498,11 +2242,11 @@
             });
         });
 
+        // Carregar dados iniciais da tabela de atletas
         renderAthletesTable();
-        loadAthleteSelector();
     }
 
-    // --- NAVEGAÇÃO ---
+    // --- NAVEGAÇÃO --- 
     function switchPage(pageId) {
         const pages = document.querySelectorAll('.page');
         pages.forEach(page => page.classList.remove('active'));
@@ -2519,22 +2263,20 @@
         if (activeBtn) {
             activeBtn.classList.add('active');
         }
-
-        // Carregar dados específicos da página
-        if (pageId === 'workouts') {
-            loadWorkoutCalendar();
-        }
     }
 
     function switchProfileTab(tabId) {
+        // Esconder todos os conteúdos das abas
         const tabContents = document.querySelectorAll('.tab-content');
         tabContents.forEach(content => content.classList.remove('active'));
 
+        // Mostrar o conteúdo da aba selecionada
         const targetContent = document.getElementById(tabId + 'Tab');
         if (targetContent) {
             targetContent.classList.add('active');
         }
 
+        // Atualizar botão ativo nas abas do perfil
         const profileTabs = document.querySelectorAll('.profile-tab');
         profileTabs.forEach(tab => tab.classList.remove('active'));
         const activeTab = document.querySelector(`.profile-tab[onclick*="'${tabId}'"]`);
@@ -2542,6 +2284,7 @@
             activeTab.classList.add('active');
         }
 
+        // Carregar dados específicos da aba, se necessário
         if (tabId === 'eventos') {
             loadAthleteEvents();
         }
@@ -2550,30 +2293,10 @@
         }
     }
 
-    // --- DASHBOARD ---
-    function updateDashboardStats() {
-        document.getElementById('activeAthletes').textContent = Object.keys(athletesData).length;
-        document.getElementById('upcomingEvents').textContent = events.filter(e => new Date(e.date) >= new Date()).length;
-        
-        // Calcular treinos da semana
-        let weeklyWorkouts = 0;
-        Object.values(workouts).forEach(athleteWorkouts => {
-            weeklyWorkouts += Object.keys(athleteWorkouts).length;
-        });
-        document.getElementById('weeklyWorkouts').textContent = weeklyWorkouts;
-        
-        // Calcular pendências
-        let pendingTasks = 0;
-        Object.values(athletesData).forEach(athlete => {
-            if (athlete.status === 'preparacao') pendingTasks++;
-        });
-        document.getElementById('pendingTasks').textContent = pendingTasks;
-    }
-
-    // --- ATLETAS ---
+    // --- ATLETAS --- 
     function renderAthletesTable() {
         const tableBody = document.getElementById('athletesTableBody');
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = ''; // Limpa a tabela
         const noResultsMessage = document.getElementById('noResultsMessage');
         let hasVisibleRows = false;
 
@@ -2597,14 +2320,6 @@
                 <td>${athlete.group}</td>
                 <td>${athlete.mesocycle || '--'}</td>
                 <td>${athlete.microcycle || '--'}</td>
-                <td>
-                    <button class="btn-warning" onclick="viewAthleteProfile('${athlete.id}')" style="padding: 4px 8px; font-size: 10px; margin-right: 4px;">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-danger" onclick="deleteAthlete('${athlete.id}')" style="padding: 4px 8px; font-size: 10px;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
             `;
             
             if (!matchesFilter) {
@@ -2645,13 +2360,13 @@
     function previousWeek() {
         currentWeekStart.setDate(currentWeekStart.getDate() - 7);
         updateWeekDisplay();
-        loadWorkoutCalendar();
+        // Aqui você pode adicionar lógica para recarregar dados da semana, se necessário
     }
 
     function nextWeek() {
         currentWeekStart.setDate(currentWeekStart.getDate() + 7);
         updateWeekDisplay();
-        loadWorkoutCalendar();
+        // Aqui você pode adicionar lógica para recarregar dados da semana, se necessário
     }
 
     function updateWeekDisplay() {
@@ -2670,376 +2385,649 @@
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
         
-        renderAthletesTable();
-        searchAthletes();
+        renderAthletesTable(); // Re-renderiza a tabela com o filtro
+        searchAthletes(); // Aplica a busca sobre o filtro
     }
 
-    function deleteAthlete(athleteId) {
-        if (confirm('Tem certeza que deseja excluir este atleta? Esta ação não pode ser desfeita.')) {
-            delete athletesData[athleteId];
-            renderAthletesTable();
-            updateDashboardStats();
-            showNotification('Atleta excluído com sucesso!');
+    // --- PERFIL DO ATLETA --- 
+    function viewAthleteProfile(athleteId) {
+        currentAthlete = athletesData[athleteId];
+        if (!currentAthlete) return;
+
+        // Preencher dados do header
+        document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
+        document.getElementById('profileName').textContent = currentAthlete.name;
+        document.getElementById('profileGroup').textContent = currentAthlete.group;
+        document.getElementById('profileStatus').textContent = currentAthlete.status === 'liberado' ? 'Liberado' : 'Em preparação';
+
+        // Preencher Aba Dados
+        document.getElementById('athleteFullName').textContent = currentAthlete.name;
+        document.getElementById('athleteEmail').textContent = currentAthlete.email;
+        document.getElementById('athletePhone').textContent = currentAthlete.phone;
+        document.getElementById('athleteBirthdate').textContent = formatDate(currentAthlete.birthdate);
+        document.getElementById('athleteGroup').textContent = currentAthlete.group;
+        document.getElementById('athleteLevel').textContent = currentAthlete.level;
+        document.getElementById('editExperience').value = currentAthlete.experience; // Input editável
+        document.getElementById('mainObjective').textContent = currentAthlete.goal;
+        document.getElementById('targetRace').textContent = currentAthlete.targetRace;
+
+        // Resetar campos de edição
+        resetEditFields();
+        loadBestResults();
+
+        // Preencher Aba Avaliações (se houver dados salvos)
+        // ... (lógica para carregar dados de avaliações salvas)
+
+        // Preencher Aba Planejamento (se houver dados salvos)
+        // ... (lógica para carregar dados de planejamento do atleta)
+
+        switchPage('athleteProfile');
+        switchProfileTab('dados'); // Começa na aba 'Dados'
+    }
+
+    function toggleEditFields(section) {
+        const sectionElement = section === 'pessoais' ? document.querySelector('.info-card:nth-child(1)') : document.querySelector('.info-card:nth-child(2)');
+        const inputs = sectionElement.querySelectorAll('.edit-field');
+        const spans = sectionElement.querySelectorAll('.info-value');
+        const editBtn = section === 'pessoais' ? document.getElementById('editDadosBtn') : document.getElementById('editEsportivosBtn');
+        const saveBtn = section === 'pessoais' ? document.getElementById('saveDadosBtn') : document.getElementById('saveEsportivosBtn');
+
+        inputs.forEach((input, i) => {
+            // Preenche o input com o valor atual do span correspondente
+            if (spans[i]) {
+                if (input.type === 'date') {
+                    // Encontra o ID do span para buscar o dado original
+                    const spanId = spans[i].id;
+                    const originalDate = currentAthlete[spanId.replace('athlete', '').toLowerCase()];
+                    input.value = formatDateForInput(originalDate);
+                } else {
+                    input.value = spans[i].textContent;
+                }
+            }
+            input.style.display = 'inline-block';
+        });
+        spans.forEach(span => span.style.display = 'none');
+
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+    }
+
+    function saveEditedFields(section) {
+        const sectionElement = section === 'pessoais' ? document.querySelector('.info-card:nth-child(1)') : document.querySelector('.info-card:nth-child(2)');
+        const inputs = sectionElement.querySelectorAll('.edit-field');
+        const spans = sectionElement.querySelectorAll('.info-value');
+        const editBtn = section === 'pessoais' ? document.getElementById('editDadosBtn') : document.getElementById('editEsportivosBtn');
+        const saveBtn = section === 'pessoais' ? document.getElementById('saveDadosBtn') : document.getElementById('saveEsportivosBtn');
+
+        inputs.forEach((input, i) => {
+            if (spans[i]) {
+                const newValue = input.value;
+                spans[i].textContent = (input.type === 'date') ? formatDate(newValue) : newValue;
+                // Atualizar o objeto currentAthlete (simulação)
+                const fieldName = input.id.replace('edit', '').toLowerCase();
+                if (currentAthlete.hasOwnProperty(fieldName)) {
+                    currentAthlete[fieldName] = newValue;
+                }
+                // Atualizar nome completo e grupo no header se necessário
+                if (input.id === 'editFullName') document.getElementById('profileName').textContent = newValue;
+                if (input.id === 'editGroup') document.getElementById('profileGroup').textContent = newValue;
+            }
+            input.style.display = 'none';
+        });
+        spans.forEach(span => span.style.display = 'inline-block');
+
+        editBtn.style.display = 'inline-block';
+        saveBtn.style.display = 'none';
+
+        // Simular salvamento (no futuro, seria uma chamada API)
+        athletesData[currentAthlete.id] = { ...currentAthlete };
+        alert('Dados atualizados com sucesso!');
+        renderAthletesTable(); // Atualiza a tabela principal caso o grupo mude
+    }
+
+    function resetEditFields() {
+        const allInputs = document.querySelectorAll('#dadosTab .edit-field');
+        const allSpans = document.querySelectorAll('#dadosTab .info-value');
+        allInputs.forEach(input => input.style.display = 'none');
+        allSpans.forEach(span => span.style.display = 'inline-block');
+        document.getElementById('editDadosBtn').style.display = 'inline-block';
+        document.getElementById('saveDadosBtn').style.display = 'none';
+        document.getElementById('editEsportivosBtn').style.display = 'inline-block';
+        document.getElementById('saveEsportivosBtn').style.display = 'none';
+    }
+
+    // --- MELHORES RESULTADOS (Modal) ---
+    function openBestResultModal() {
+        document.getElementById('bestResultForm').reset();
+        document.getElementById('customDistanceGroup').style.display = 'none';
+        document.getElementById('bestResultModal').classList.add('active');
+    }
+
+    function closeBestResultModal() {
+        document.getElementById('bestResultModal').classList.remove('active');
+    }
+
+    function handleBestResultSubmit(e) {
+        e.preventDefault();
+        if (!currentAthlete) return;
+
+        const distanceType = document.getElementById('raceDistance').value;
+        const distance = distanceType === 'other' 
+            ? document.getElementById('customDistance').value + 'km' 
+            : distanceType;
+        
+        const newResult = {
+            id: 'br' + Date.now(), // ID simples
+            distance: distance,
+            time: document.getElementById('raceTime').value,
+            date: document.getElementById('raceDate').value,
+            name: document.getElementById('raceName').value || ''
+        };
+
+        currentAthlete.bestResults.push(newResult);
+        athletesData[currentAthlete.id] = { ...currentAthlete }; // Atualiza mock
+        loadBestResults();
+        closeBestResultModal();
+        alert('Melhor resultado adicionado!');
+    }
+
+    function loadBestResults() {
+        const listContainer = document.getElementById('bestResultsList');
+        listContainer.innerHTML = ''; // Limpa a lista
+
+        if (!currentAthlete || currentAthlete.bestResults.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state" style="padding: 20px;">
+                    <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                    <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                </div>`;
+            return;
+        }
+
+        currentAthlete.bestResults.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(result => {
+            const item = document.createElement('div');
+            item.className = 'info-item'; // Reutiliza estilo
+            item.innerHTML = `
+                <div>
+                    <span class="info-label">${result.distance} (${formatDate(result.date)}):</span>
+                    <span class="info-value"> ${result.time}</span>
+                    ${result.name ? `<small style='display: block; color: #6b7280;'>(${result.name})</small>` : ''}
+                </div>
+                <button onclick="deleteBestResult('${result.id}')" class="btn-danger" style="padding: 4px 8px; font-size: 10px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    function deleteBestResult(resultId) {
+        if (!currentAthlete || !confirm('Tem certeza que deseja excluir este resultado?')) return;
+
+        currentAthlete.bestResults = currentAthlete.bestResults.filter(r => r.id !== resultId);
+        athletesData[currentAthlete.id] = { ...currentAthlete }; // Atualiza mock
+        loadBestResults();
+        alert('Resultado excluído.');
+    }
+
+    // --- EVENTOS (Modal e Lista) ---
+    function openEventModal(eventId = null) {
+        editingEventId = eventId;
+        
+        if (eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                document.getElementById('modalTitle').textContent = 'Editar Evento';
+                document.getElementById('submitEventBtn').textContent = 'Salvar Alterações';
+                document.getElementById('eventId').value = eventId;
+                document.getElementById('eventName').value = event.name;
+                document.getElementById('eventDate').value = formatDateForInput(event.date);
+                document.getElementById('eventDistance').value = event.distance;
+                document.getElementById('eventLocation').value = event.location;
+            }
+        } else {
+            document.getElementById('modalTitle').textContent = 'Cadastrar Novo Evento';
+            document.getElementById('submitEventBtn').textContent = 'Cadastrar Evento';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = '';
+        }
+        
+        document.getElementById('eventModal').classList.add('active');
+        loadAthletesForSelection(eventId);
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModal').classList.remove('active');
+        document.getElementById('eventForm').reset();
+        editingEventId = null;
+    }
+
+    function loadAthletesForSelection(eventId = null) {
+        const athletesList = document.getElementById('athletesList');
+        athletesList.innerHTML = '';
+        
+        let selectedParticipants = [];
+        if (eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                selectedParticipants = event.participants;
+            }
+        }
+        
+        Object.keys(athletesData).forEach(athleteId => {
+            const athlete = athletesData[athleteId];
+            const isSelected = selectedParticipants.includes(athleteId);
+            const div = document.createElement('div');
+            div.className = 'athlete-checkbox';
+            div.innerHTML = `
+                <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}" ${isSelected ? 'checked' : ''}>
+                <label for="athlete_${athleteId}">${athlete.name}</label>
+            `;
+            athletesList.appendChild(div);
+        });
+    }
+
+    function handleEventSubmit(e) {
+        e.preventDefault();
+        
+        const eventId = document.getElementById('eventId').value;
+        const eventData = {
+            id: eventId || 'evt' + Date.now(), // ID simples
+            name: document.getElementById('eventName').value,
+            date: document.getElementById('eventDate').value,
+            distance: document.getElementById('eventDistance').value,
+            location: document.getElementById('eventLocation').value,
+            participants: []
+        };
+        
+        const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+        checkboxes.forEach(checkbox => {
+            eventData.participants.push(checkbox.value);
+        });
+        
+        if (eventId) {
+            const eventIndex = events.findIndex(e => e.id === eventId);
+            if (eventIndex !== -1) {
+                events[eventIndex] = eventData;
+            }
+        } else {
+            events.push(eventData);
+        }
+        
+        localStorage.setItem('events', JSON.stringify(events));
+        
+        closeEventModal();
+        loadEvents(); // Atualiza a lista no Dashboard
+        if (document.getElementById('athleteProfilePage').classList.contains('active') && document.getElementById('eventosTab').classList.contains('active')) {
+             loadAthleteEvents(); // Atualiza a lista no perfil do atleta, se visível
+        }
+        alert(eventId ? 'Evento atualizado com sucesso!' : 'Evento cadastrado com sucesso!');
+    }
+
+    function editEvent(eventId) {
+        openEventModal(eventId);
+    }
+
+    function deleteEvent(eventId) {
+        if (confirm('Tem certeza que deseja excluir este evento?')) {
+            events = events.filter(event => event.id !== eventId);
+            localStorage.setItem('events', JSON.stringify(events));
+            loadEvents();
+            if (document.getElementById('athleteProfilePage').classList.contains('active') && document.getElementById('eventosTab').classList.contains('active')) {
+                 loadAthleteEvents();
+            }
+            alert('Evento excluído com sucesso!');
         }
     }
 
-    // --- ADICIONAR ATLETA ---
-    function openAddAthleteModal() {
-        document.getElementById('addAthleteForm').reset();
-        document.getElementById('addAthleteModal').classList.add('active');
+    function loadEvents() {
+        const eventsContent = document.getElementById('eventsContent');
+        
+        if (!eventsContent) return; // Sai se o elemento não existir (ex: na tela de login)
+
+        if (events.length === 0) {
+            eventsContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Nenhum evento cadastrado</h3>
+                    <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        eventsContent.innerHTML = sortedEvents.map(event => {
+            return `
+                <div class="event-card">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.name}</div>
+                            <div class="event-date">${formatDate(event.date)}</div>
+                        </div>
+                        <div class="event-actions">
+                            <button class="event-btn edit" onclick="editEvent('${event.id}')" title="Editar evento">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="event-btn delete" onclick="deleteEvent('${event.id}')" title="Excluir evento">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-detail-item">
+                            <i class="fas fa-route"></i>
+                            <span>${event.distance}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
+                        </div>
+                    </div>
+                    <div class="event-participants">
+                        <div class="participants-title">Participantes (${event.participants.length})</div>
+                        <div class="participants-list">
+                            ${event.participants.map(id => 
+                                `<span class="participant-badge">${athletesData[id]?.name || 'Atleta Removido'}</span>`
+                            ).join('') || '<span style="font-size: 12px; color: #6b7280;">Nenhum atleta inscrito</span>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
-    function closeAddAthleteModal() {
-        document.getElementById('addAthleteModal').classList.remove('active');
+    function loadAthleteEvents() {
+        if (!currentAthlete) return;
+        
+        const athleteId = currentAthlete.id;
+        const athleteEvents = events.filter(event => 
+            event.participants.includes(athleteId)
+        );
+        
+        const athleteEventsContainer = document.getElementById('athleteEvents');
+        
+        if (athleteEvents.length === 0) {
+            athleteEventsContainer.innerHTML = `
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Nenhum evento para este atleta</h3>
+                    <p>Este atleta ainda não está inscrito em nenhum evento cadastrado.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+            return `
+                <div class="event-card">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.name}</div>
+                            <div class="event-date">${formatDate(event.date)}</div>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-detail-item">
+                            <i class="fas fa-route"></i>
+                            <span>${event.distance}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
-    function handleAddAthleteSubmit(e) {
+    // --- AVALIAÇÕES (Cálculos) ---
+    function calculatePerformanceData() {
+        // Pegar valores dos inputs
+        const age = parseInt(document.getElementById('age').value) || 0;
+        const gender = document.getElementById('gender').value;
+        const height = parseInt(document.getElementById('height').value) || 0;
+        const weight = parseInt(document.getElementById('weight').value) || 0;
+        const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
+        let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+        const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+        const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+        const test5km = document.getElementById('test5km').value;
+        const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+
+        if (!age || !gender || !height || !weight) {
+            alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+            return;
+        }
+        if (!cooperTest && !vamTest && !test5km && !vo2MaxInput && !fcRest) {
+            alert('Por favor, preencha pelo menos um teste de esforço OU a FC de repouso para estimativas');
+            return;
+        }
+
+        if (!fcMax) {
+            fcMax = Math.round(208 - (0.7 * age));
+        }
+
+        let vo2Max = vo2MaxInput;
+        if (!vo2Max && cooperTest > 0) {
+            vo2Max = (cooperTest - 504.9) / 44.73;
+        }
+        if (!vo2Max && fcMax > 0 && fcRest > 0) {
+            vo2Max = 15.3 * (fcMax / fcRest);
+        }
+
+        let vam = vamTest;
+        if (!vam && test5km) {
+            const timeParts = test5km.split(':').map(Number);
+            if (timeParts.length === 2 && !isNaN(timeParts[0]) && !isNaN(timeParts[1])) {
+                const totalMinutes = timeParts[0] + (timeParts[1] / 60);
+                if (totalMinutes > 0) {
+                    const speed = 5 / (totalMinutes / 60); // km/h
+                    vam = speed * 1.05; 
+                }
+            }
+        }
+        if (!vam && vo2Max > 0) {
+            vam = vo2Max / 3.5; // Estimativa VAM = VO2max / 3.5
+        }
+        if (!vam && fcMax > 0 && fcRest > 0) {
+            const fcReserve = fcMax - fcRest;
+            vam = (fcReserve * 0.15) + 8; 
+        }
+
+        const fcReserve = fcMax > 0 && fcRest > 0 ? fcMax - fcRest : 0;
+
+        document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+        document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+        document.getElementById('calculatedFCMax').textContent = fcMax || '--';
+        document.getElementById('calculatedFCReserve').textContent = fcReserve || '--';
+
+        generateTrainingZones(fcMax, fcRest, vam);
+        document.getElementById('performanceResults').style.display = 'block';
+    }
+
+    function generateTrainingZones(fcMax, fcRest, vam) {
+        const zones = [
+            { zone: 1, name: 'Z1', fcPercent: [50, 60], vamPercent: [60, 70], description: 'Recuperação', color: 'zone-1' },
+            { zone: 2, name: 'Z2', fcPercent: [60, 70], vamPercent: [70, 80], description: 'Aeróbio Leve', color: 'zone-2' },
+            { zone: 3, name: 'Z3', fcPercent: [70, 80], vamPercent: [80, 90], description: 'Aeróbio Moderado', color: 'zone-3' },
+            { zone: 4, name: 'Z4', fcPercent: [80, 90], vamPercent: [90, 100], description: 'Limiar Anaeróbio', color: 'zone-4' },
+            { zone: 5, name: 'Z5', fcPercent: [90, 100], vamPercent: [100, 110], description: 'VO2 Máx', color: 'zone-5' }
+        ];
+
+        const tbody = document.getElementById('zonesTableBody');
+        tbody.innerHTML = ''; // Limpa tabela
+
+        zones.forEach(zone => {
+            let fcRange = '--';
+            if (fcMax > 0) {
+                if (fcRest > 0) { // Karvonen
+                    const fcReserve = fcMax - fcRest;
+                    const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                    const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                    fcRange = `${fcMin} - ${fcMaxZone}`;
+                } else { // % Direto FC Max
+                    const fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
+                    const fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
+                    fcRange = `${fcMin} - ${fcMaxZone}`;
+                }
+            }
+
+            let paceRange = '--';
+            if (vam > 0) {
+                const vamMin = vam * (zone.vamPercent[0] / 100);
+                const vamMax = vam * (zone.vamPercent[1] / 100);
+                const paceMin = 60 / vamMax; // min/km
+                const paceMax = 60 / vamMin; // min/km
+                paceRange = `${formatPace(paceMax)} - ${formatPace(paceMin)}`;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="zone-color ${zone.color}"></span> ${zone.name}</td>
+                <td>${zone.description}</td>
+                <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
+                <td>${fcRange}</td>
+                <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
+                <td>${paceRange}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function formatPace(decimalMinutes) {
+        if (!decimalMinutes || !isFinite(decimalMinutes)) return '--:--';
+        const totalSeconds = Math.round(decimalMinutes * 60);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // --- PLANEJAMENTOS (CRUD) ---
+    function handlePlanningSubmit(e) {
         e.preventDefault();
         
-        const newAthlete = {
-            id: 'athlete-' + Date.now(),
-            name: document.getElementById('newAthleteName').value,
-            email: document.getElementById('newAthleteEmail').value,
-            phone: document.getElementById('newAthletePhone').value,
-            birthdate: document.getElementById('newAthleteBirthdate').value,
-            group: document.getElementById('newAthleteGroup').value,
-            level: document.getElementById('newAthleteLevel').value,
-            goal: document.getElementById('newAthleteGoal').value,
-            status: 'preparacao',
-            mesocycle: '',
-            microcycle: '',
-            experience: 'A definir',
-            targetRace: '',
-            bestResults: [],
-            evaluationData: {},
-            workouts: {}
+        const planData = {
+            id: editingPlanningId || 'plan' + Date.now(), // Reusa ID se editando, senão cria novo
+            name: document.getElementById('planMacroName').value,
+            objective: document.getElementById('planObjective').value,
+            startDate: document.getElementById('planStartDate').value,
+            endDate: document.getElementById('planEndDate').value,
+            mesocycles: document.getElementById('planMesocycles').value,
+            microcycles: document.getElementById('planMicrocycles').value
         };
 
-        athletesData[newAthlete.id] = newAthlete;
-        renderAthletesTable();
-        updateDashboardStats();
-        closeAddAthleteModal();
-        showNotification('Atleta adicionado com sucesso!');
+        if (editingPlanningId) {
+            // Atualizar plano existente
+            const planIndex = plans.findIndex(p => p.id === editingPlanningId);
+            if (planIndex !== -1) {
+                plans[planIndex] = planData;
+            }
+        } else {
+            // Adicionar novo plano
+            plans.push(planData);
+        }
+
+        localStorage.setItem('plans', JSON.stringify(plans)); // Salva no localStorage
+        loadPlans(); // Recarrega a lista de planos
+        resetPlanningForm(); // Limpa o formulário
+        alert(editingPlanningId ? 'Planejamento atualizado com sucesso!' : 'Planejamento salvo com sucesso!');
     }
 
-    // Continuação do código JavaScript será fornecida na próxima parte...
+    function loadPlans() {
+        const listContainer = document.getElementById('savedPlansList');
+        const emptyState = document.getElementById('emptyPlansState');
+        listContainer.innerHTML = ''; // Limpa a lista atual
+
+        if (plans.length === 0) {
+            listContainer.appendChild(emptyState); // Mostra mensagem de vazio se não houver planos
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none'; // Esconde mensagem de vazio
+
+        // Ordena planos (opcional, ex: por data de início)
+        const sortedPlans = [...plans].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+        sortedPlans.forEach(plan => {
+            const card = document.createElement('div');
+            card.className = 'planning-card';
+            card.innerHTML = `
+                <div class="planning-card-header">
+                    <span class="planning-title">${plan.name}</span>
+                    <span class="planning-dates">${formatDate(plan.startDate)} - ${formatDate(plan.endDate)}</span>
+                </div>
+                <div class="planning-details">
+                    <p><strong>Objetivo:</strong> ${plan.objective}</p>
+                    <p><strong>Mesociclos:</strong> ${plan.mesocycles.substring(0, 100)}...</p> 
+                    <p><strong>Microciclos:</strong> ${plan.microcycles.substring(0, 100)}...</p>
+                </div>
+                <div class="planning-actions">
+                    <button class="btn-warning" onclick="editPlan('${plan.id}')">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn-danger" onclick="deletePlan('${plan.id}')">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            `;
+            listContainer.appendChild(card);
+        });
+    }
+
+    function editPlan(planId) {
+        const plan = plans.find(p => p.id === planId);
+        if (!plan) return;
+
+        editingPlanningId = planId;
+
+        // Preenche o formulário com os dados do plano
+        document.getElementById('planningId').value = plan.id;
+        document.getElementById('planMacroName').value = plan.name;
+        document.getElementById('planObjective').value = plan.objective;
+        document.getElementById('planStartDate').value = formatDateForInput(plan.startDate);
+        document.getElementById('planEndDate').value = formatDateForInput(plan.endDate);
+        document.getElementById('planMesocycles').value = plan.mesocycles;
+        document.getElementById('planMicrocycles').value = plan.microcycles;
+
+        // Ajusta a interface do formulário para modo de edição
+        document.getElementById('planningFormTitle').textContent = 'Editar Planejamento';
+        document.getElementById('savePlanBtn').innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+        document.getElementById('cancelEditPlanBtn').style.display = 'inline-block';
+
+        // Rola a página para o formulário
+        document.getElementById('planningForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deletePlan(planId) {
+        if (confirm('Tem certeza que deseja excluir este planejamento? Esta ação não pode ser desfeita.')) {
+            plans = plans.filter(p => p.id !== planId);
+            localStorage.setItem('plans', JSON.stringify(plans));
+            loadPlans();
+            alert('Planejamento excluído com sucesso!');
+            // Se o formulário estava em modo de edição para este plano, reseta
+            if (editingPlanningId === planId) {
+                resetPlanningForm();
+            }
+        }
+    }
+
+    function resetPlanningForm() {
+        editingPlanningId = null;
+        document.getElementById('planningForm').reset();
+        document.getElementById('planningId').value = '';
+        document.getElementById('planningFormTitle').textContent = 'Criar Novo Planejamento (Macrociclo)';
+        document.getElementById('savePlanBtn').innerHTML = '<i class="fas fa-save"></i> Salvar Planejamento';
+        document.getElementById('cancelEditPlanBtn').style.display = 'none';
+    }
+
 </script>
 
 </body>
 </html>
-                <div class="role-badge">TREINADOR</div>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
-                </div>
-                
-                <button type="submit" class="login-btn" id="loginBtn">
-                    Entrar como Treinador
-                </button>
-            </form>
-            
-            <div class="demo-info">
-                <strong>Credenciais de Teste:</strong><br>
-                E-mail: treinador@bastos.com<br>
-                Senha: 123456
-            </div>
-        </div>
-    </div>
 
-    <!-- APP -->
-    <div id="appContainer" class="app-container">
-        <header class="header">
-            <nav class="nav">
-                <div class="logo">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Bastos Run Coach</span>
-                </div>
-                <div class="nav-buttons">
-                    <button class="nav-btn active" data-page="dashboard">
-                        <i class="fas fa-chart-bar"></i> Dashboard
-                    </button>
-                    <button class="nav-btn" data-page="athletes">
-                        <i class="fas fa-users"></i> Meus Atletas
-                    </button>
-                    <button class="nav-btn" data-page="workouts">
-                        <i class="fas fa-dumbbell"></i> Treinos
-                    </button>
-                    <button class="nav-btn" data-page="reports">
-                        <i class="fas fa-chart-line"></i> Relatórios
-                    </button>
-                    <button class="nav-btn" data-page="planning">
-                        <i class="fas fa-calendar-alt"></i> Planejamentos
-                    </button>
-                    <div class="user-info">
-                        <i class="fas fa-user"></i>
-                        <span id="trainerName">Treinador</span>
-                        <button class="logout-btn" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <div class="container">
-            <!-- DASHBOARD -->
-            <div id="dashboardPage" class="page active">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon blue">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-title">Atletas Ativos</div>
-                        </div>
-                        <div class="stat-value" id="activeAthletes">2</div>
-                        <div class="stat-description">Total de atletas cadastrados</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon green">
-                                <i class="fas fa-dumbbell"></i>
-                            </div>
-                            <div class="stat-title">Treinos da Semana</div>
-                        </div>
-                        <div class="stat-value" id="weeklyWorkouts">12</div>
-                        <div class="stat-description">Treinos programados</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon purple">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-title">Próximos Eventos</div>
-                        </div>
-                        <div class="stat-value" id="upcomingEvents">3</div>
-                        <div class="stat-description">Eventos cadastrados</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon yellow">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </div>
-                            <div class="stat-title">Pendências</div>
-                        </div>
-                        <div class="stat-value" id="pendingTasks">1</div>
-                        <div class="stat-description">Requer atenção</div>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Próximos Eventos</h2>
-                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
-                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
-                            <i class="fas fa-plus"></i> Cadastrar Evento
-                        </button>
-                    </div>
-                    <div id="eventsContent">
-                        <!-- Eventos serão carregados aqui -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- MEUS ATLETAS -->
-            <div id="athletesPage" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Meus Atletas</h1>
-                </div>
-
-                <div class="content-card">
-                    <!-- Seletor de Período -->
-                    <div class="card-header">
-                        <div class="period-selector">
-                            <button class="period-navigation" onclick="previousWeek()">
-                                <i class="fas fa-chevron-left"></i> Semana Anterior
-                            </button>
-                            <div class="current-period" id="currentPeriod">
-                                26/05 a 01/06/2025
-                            </div>
-                            <button class="period-navigation" onclick="nextWeek()">
-                                Próxima Semana <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                            <button class="period-btn active" onclick="filterByStatus('geral')">Geral</button>
-                            <button class="period-btn" onclick="filterByStatus('sem-macrociclo')">Sem macrociclo</button>
-                            <button class="period-btn" onclick="filterByStatus('preparacao')">Em preparação</button>
-                            <button class="period-btn" onclick="filterByStatus('liberado')">Liberado</button>
-                        </div>
-                    </div>
-
-                    <!-- Barra de Busca -->
-                    <div class="filters-bar">
-                        <div class="search-group">
-                            <i class="fas fa-search" style="color: #6b7280;"></i>
-                            <input 
-                                type="text" 
-                                id="athleteSearch" 
-                                class="search-input" 
-                                placeholder="Buscar atleta por nome..."
-                                onkeyup="searchAthletes()"
-                            >
-                        </div>
-                        <button class="btn-success" onclick="openAddAthleteModal()">
-                            <i class="fas fa-plus"></i> Adicionar Atleta
-                        </button>
-                    </div>
-
-                    <!-- Tabela de Atletas -->
-                    <table class="athletes-table">
-                        <thead class="table-header">
-                            <tr>
-                                <th>Atleta</th>
-                                <th>Situação</th>
-                                <th>Grupo</th>
-                                <th>Mesociclo</th>
-                                <th>Microciclo</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body" id="athletesTableBody">
-                            <!-- Atletas serão carregados dinamicamente -->
-                        </tbody>
-                    </table>
-                    
-                    <!-- Mensagem quando não há resultados -->
-                    <div id="noResultsMessage" class="no-results" style="display: none;">
-                        <i class="fas fa-search"></i>
-                        <h3>Nenhum atleta encontrado</h3>
-                        <p>Tente buscar com um termo diferente</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TREINOS (NOVA SEÇÃO) -->
-            <div id="workoutsPage" class="page">
-                <div class="page-header">
-                    <div class="workout-header">
-                        <div>
-                            <h1 class="page-title">Treinos</h1>
-                            <p class="page-subtitle">Gerencie os treinos dos seus atletas</p>
-                        </div>
-                        <div>
-                            <select id="athleteSelector" onchange="loadWorkoutCalendar()" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; margin-right: 12px;">
-                                <option value="">Selecione um atleta</option>
-                            </select>
-                            <button class="btn-primary" onclick="openWorkoutModal()">
-                                <i class="fas fa-plus"></i> Novo Treino
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <div class="workout-calendar" id="workoutCalendar">
-                        <!-- Calendário de treinos será gerado aqui -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- RELATÓRIOS (NOVA SEÇÃO) -->
-            <div id="reportsPage" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Relatórios</h1>
-                    <p class="page-subtitle">Analise o desempenho e progresso dos atletas</p>
-                </div>
-
-                <div class="reports-grid">
-                    <div class="report-card">
-                        <div class="report-card-header">
-                            <div class="report-icon blue">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div>
-                                <h3 class="report-title">Progresso dos Atletas</h3>
-                                <p class="report-description">Evolução dos tempos e performances</p>
-                            </div>
-                        </div>
-                        <div class="report-actions">
-                            <button class="btn-outline" onclick="generateProgressReport()">
-                                <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                            <button class="btn-outline" onclick="exportProgressReport()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="report-card">
-                        <div class="report-card-header">
-                            <div class="report-icon green">
-                                <i class="fas fa-dumbbell"></i>
-                            </div>
-                            <div>
-                                <h3 class="report-title">Frequência de Treinos</h3>
-                                <p class="report-description">Aderência aos planos de treinamento</p>
-                            </div>
-                        </div>
-                        <div class="report-actions">
-                            <button class="btn-outline" onclick="generateFrequencyReport()">
-                                <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                            <button class="btn-outline" onclick="exportFrequencyReport()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="report-card">
-                        <div class="report-card-header">
-                            <div class="report-icon purple">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div>
-                                <h3 class="report-title">Resultados de Provas</h3>
-                                <p class="report-description">Performance em competições</p>
-                            </div>
-                        </div>
-                        <div class="report-actions">
-                            <button class="btn-outline" onclick="generateResultsReport()">
-                                <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                            <button class="btn-outline" onclick="exportResultsReport()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="report-card">
-                        <div class="report-card-header">
-                            <div class="report-icon orange">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <div>
-                                <h3 class="report-title">Zonas de Treinamento</h3>
-                                <p class="report-description">Distribuição por zonas de FC</p>
-                            </div>
-                        </div>
-                        <div class="report-actions">
-                            <button class="btn-outline" onclick="generateZonesReport()">
-                                <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                            <button class="btn-outline" onclick="exportZonesReport()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
