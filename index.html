@@ -1771,68 +1771,73 @@ function saveEditedFields(section) {
                             </div>
                         </div>
 
-                        <!-- Planejamento de Macrociclo -->
-                        <div id="planejamentoTab" class="tab-content">
-<!-- SUBSTITUIÇÃO SEGURA -->
-<!-- Vá até a aba Planejamento (id="planejamentoTab") -->
-<!-- Procure pelo bloco atual que começa com: -->
-<form id="macroForm">
+<!-- Planejamento de Macrociclo -->
+<div id="planejamentoTab" class="tab-content">
 
-<!-- Substitua TODO o conteúdo desde <form id="macroForm"> até o final de -->
-<!-- <div id="mesoResultado" ...>...</div> -->
+  <details class="evaluation-section" style="margin-top: 24px;">
+    <summary style="cursor: pointer; font-size: 16px; font-weight: 600; padding: 8px 0;">
+      <i class="fas fa-plus-circle"></i> Criar Novo Planejamento
+    </summary>
 
-<!-- Substitua por este novo conteúdo abaixo: -->
-<details class="evaluation-section" style="margin-top: 24px;">
-  <summary style="cursor: pointer; font-size: 16px; font-weight: 600; padding: 8px 0;">
-    <i class="fas fa-plus-circle"></i> Criar Novo Planejamento
-  </summary>
-
-  <form id="macroForm" style="margin-top: 16px;">
-    <div class="form-group">
-      <label for="macroNome">Nome do Macrociclo</label>
-      <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
-    </div>
-
-    <div class="form-group">
-      <label for="macroObs">Objetivo / Observação</label>
-      <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..."></textarea>
-    </div>
-
-    <div class="form-row">
+    <form id="macroForm" style="margin-top: 16px;">
       <div class="form-group">
-        <label for="inicioMacro">Início</label>
-        <input type="date" id="inicioMacro" required>
+        <label for="macroNome">Nome do Macrociclo</label>
+        <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
       </div>
+
       <div class="form-group">
-        <label for="fimMacro">Término</label>
-        <input type="date" id="fimMacro" required>
+        <label for="macroObs">Objetivo / Observação</label>
+        <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..."></textarea>
       </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="inicioMacro">Início</label>
+          <input type="date" id="inicioMacro" required>
+        </div>
+        <div class="form-group">
+          <label for="fimMacro">Término</label>
+          <input type="date" id="fimMacro" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="semanasMacro">Semanas</label>
+        <input type="number" id="semanasMacro" min="1" required readonly style="background: #f3f4f6;">
+      </div>
+
+      <div class="form-group">
+        <label for="mesociclos">Distribuição dos Mesociclos</label>
+        <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)"></textarea>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
+        <i class="fas fa-layer-group"></i> Gerar Estrutura
+      </button>
+
+      <button type="button" class="btn-success" id="salvarBtn" style="margin-top: 12px;">
+        <i class="fas fa-save"></i> Salvar Planejamento
+      </button>
+    </form>
+
+    <div id="mesoResultado" style="margin-top: 24px; display: none;">
+      <h4 style="margin-bottom: 12px;">Estrutura do Plano:</h4>
+      <div id="estruturaMesociclos"></div>
     </div>
+  </details>
 
-    <div class="form-group">
-      <label for="semanasMacro">Semanas</label>
-      <input type="number" id="semanasMacro" min="1" required readonly style="background: #f3f4f6;">
+  <!-- LISTA DE MACROCICLOS -->
+  <div class="evaluation-section">
+    <h3 class="section-title">
+      <i class="fas fa-clipboard-list"></i> Macrociclos Salvos
+    </h3>
+    <div id="listaMacrociclos">
+      <p style='color: #6b7280;'>Nenhum macrociclo salvo ainda.</p>
     </div>
-
-    <div class="form-group">
-      <label for="mesociclos">Distribuição dos Mesociclos</label>
-      <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)"></textarea>
-    </div>
-
-    <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
-      <i class="fas fa-layer-group"></i> Gerar Estrutura
-    </button>
-
-    <button type="button" class="btn-success" onclick="salvarMacrociclo()" style="margin-top: 12px;">
-      <i class="fas fa-save"></i> Salvar Planejamento
-    </button>
-  </form>
-
-  <div id="mesoResultado" style="margin-top: 24px; display: none;">
-    <h4 style="margin-bottom: 12px;">Estrutura do Plano:</h4>
-    <div id="estruturaMesociclos"></div>
   </div>
-</details>
+
+</div>
+
                         <!-- Aba Planilhas -->
                         <div id="planilhasTab" class="tab-content">
                             <div class="empty-state">
