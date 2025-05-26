@@ -1734,32 +1734,31 @@
         </div>
     </div>
 </div>
-
 <script>
-function gerarMesociclos() {
-    const nome = document.getElementById('macroNome').value;
-    const obs = document.getElementById('macroObs').value;
-    const inicio = new Date(document.getElementById('inicioMacro').value);
-    const fim = new Date(document.getElementById('fimMacro').value);
+    function gerarMesociclos() {
+          const nome = document.getElementById('macroNome').value;
+          const obs = document.getElementById('macroObs').value;
+          const inicio = new Date(document.getElementById('inicioMacro').value);
+          const fim = new Date(document.getElementById('fimMacro').value);
 
     if (!nome || !inicio || !fim || fim <= inicio) {
         alert('Preencha corretamente as datas e o nome do macrociclo.');
         return;
     }
 
-    const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
-    const semanas = Math.ceil(diff / 7);
-    const lista = document.getElementById('listaMesos');
-    lista.innerHTML = '';
+        const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+        const semanas = Math.ceil(diff / 7);
+        const lista = document.getElementById('listaMesos');
+        lista.innerHTML = '';
 
-    for (let i = 1; i <= semanas; i++) {
+        for (let i = 1; i <= semanas; i++) {
         const li = document.createElement('li');
         li.textContent = `Semana ${i} - Tipo: (definir posteriormente)`;
         lista.appendChild(li);
     }
 
-    document.getElementById('mesoResultado').style.display = 'block';
-    console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
+       document.getElementById('mesoResultado').style.display = 'block';
+       console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
 }
 </script>
                           </div>
