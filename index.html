@@ -1922,10 +1922,576 @@ function saveEditedFields(section) {
 
                         <!-- Aba Planilhas -->
                         <div id="planilhasTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-file-excel"></i>
-                                <h3>Planilhas em Desenvolvimento</h3>
-                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
+                 // Estado das planilhas
+        let workoutPlans = JSON.parse(localStorage.getItem('workoutPlans') || '{}'); // Organizado por atleta
+        let currentWorkoutWeek = new Date('2025-05-26'); // Semana atual das planilhas
+        let selectedTemplate = null;
+        let editingWorkoutId = null;
+        let currentWorkoutDay = null;
+
+        // Templates de treino predefinidos
+        const workoutTemplates = {
+            easy: {
+                type: 'Corrida Regenerativa',
+                zone: '1',
+                intensity: 'muito-leve',
+                distance: 5,
+                duration: 35,
+                pace: '6:00-6:30/km',
+                description: 'Corrida muito leve para recuperação ativa. Mantenha conversação normal durante todo o treino.'
+            },
+            base: {
+                type: 'Base Aeróbia',
+                zone: '2',
+                intensity: 'leve',
+                distance: 8,
+                duration: 50,
+                pace: '5:30-6:00/km',
+                description: 'Corrida em ritmo confortável, desenvolvendo capacidade aeróbia. Deve conseguir manter conversação.'
+            },
+            tempo: {
+                type: 'Tempo Run',
+                zone: '3',
+                intensity: 'moderada',
+                distance: 6,
+                duration: 35,
+                pace: '5:00-5:20/km',
+                description: 'Corrida em ritmo controlado e sustentado. Aquecimento 10min + 20min no ritmo + volta à calma 5min.'
+            },
+            intervals: {
+                type: 'Treino Intervalado',
+                zone: '4',
+                intensity: 'forte',
+                distance: 7,
+                duration: 45,
+                pace: '4:30-4:50/km',
+                description: 'Aquecimento 15min + 6x800m (rec 2min) + volta à calma 10min. Manter intensidade alta nos tiros.'
+            },
+            long: {
+                type: 'Longão',
+                zone: '2',
+                intensity: 'leve',
+                distance: 15,
+                duration: 90,
+                pace: '5:45-6:15/km',
+                description: 'Corrida longa para resistência. Inicie devagar e mantenha ritmo constante. Hidrate-se regularmente.'
+            }
+        };
+
+        // Inicializar sistema de planilhas quando a aba for ativada
+        function initializeWorkoutSystem() {
+            loadMacrociclosForWorkout();
+            
+            // Listener para seleção de macrociclo
+            const macrocicloSelect = document.getElementById('macrocicloSelect');
+            if (macrocicloSelect) {
+                macrocicloSelect.addEventListener('change', function() {
+                    const createBtn = document.getElementById('createPlanBtn');
+                    if (this.value) {
+                        createBtn.disabled = false;
+                        createBtn.textContent = 'Criar Planilha';
+                    } else {
+                        createBtn.disabled = true;
+                        hideWorkoutCalendar();
+                    }
+                });
+            }
+
+            // Listener para templates de treino
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedTemplate = this.dataset.template;
+                    
+                    if (selectedTemplate !== 'custom') {
+                        fillWorkoutFormFromTemplate(selectedTemplate);
+                    } else {
+                        clearWorkoutForm();
+                    }
+                });
+            });
+
+            // Listener para o formulário de treino
+            document.getElementById('workoutForm').addEventListener('submit', handleWorkoutSubmit);
+        }
+
+        function loadMacrociclosForWorkout() {
+            const select = document.getElementById('macrocicloSelect');
+            const macrociclos = JSON.parse(localStorage.getItem('macrociclosSalvos') || '[]');
+            
+            select.innerHTML = '<option value="">Selecionar Macrociclo</option>';
+            
+            macrociclos.forEach(macro => {
+                const option = document.createElement('option');
+                option.value = macro.id;
+                option.textContent = `${macro.nome} (${macro.inicio} a ${macro.fim})`;
+                select.appendChild(option);
+            });
+        }
+
+        function createWorkoutPlan() {
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            if (!macrocicloId) return;
+
+            const athleteId = getCurrentAthleteId();
+            if (!athleteId) return;
+
+            // Inicializar estrutura de dados se não existir
+            if (!workoutPlans[athleteId]) {
+                workoutPlans[athleteId] = {};
+            }
+            if (!workoutPlans[athleteId][macrocicloId]) {
+                workoutPlans[athleteId][macrocicloId] = {};
+            }
+
+            showWorkoutCalendar();
+            updateWorkoutWeekDisplay();
+            loadWorkoutsForWeek();
+        }
+
+        function showWorkoutCalendar() {
+            document.getElementById('emptyWorkoutState').style.display = 'none';
+            document.getElementById('weekNavigation').style.display = 'block';
+            document.getElementById('workoutCalendar').style.display = 'block';
+        }
+
+        function hideWorkoutCalendar() {
+            document.getElementById('emptyWorkoutState').style.display = 'block';
+            document.getElementById('weekNavigation').style.display = 'none';
+            document.getElementById('workoutCalendar').style.display = 'none';
+        }
+
+        function getCurrentAthleteId() {
+            if (!currentAthlete) return null;
+            return Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+        }
+
+        function getWeekKey(date) {
+            const startOfWeek = new Date(date);
+            startOfWeek.setDate(date.getDate() - date.getDay() + 1); // Segunda-feira
+            return startOfWeek.toISOString().split('T')[0];
+        }
+
+        function previousWorkoutWeek() {
+            currentWorkoutWeek.setDate(currentWorkoutWeek.getDate() - 7);
+            updateWorkoutWeekDisplay();
+            loadWorkoutsForWeek();
+        }
+
+        function nextWorkoutWeek() {
+            currentWorkoutWeek.setDate(currentWorkoutWeek.getDate() + 7);
+            updateWorkoutWeekDisplay();
+            loadWorkoutsForWeek();
+        }
+
+        function updateWorkoutWeekDisplay() {
+            const weekEnd = new Date(currentWorkoutWeek);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            const startStr = formatDate(currentWorkoutWeek);
+            const endStr = formatDate(weekEnd);
+            
+            // Calcular número da semana baseado no macrociclo
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            const macrociclos = JSON.parse(localStorage.getItem('macrociclosSalvos') || '[]');
+            const macro = macrociclos.find(m => m.id === macrocicloId);
+            
+            let weekNumber = 1;
+            if (macro) {
+                const macroStart = new Date(macro.inicio);
+                const diffTime = currentWorkoutWeek - macroStart;
+                const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+                weekNumber = Math.max(1, diffWeeks + 1);
+            }
+            
+            document.getElementById('currentWorkoutWeek').textContent = `Semana ${weekNumber} - ${startStr} a ${endStr}`;
+            
+            // Atualizar datas dos dias
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            days.forEach((day, index) => {
+                const dayDate = new Date(currentWorkoutWeek);
+                dayDate.setDate(currentWorkoutWeek.getDate() + index);
+                const dayElement = document.getElementById(day + 'Date');
+                if (dayElement) {
+                    dayElement.textContent = formatDate(dayDate).substring(0, 5); // DD/MM
+                }
+            });
+        }
+
+        function addWorkout(day) {
+            currentWorkoutDay = day;
+            editingWorkoutId = null;
+            document.getElementById('workoutModalTitle').textContent = 'Adicionar Treino';
+            document.getElementById('submitWorkoutBtn').textContent = 'Salvar Treino';
+            clearWorkoutForm();
+            document.getElementById('workoutModal').classList.add('active');
+        }
+
+        function editWorkout(workoutId, day) {
+            const athleteId = getCurrentAthleteId();
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            const weekKey = getWeekKey(currentWorkoutWeek);
+            
+            const workout = workoutPlans[athleteId]?.[macrocicloId]?.[weekKey]?.[day]?.find(w => w.id === workoutId);
+            if (!workout) return;
+
+            currentWorkoutDay = day;
+            editingWorkoutId = workoutId;
+            document.getElementById('workoutModalTitle').textContent = 'Editar Treino';
+            document.getElementById('submitWorkoutBtn').textContent = 'Salvar Alterações';
+            
+            // Preencher formulário com dados do treino
+            document.getElementById('workoutType').value = workout.type;
+            document.getElementById('workoutZone').value = workout.zone;
+            document.getElementById('workoutDistance').value = workout.distance || '';
+            document.getElementById('workoutDuration').value = workout.duration || '';
+            document.getElementById('workoutIntensity').value = workout.intensity || '';
+            document.getElementById('workoutPace').value = workout.pace || '';
+            document.getElementById('workoutDescription').value = workout.description || '';
+            
+            document.getElementById('workoutModal').classList.add('active');
+        }
+
+        function deleteWorkout(workoutId, day) {
+            if (!confirm('Tem certeza que deseja excluir este treino?')) return;
+
+            const athleteId = getCurrentAthleteId();
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            const weekKey = getWeekKey(currentWorkoutWeek);
+            
+            if (workoutPlans[athleteId]?.[macrocicloId]?.[weekKey]?.[day]) {
+                workoutPlans[athleteId][macrocicloId][weekKey][day] = 
+                    workoutPlans[athleteId][macrocicloId][weekKey][day].filter(w => w.id !== workoutId);
+                
+                localStorage.setItem('workoutPlans', JSON.stringify(workoutPlans));
+                loadWorkoutsForWeek();
+                alert('Treino excluído com sucesso!');
+            }
+        }
+
+        function closeWorkoutModal() {
+            document.getElementById('workoutModal').classList.remove('active');
+            clearWorkoutForm();
+            selectedTemplate = null;
+            editingWorkoutId = null;
+            currentWorkoutDay = null;
+        }
+
+        function clearWorkoutForm() {
+            document.getElementById('workoutForm').reset();
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        }
+
+        function fillWorkoutFormFromTemplate(templateKey) {
+            const template = workoutTemplates[templateKey];
+            if (!template) return;
+
+            document.getElementById('workoutType').value = template.type;
+            document.getElementById('workoutZone').value = template.zone;
+            document.getElementById('workoutDistance').value = template.distance;
+            document.getElementById('workoutDuration').value = template.duration;
+            document.getElementById('workoutIntensity').value = template.intensity;
+            document.getElementById('workoutPace').value = template.pace;
+            document.getElementById('workoutDescription').value = template.description;
+        }
+
+        function handleWorkoutSubmit(e) {
+            e.preventDefault();
+            
+            const athleteId = getCurrentAthleteId();
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            const weekKey = getWeekKey(currentWorkoutWeek);
+            
+            if (!athleteId || !macrocicloId || !currentWorkoutDay) return;
+
+            const workoutData = {
+                id: editingWorkoutId || Date.now().toString(),
+                type: document.getElementById('workoutType').value,
+                zone: document.getElementById('workoutZone').value,
+                distance: parseFloat(document.getElementById('workoutDistance').value) || null,
+                duration: parseInt(document.getElementById('workoutDuration').value) || null,
+                intensity: document.getElementById('workoutIntensity').value,
+                pace: document.getElementById('workoutPace').value,
+                description: document.getElementById('workoutDescription').value,
+                completed: false,
+                feedback: null
+            };
+
+            // Inicializar estrutura se necessário
+            if (!workoutPlans[athleteId][macrocicloId][weekKey]) {
+                workoutPlans[athleteId][macrocicloId][weekKey] = {};
+            }
+            if (!workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay]) {
+                workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay] = [];
+            }
+
+            if (editingWorkoutId) {
+                // Editar treino existente
+                const workoutIndex = workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay]
+                    .findIndex(w => w.id === editingWorkoutId);
+                if (workoutIndex !== -1) {
+                    workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay][workoutIndex] = workoutData;
+                }
+            } else {
+                // Adicionar novo treino
+                workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay].push(workoutData);
+            }
+
+            localStorage.setItem('workoutPlans', JSON.stringify(workoutPlans));
+            closeWorkoutModal();
+            loadWorkoutsForWeek();
+            alert(editingWorkoutId ? 'Treino atualizado com sucesso!' : 'Treino adicionado com sucesso!');
+        }
+
+        function loadWorkoutsForWeek() {
+            const athleteId = getCurrentAthleteId();
+            const macrocicloId = document.getElementById('macrocicloSelect').value;
+            const weekKey = getWeekKey(currentWorkoutWeek);
+            
+            if (!athleteId || !macrocicloId) return;
+
+            const weekWorkouts = workoutPlans[athleteId]?.[macrocicloId]?.[weekKey] || {};
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            days.forEach(day => {
+                const dayWorkouts = weekWorkouts[day] || [];
+                const contentElement = document.getElementById(day + 'Workout');
+                
+                if (dayWorkouts.length > 0) {
+                    contentElement.innerHTML = dayWorkouts.map(workout => `
+                        <div class="workout-card">
+                            <div class="workout-header">
+                                <div class="workout-type">${workout.type}</div>
+                                <div class="workout-zone zone-${workout.zone}-bg">Zona ${workout.zone}</div>
+                            </div>
+                            <div class="workout-details">
+                                ${workout.distance ? `📏 ${workout.distance}km` : ''}
+                                ${workout.duration ? `⏱️ ${workout.duration}min` : ''}
+                                ${workout.pace ? `🏃‍♂️ ${workout.pace}` : ''}
+                                ${workout.intensity ? `💪 ${workout.intensity}` : ''}
+                            </div>
+                            <div class="workout-actions">
+                                <button class="workout-action-btn edit" onclick="editWorkout('${workout.id}', '${day}')" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="workout-action-btn delete" onclick="deleteWorkout('${workout.id}', '${day}')" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('') + `
+                        <button class="add-workout-btn" onclick="addWorkout('${day}')">
+                            <i class="fas fa-plus"></i> Adicionar Treino
+                        </button>
+                    `;
+                } else {
+                    contentElement.innerHTML = `
+                        <button class="add-workout-btn" onclick="addWorkout('${day}')">
+                            <i class="fas fa-plus"></i> Adicionar Treino
+                        </button>
+                    `;
+                }
+            });
+
+            updateWeekSummary(weekWorkouts);
+        }
+
+        function updateWeekSummary(weekWorkouts) {
+            let totalVolume = 0;
+            let totalTime = 0;
+            let totalWorkouts = 0;
+            const zoneCount = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+            Object.values(weekWorkouts).forEach(dayWorkouts => {
+                dayWorkouts.forEach(workout => {
+                    totalWorkouts++;
+                    if (workout.distance) totalVolume += workout.distance;
+                    if (workout.duration) totalTime += workout.duration;
+                    if (workout.zone) zoneCount[workout.zone]++;
+                });
+            });
+
+            // Zona principal (mais utilizada)
+            const mainZone = Object.entries(zoneCount).reduce((a, b) => 
+                zoneCount[a[0]] > zoneCount[b[0]] ? a : b
+            );
+
+            document.getElementById('weekVolume').textContent = `${totalVolume.toFixed(1)} km`;
+            document.getElementById('weekTime').textContent = `${totalTime} min`;
+            document.getElementById('weekWorkouts').textContent = totalWorkouts;
+            document.getElementById('weekMainZone').textContent = 
+                totalWorkouts > 0 ? `Zona ${mainZone[0]}` : '-';
+        }
+
+        // Atualizar a função switchProfileTab para inicializar planilhas
+        const originalSwitchProfileTab = switchProfileTab;
+        switchProfileTab = function(tabName) {
+            originalSwitchProfileTab.call(this, tabName);
+            
+            if (tabName === 'planilhas') {
+                setTimeout(initializeWorkoutSystem, 100);
+            }
+        };
+
+        // Função para gerar planilha automática baseada no macrociclo (funcionalidade futura)
+        function generateAutomaticWorkoutPlan() {
+            // Esta função pode ser implementada para gerar planilhas automáticas
+            // baseadas no tipo de macrociclo e nas zonas calculadas do atleta
+            console.log('Geração automática de planilha - em desenvolvimento');
+        }                        <!-- Aba Planilhas -->
+                        <div id="planilhasTab" class="tab-content">
+                            <!-- Seletor de Macrociclo Ativo -->
+                            <div class="evaluation-section">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <h3 class="section-title" style="margin-bottom: 0;">
+                                        <i class="fas fa-calendar-week"></i> Planilhas de Treino
+                                    </h3>
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <select id="macrocicloSelect" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #d1d5db;">
+                                            <option value="">Selecionar Macrociclo</option>
+                                        </select>
+                                        <button class="btn-primary" onclick="createWorkoutPlan()" id="createPlanBtn" disabled>
+                                            <i class="fas fa-plus"></i> Criar Planilha
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Navegação Semanal -->
+                                <div id="weekNavigation" style="display: none;">
+                                    <div class="period-selector" style="margin-bottom: 20px;">
+                                        <button class="period-navigation" onclick="previousWorkoutWeek()">
+                                            <i class="fas fa-chevron-left"></i> Semana Anterior
+                                        </button>
+                                        <div class="current-period" id="currentWorkoutWeek">
+                                            Semana 1 - 26/05 a 01/06/2025
+                                        </div>
+                                        <button class="period-navigation" onclick="nextWorkoutWeek()">
+                                            Próxima Semana <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Calendário de Treinos -->
+                            <div id="workoutCalendar" style="display: none;">
+                                <div class="workout-week-grid">
+                                    <div class="workout-day" data-day="monday">
+                                        <div class="day-header">
+                                            <h4>Segunda-feira</h4>
+                                            <span class="day-date" id="mondayDate">26/05</span>
+                                        </div>
+                                        <div class="workout-content" id="mondayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('monday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="tuesday">
+                                        <div class="day-header">
+                                            <h4>Terça-feira</h4>
+                                            <span class="day-date" id="tuesdayDate">27/05</span>
+                                        </div>
+                                        <div class="workout-content" id="tuesdayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('tuesday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="wednesday">
+                                        <div class="day-header">
+                                            <h4>Quarta-feira</h4>
+                                            <span class="day-date" id="wednesdayDate">28/05</span>
+                                        </div>
+                                        <div class="workout-content" id="wednesdayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('wednesday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="thursday">
+                                        <div class="day-header">
+                                            <h4>Quinta-feira</h4>
+                                            <span class="day-date" id="thursdayDate">29/05</span>
+                                        </div>
+                                        <div class="workout-content" id="thursdayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('thursday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="friday">
+                                        <div class="day-header">
+                                            <h4>Sexta-feira</h4>
+                                            <span class="day-date" id="fridayDate">30/05</span>
+                                        </div>
+                                        <div class="workout-content" id="fridayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('friday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="saturday">
+                                        <div class="day-header">
+                                            <h4>Sábado</h4>
+                                            <span class="day-date" id="saturdayDate">31/05</span>
+                                        </div>
+                                        <div class="workout-content" id="saturdayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('saturday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="workout-day" data-day="sunday">
+                                        <div class="day-header">
+                                            <h4>Domingo</h4>
+                                            <span class="day-date" id="sundayDate">01/06</span>
+                                        </div>
+                                        <div class="workout-content" id="sundayWorkout">
+                                            <button class="add-workout-btn" onclick="addWorkout('sunday')">
+                                                <i class="fas fa-plus"></i> Adicionar Treino
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resumo da Semana -->
+                                <div class="week-summary">
+                                    <h4 style="margin-bottom: 12px;"><i class="fas fa-chart-bar"></i> Resumo da Semana</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <span class="summary-label">Volume Total</span>
+                                            <span class="summary-value" id="weekVolume">0 km</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Tempo Total</span>
+                                            <span class="summary-value" id="weekTime">0 min</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Treinos</span>
+                                            <span class="summary-value" id="weekWorkouts">0</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Zona Principal</span>
+                                            <span class="summary-value" id="weekMainZone">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Estado vazio -->
+                            <div id="emptyWorkoutState" class="empty-state">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h3>Selecione um Macrociclo</h3>
+                                <p>Escolha um macrociclo ativo para começar a criar planilhas de treino</p>
                             </div>
                         </div>
 
