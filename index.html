@@ -1694,11 +1694,75 @@
 
                         <!-- Aba Planejamento -->
                         <div id="planejamentoTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-alt"></i>
-                                <h3>Planejamento em Desenvolvimento</h3>
-                                <p>Esta seção conterá o planejamento de treinos, periodização e objetivos</p>
-                            </div>
+                            <!-- Planejamento de Macrociclo - Inclusão na aba Planejamento -->
+<div id="planejamentoTab" class="tab-content">
+    <div class="evaluation-section">
+        <h3 class="section-title">
+            <i class="fas fa-layer-group"></i> Planejamento de Macrociclo
+        </h3>
+
+        <form id="macroForm">
+            <div class="form-group">
+                <label for="macroNome">Nome do Macrociclo</label>
+                <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
+            </div>
+
+            <div class="form-group">
+                <label for="macroObs">Objetivo / Observação</label>
+                <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..." style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc;"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inicioMacro">Início</label>
+                    <input type="date" id="inicioMacro" required>
+                </div>
+                <div class="form-group">
+                    <label for="fimMacro">Término</label>
+                    <input type="date" id="fimMacro" required>
+                </div>
+            </div>
+
+            <button type="button" class="btn-primary" onclick="gerarMesociclos()">
+                <i class="fas fa-layer-group"></i> Gerar Mesociclos
+            </button>
+        </form>
+
+        <div id="mesoResultado" style="margin-top: 24px; display: none;">
+            <h4 style="margin-bottom: 12px;">Mesociclos Gerados:</h4>
+            <ul id="listaMesos" style="list-style: disc; padding-left: 20px;"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+function gerarMesociclos() {
+    const nome = document.getElementById('macroNome').value;
+    const obs = document.getElementById('macroObs').value;
+    const inicio = new Date(document.getElementById('inicioMacro').value);
+    const fim = new Date(document.getElementById('fimMacro').value);
+
+    if (!nome || !inicio || !fim || fim <= inicio) {
+        alert('Preencha corretamente as datas e o nome do macrociclo.');
+        return;
+    }
+
+    const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+    const semanas = Math.ceil(diff / 7);
+    const lista = document.getElementById('listaMesos');
+    lista.innerHTML = '';
+
+    for (let i = 1; i <= semanas; i++) {
+        const li = document.createElement('li');
+        li.textContent = `Semana ${i} - Tipo: (definir posteriormente)`;
+        lista.appendChild(li);
+    }
+
+    document.getElementById('mesoResultado').style.display = 'block';
+    console.log('Macrociclo gerado:', { nome, obs, inicio, fim, semanas });
+}
+</script>
+                          </div>
                         </div>
 
                         <!-- Aba Planilhas -->
