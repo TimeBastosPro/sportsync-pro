@@ -255,7 +255,7 @@ function loadMicrocycles(period) {
                 const startDate = new Date(period.startDate);
                 const endDate = new Date(period.endDate);
                 const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7));
-                const status = getpériodStatus(period);
+                const status = getperiodStatus(period);
                 
                 return `
                     <tr onclick="selectPeriod('${period.id}')" ${selectedPeriodId === period.id ? 'class="selected"' : ''}>
@@ -322,8 +322,6 @@ function loadMicrocycles(period) {
             document.getElementById('periodDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
             document.getElementById('orientationContent').innerHTML = `<p>${period.orientation || 'Nenhuma orientação definida.'}</p>`;
             
-            // Carregar microciclos
-            loadMicrocycles(period);
         }
 
         function loadMicrocycles(period) {
