@@ -1,62 +1,328 @@
-<!-- Aba Dados -->
+margin: 0 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        .action-btn.edit:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .action-btn.delete:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .planning-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .planning-actions {
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-user-tie"></i>
+                    <h1>Bastos Run Coach</h1>
+                </div>
+                <div class="role-badge">TREINADOR</div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Entrar como Treinador
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <strong>Credenciais de Teste:</strong><br>
+                E-mail: treinador@bastos.com<br>
+                Senha: 123456
+            </div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appContainer" class="app-container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Bastos Run Coach</span>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" data-page="dashboard">
+                        <i class="fas fa-chart-bar"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-page="athletes">
+                        <i class="fas fa-users"></i> Meus Atletas
+                    </button>
+                    <div class="user-info">
+                        <i class="fas fa-user"></i>
+                        <span id="trainerName">Treinador</span>
+                        <button class="logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- DASHBOARD -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-title">Atletas Ativos</div>
+                        </div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-description">Total de atletas cadastrados</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-title">Sem Planejamento</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Atletas sem plano de treino</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon yellow">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-title">Planilhas Vazias</div>
+                        </div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-description">Planilhas sem treinos</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="stat-title">Sem Feedback</div>
+                        </div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-description">Treinos aguardando feedback</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Próximos Eventos</h2>
+                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
+                        <button class="add-event-btn" onclick="openEventModal()" style="margin-top: 12px;">
+                            <i class="fas fa-plus"></i> Cadastrar Evento
+                        </button>
+                    </div>
+                    <div id="eventsContent">
+                        <!-- Eventos serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEUS ATLETAS -->
+            <div id="athletesPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Meus Atletas</h1>
+                </div>
+
+                <div class="content-card">
+                    <table class="athletes-table">
+                        <thead class="table-header">
+                            <tr>
+                                <th>Atleta</th>
+                                <th>Situação</th>
+                                <th>Grupo</th>
+                                <th>Mesociclo</th>
+                                <th>Microciclo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr onclick="viewAthleteProfile('adao-oliveira')">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name">Adão Aparecido de Oliveira</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-preparation">Em preparação</span>
+                                </td>
+                                <td>Projeto Corra</td>
+                                <td>Base Geral</td>
+                                <td>14/27 Choque</td>
+                            </tr>
+                            <tr onclick="viewAthleteProfile('adriana-freitas')">
+                                <td>
+                                    <div class="athlete-info">
+                                        <div class="athlete-avatar">A</div>
+                                        <div class="athlete-name">Adriana Duque de Freitas</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active">Liberado</span>
+                                </td>
+                                <td>TIME BASTOS</td>
+                                <td>Específico</td>
+                                <td>22/25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PERFIL DO ATLETA -->
+            <div id="athleteProfilePage" class="page">
+                <div class="content-card">
+                    <!-- Header do Perfil -->
+                    <div class="profile-header">
+                        <div class="profile-info">
+                            <div class="profile-avatar" id="profileAvatar">A</div>
+                            <div class="profile-details">
+                                <h1 id="profileName">Nome do Atleta</h1>
+                                <p id="profileGroup">Grupo</p>
+                                <p id="profileStatus">Status</p>
+                            </div>
+                            <button class="back-btn" onclick="backToAthletes()">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Abas do Perfil -->
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" onclick="switchProfileTab('dados')">
+                            <i class="fas fa-user"></i> Dados
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">
+                            <i class="fas fa-chart-line"></i> Avaliações
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planejamento')">
+                            <i class="fas fa-calendar-alt"></i> Planejamento
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
+                            <i class="fas fa-file-excel"></i> Planilhas
+                        </button>
+                        <button class="profile-tab" onclick="switchProfileTab('eventos')">
+                            <i class="fas fa-trophy"></i> Eventos
+                        </button>
+                    </div>
+
+                    <!-- Conteúdo das Abas -->
+                    <div class="profile-content">
+                        <!-- Aba Dados -->
                         <div id="dadosTab" class="tab-content active">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
-                                    <h3 style="color: #1f2937; font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-user"></i> Informações Pessoais
-                                    </h3>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Nome Completo:</span>
-                                        <span id="fullName" style="color: #1f2937; font-weight: 500; font-size: 14px;">-</span>
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Nome Completo:</span>
+                                        <span class="info-value" id="fullName">-</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Data de Nascimento:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">15/03/1985</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Data de Nascimento:</span>
+                                        <span class="info-value">15/03/1985</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Idade:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">40 anos</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Idade:</span>
+                                        <span class="info-value">40 anos</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">E-mail:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">atleta@email.com</span>
+                                    <div class="info-item">
+                                        <span class="info-label">E-mail:</span>
+                                        <span class="info-value">atleta@email.com</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #6b7280; font-size: 14px;">Telefone:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">(11) 99999-9999</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Telefone:</span>
+                                        <span class="info-value">(11) 99999-9999</span>
                                     </div>
                                 </div>
 
-                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
-                                    <h3 style="color: #1f2937; font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-running"></i> Dados Esportivos
-                                    </h3>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Grupo:</span>
-                                        <span id="athleteGroup" style="color: #1f2937; font-weight: 500; font-size: 14px;">-</span>
+                                <div class="info-card">
+                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Grupo:</span>
+                                        <span class="info-value" id="athleteGroup">-</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Categoria:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">Veterano</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Categoria:</span>
+                                        <span class="info-value">Veterano</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Tempo de Treino:</span>
-                                        <span style="color: #1f2937; font-weight: 500; font-size: 14px;">2 anos</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Tempo de Treino:</span>
+                                        <span class="info-value">2 anos</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-                                        <span style="color: #6b7280; font-size: 14px;">Mesociclo Atual:</span>
-                                        <span id="currentMesocycle" style="color: #1f2937; font-weight: 500; font-size: 14px;">-</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Mesociclo Atual:</span>
+                                        <span class="info-value" id="currentMesocycle">-</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #6b7280; font-size: 14px;">Microciclo Atual:</span>
-                                        <span id="currentMicrocycle" style="color: #1f2937; font-weight: 500; font-size: 14px;">-</span>
+                                    <div class="info-item">
+                                        <span class="info-label">Microciclo Atual:</span>
+                                        <span class="info-value" id="currentMicrocycle">-</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Aba Avaliações -->
-                        <div id="avaliacoesTab" class="tab-content" style="display: none;">
+                        <div id="avaliacoesTab" class="tab-content">
                             <div class="empty-state">
                                 <i class="fas fa-chart-line"></i>
                                 <h3>Avaliações em Desenvolvimento</h3>
@@ -65,7 +331,7 @@
                         </div>
 
                         <!-- Aba Planejamento -->
-                        <div id="planejamentoTab" class="tab-content" style="display: none;">
+                        <div id="planejamentoTab" class="tab-content">
                             <!-- Header do Planejamento -->
                             <div class="planning-header">
                                 <div class="planning-title">
@@ -106,22 +372,22 @@
                                     </table>
                                 </div>
 
-                                <div id="noPeriodsMessage" class="empty-state" style="display: block;">
+                                <div id="noPeriodsMessage" class="empty-state-small" style="display: none;">
                                     <i class="fas fa-calendar-plus"></i>
-                                    <h3>Nenhum período cadastrado</h3>
+                                    <h4>Nenhum período cadastrado</h4>
                                     <p>Clique em "Novo Macrociclo" para começar o planejamento</p>
                                 </div>
                             </div>
 
                             <!-- Detalhes do Período Selecionado -->
                             <div id="periodDetails" class="planning-section" style="display: none;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div class="section-header">
                                     <h3 class="section-title">
                                         <i class="fas fa-calendar-week"></i> <span id="periodDetailsTitle">Período 1</span>
                                     </h3>
-                                    <div style="display: flex; align-items: center; gap: 16px; font-size: 14px;">
-                                        <span id="periodDuration" style="background: #eff6ff; color: #1e40af; padding: 4px 8px; border-radius: 12px; font-weight: 600; font-size: 12px;">16 semanas</span>
-                                        <span id="periodDates" style="color: #6b7280; font-weight: 500;">03/02/2025 - 22/06/2025</span>
+                                    <div class="period-info">
+                                        <span class="period-duration" id="periodDuration">16 semanas</span>
+                                        <span class="period-dates" id="periodDates">03/02/2025 - 22/06/2025</span>
                                         <button class="btn-small" onclick="editPeriod()">
                                             <i class="fas fa-edit"></i> Editar Período
                                         </button>
@@ -129,17 +395,31 @@
                                 </div>
 
                                 <!-- Orientação/Objetivo -->
-                                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-                                    <h4 style="color: #1f2937; font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-bullseye"></i> Orientação do Período
-                                    </h4>
-                                    <div id="orientationContent" style="margin-bottom: 12px;">
-                                        <p style="color: #374151; line-height: 1.6; margin: 0;">Preparação de base aeróbia com foco no desenvolvimento da resistência geral.</p>
+                                <div class="period-orientation">
+                                    <h4><i class="fas fa-bullseye"></i> Orientação do Período</h4>
+                                    <div class="orientation-content" id="orientationContent">
+                                        <p>Preparação de base aeróbia com foco no desenvolvimento da resistência geral e adaptação aos estímulos de treino.</p>
                                     </div>
                                     <button class="btn-small" onclick="editOrientation()">
                                         <i class="fas fa-edit"></i> Editar Orientação
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Planilhas -->
+                        <div id="planilhasTab" class="tab-content">
+                            <div class="empty-state">
+                                <i class="fas fa-file-excel"></i>
+                                <h3>Planilhas em Desenvolvimento</h3>
+                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
+                            </div>
+                        </div>
+
+                        <!-- Aba Eventos -->
+                        <div id="eventosTab" class="tab-content">
+                            <div id="athleteEvents">
+                                <!-- Eventos do atleta serão carregados aqui -->
                             </div>
                         </div>
                     </div>
@@ -152,11 +432,12 @@
     <div id="eventModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">Cadastrar Novo Evento</h2>
+                <h2 class="modal-title" id="modalTitle">Cadastrar Novo Evento</h2>
                 <button class="modal-close" onclick="closeEventModal()">&times;</button>
             </div>
             
             <form id="eventForm">
+                <input type="hidden" id="eventId" value="">
                 <div class="form-group">
                     <label for="eventName">Nome do Evento</label>
                     <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
@@ -178,9 +459,16 @@
                     <input type="text" id="eventLocation" required placeholder="Ex: Parque Ibirapuera, São Paulo">
                 </div>
                 
+                <div class="athletes-selection">
+                    <h3>Selecionar Atletas Participantes</h3>
+                    <div id="athletesList">
+                        <!-- Lista de atletas será carregada aqui -->
+                    </div>
+                </div>
+                
                 <div style="text-align: right; margin-top: 24px;">
                     <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Cadastrar Evento</button>
+                    <button type="submit" class="btn-primary" id="submitEventBtn">Cadastrar Evento</button>
                 </div>
             </form>
         </div>
@@ -195,6 +483,7 @@
             </div>
             
             <form id="cycleForm">
+                <input type="hidden" id="cycleId" value="">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="cycleNumber">Número do Período</label>
@@ -235,6 +524,7 @@
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
         let currentAthlete = null;
         let events = JSON.parse(localStorage.getItem('events') || '[]');
+        let editingEventId = null;
         let cycles = JSON.parse(localStorage.getItem('cycles') || '{}');
         let selectedPeriodId = null;
 
@@ -397,25 +687,19 @@
             // Remover active de todas as abas
             document.querySelectorAll('.profile-tab').forEach(tab => {
                 tab.classList.remove('active');
-                tab.style.color = '#6b7280';
-                tab.style.borderBottomColor = 'transparent';
-                tab.style.fontWeight = '500';
             });
-            
             document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
                 content.classList.remove('active');
             });
 
             // Ativar aba selecionada
             event.target.classList.add('active');
-            event.target.style.color = '#3b82f6';
-            event.target.style.borderBottomColor = '#3b82f6';
-            event.target.style.fontWeight = '600';
+            document.getElementById(tabName + 'Tab').classList.add('active');
             
-            const targetTab = document.getElementById(tabName + 'Tab');
-            targetTab.style.display = 'block';
-            targetTab.classList.add('active');
+            // Se for aba de eventos, carregar eventos do atleta
+            if (tabName === 'eventos') {
+                loadAthleteEvents();
+            }
             
             // Se for aba de planejamento, carregar ciclos do atleta
             if (tabName === 'planejamento') {
@@ -424,32 +708,112 @@
         }
 
         // Funções de Eventos
-        function openEventModal() {
+        function openEventModal(eventId = null) {
+            editingEventId = eventId;
+            
+            if (eventId) {
+                // Modo edição
+                const event = events.find(e => e.id === eventId);
+                if (event) {
+                    document.getElementById('modalTitle').textContent = 'Editar Evento';
+                    document.getElementById('submitEventBtn').textContent = 'Salvar Alterações';
+                    document.getElementById('eventId').value = eventId;
+                    document.getElementById('eventName').value = event.name;
+                    document.getElementById('eventDate').value = event.date;
+                    document.getElementById('eventDistance').value = event.distance;
+                    document.getElementById('eventLocation').value = event.location;
+                }
+            } else {
+                // Modo criação
+                document.getElementById('modalTitle').textContent = 'Cadastrar Novo Evento';
+                document.getElementById('submitEventBtn').textContent = 'Cadastrar Evento';
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventId').value = '';
+            }
+            
             document.getElementById('eventModal').classList.add('active');
+            loadAthletesForSelection(eventId);
         }
 
         function closeEventModal() {
             document.getElementById('eventModal').classList.remove('active');
             document.getElementById('eventForm').reset();
+            editingEventId = null;
+        }
+
+        function loadAthletesForSelection(eventId = null) {
+            const athletesList = document.getElementById('athletesList');
+            athletesList.innerHTML = '';
+            
+            let selectedParticipants = [];
+            if (eventId) {
+                const event = events.find(e => e.id === eventId);
+                if (event) {
+                    selectedParticipants = event.participants || [];
+                }
+            }
+            
+            Object.keys(athletesData).forEach(athleteId => {
+                const athlete = athletesData[athleteId];
+                const isSelected = selectedParticipants.includes(athleteId);
+                const div = document.createElement('div');
+                div.className = 'athlete-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}" ${isSelected ? 'checked' : ''}>
+                    <label for="athlete_${athleteId}">${athlete.name}</label>
+                `;
+                athletesList.appendChild(div);
+            });
         }
 
         function handleEventSubmit(e) {
             e.preventDefault();
             
+            const eventId = document.getElementById('eventId').value;
             const eventData = {
-                id: Date.now().toString(),
+                id: eventId || Date.now().toString(),
                 name: document.getElementById('eventName').value,
                 date: document.getElementById('eventDate').value,
                 distance: document.getElementById('eventDistance').value,
-                location: document.getElementById('eventLocation').value
+                location: document.getElementById('eventLocation').value,
+                participants: []
             };
             
-            events.push(eventData);
+            // Pegar atletas selecionados
+            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                eventData.participants.push(checkbox.value);
+            });
+            
+            if (eventId) {
+                // Editar evento existente
+                const eventIndex = events.findIndex(e => e.id === eventId);
+                if (eventIndex !== -1) {
+                    events[eventIndex] = eventData;
+                }
+            } else {
+                // Criar novo evento
+                events.push(eventData);
+            }
+            
             localStorage.setItem('events', JSON.stringify(events));
             
             closeEventModal();
             loadEvents();
-            alert('Evento cadastrado com sucesso!');
+            alert(eventId ? 'Evento atualizado com sucesso!' : 'Evento cadastrado com sucesso!');
+        }
+
+        function editEvent(eventId) {
+            openEventModal(eventId);
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Tem certeza que deseja excluir este evento?')) {
+                events = events.filter(event => event.id !== eventId);
+                localStorage.setItem('events', JSON.stringify(events));
+                loadEvents();
+                alert('Evento excluído com sucesso!');
+            }
         }
 
         function loadEvents() {
@@ -473,20 +837,89 @@
                 const formattedDate = eventDate.toLocaleDateString('pt-BR');
                 
                 return `
-                    <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: white;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div class="event-card">
+                        <div class="event-header">
                             <div>
-                                <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">${event.name}</div>
-                                <div style="font-size: 14px; color: #3b82f6; font-weight: 500;">${formattedDate}</div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                            <div class="event-actions">
+                                <button class="event-btn edit" onclick="editEvent('${event.id}')" title="Editar evento">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="event-btn delete" onclick="deleteEvent('${event.id}')" title="Excluir evento">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
                             </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #6b7280;">
-                                <i class="fas fa-route" style="color: #3b82f6; width: 16px;"></i>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
                                 <span>${event.distance}</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #6b7280;">
-                                <i class="fas fa-map-marker-alt" style="color: #3b82f6; width: 16px;"></i>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+                        <div class="event-participants">
+                            <div class="participants-title">Participantes</div>
+                            <div class="participants-list">
+                                ${(event.participants || []).map(id => 
+                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadAthleteEvents() {
+            if (!currentAthlete) return;
+            
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+            
+            const athleteEvents = events.filter(event => 
+                (event.participants || []).includes(athleteId)
+            );
+            
+            const athleteEventsContainer = document.getElementById('athleteEvents');
+            
+            if (athleteEvents.length === 0) {
+                athleteEventsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Nenhum evento cadastrado</h3>
+                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-title">${event.name}</div>
+                                <div class="event-date">${formattedDate}</div>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <i class="fas fa-route"></i>
+                                <span>${event.distance}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
                                 <span>${event.location}</span>
                             </div>
                         </div>
@@ -527,15 +960,13 @@
                 const status = getPeriodStatus(period);
                 
                 return `
-                    <tr onclick="selectPeriod('${period.id}')" style="cursor: pointer; ${selectedPeriodId === period.id ? 'background: #eff6ff; border-left: 4px solid #3b82f6;' : ''}">
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">${period.number}</td>
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">${formatDate(startDate)}</td>
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">${formatDate(endDate)}</td>
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">${duration} semanas</td>
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">
-                            <span class="period-status ${status.class}" style="padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase;">${status.text}</span>
-                        </td>
-                        <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151;">
+                    <tr onclick="selectPeriod('${period.id}')" ${selectedPeriodId === period.id ? 'class="selected"' : ''}>
+                        <td>${period.number}</td>
+                        <td>${formatDate(startDate)}</td>
+                        <td>${formatDate(endDate)}</td>
+                        <td>${duration} semanas</td>
+                        <td><span class="period-status ${status.class}">${status.text}</span></td>
+                        <td>
                             <button class="action-btn edit" onclick="event.stopPropagation(); editPeriod('${period.id}')" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -546,6 +977,11 @@
                     </tr>
                 `;
             }).join('');
+            
+            // Selecionar primeiro período se nenhum estiver selecionado
+            if (!selectedPeriodId && periods.length > 0) {
+                selectPeriod(periods[0].id);
+            }
         }
 
         function getPeriodStatus(period) {
@@ -572,8 +1008,11 @@
             const period = cycles[athleteId]?.find(p => p.id === periodId);
             if (!period) return;
             
-            // Recarregar tabela para atualizar seleção
-            loadPeriods(cycles[athleteId]);
+            // Atualizar seleção visual
+            document.querySelectorAll('.periods-table tr').forEach(tr => tr.classList.remove('selected'));
+            if (event && event.target) {
+                event.target.closest('tr')?.classList.add('selected');
+            }
             
             // Mostrar detalhes do período
             document.getElementById('periodDetails').style.display = 'block';
@@ -585,7 +1024,23 @@
             
             document.getElementById('periodDuration').textContent = `${duration} semanas`;
             document.getElementById('periodDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-            document.getElementById('orientationContent').innerHTML = `<p style="color: #374151; line-height: 1.6; margin: 0;">${period.orientation || 'Nenhuma orientação definida.'}</p>`;
+            document.getElementById('orientationContent').innerHTML = `<p>${period.orientation || 'Nenhuma orientação definida.'}</p>`;
+        }
+
+        function openCycleModal(cycleId = null) {
+            if (cycleId) {
+                // Modo edição
+                document.getElementById('cycleModalTitle').textContent = 'Editar Macrociclo';
+                document.getElementById('submitCycleBtn').textContent = 'Salvar Alterações';
+                // Carregar dados do ciclo...
+            } else {
+                // Modo criação
+                document.getElementById('cycleModalTitle').textContent = 'Novo Macrociclo';
+                document.getElementById('submitCycleBtn').textContent = 'Criar Macrociclo';
+                document.getElementById('cycleForm').reset();
+            }
+            
+            document.getElementById('cycleModal').classList.add('active');
         }
 
         function closeCycleModal() {
@@ -639,11 +1094,18 @@
         }
 
         function editPeriod(periodId) {
-            alert('Funcionalidade de edição em desenvolvimento!');
+            if (periodId) {
+                openCycleModal(periodId);
+            } else {
+                // Editar período selecionado
+                if (selectedPeriodId) {
+                    openCycleModal(selectedPeriodId);
+                }
+            }
         }
 
         function deletePeriod(periodId) {
-            if (confirm('Tem certeza que deseja excluir este período?')) {
+            if (confirm('Tem certeza que deseja excluir este período? Todos os microciclos serão perdidos.')) {
                 const athleteId = Object.keys(athletesData).find(id => 
                     athletesData[id].name === currentAthlete.name
                 );
@@ -668,7 +1130,7 @@
                 document.getElementById('orientationContent').textContent);
             
             if (newOrientation !== null) {
-                document.getElementById('orientationContent').innerHTML = `<p style="color: #374151; line-height: 1.6; margin: 0;">${newOrientation}</p>`;
+                document.getElementById('orientationContent').innerHTML = `<p>${newOrientation}</p>`;
                 
                 // Salvar no localStorage
                 const athleteId = Object.keys(athletesData).find(id => 
@@ -733,26 +1195,6 @@
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
         }
-
-        // CSS adicional para status
-        const statusStyles = `
-            .status-active {
-                background: #d1fae5 !important;
-                color: #065f46 !important;
-            }
-            .status-planned {
-                background: #dbeafe !important;
-                color: #1e40af !important;
-            }
-            .status-completed {
-                background: #f3f4f6 !important;
-                color: #374151 !important;
-            }
-        `;
-        
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = statusStyles;
-        document.head.appendChild(styleSheet);
     </script>
 </body>
 </html><!DOCTYPE html>
@@ -999,7 +1441,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* COMUM */
+        /* DASHBOARD */
         .page-header {
             margin-bottom: 24px;
         }
@@ -1016,187 +1458,6 @@
             font-size: 14px;
         }
         
-        .content-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-        }
-        
-        .card-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #f9fafb;
-        }
-        
-        .card-title {
-            color: #1f2937;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            color: #d1d5db;
-            margin-bottom: 16px;
-        }
-        
-        .empty-state h3 {
-            color: #374151;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        /* BOTÕES */
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-        
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-right: 12px;
-            transition: background 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-        
-        .btn-small {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.2s ease;
-        }
-        
-        .btn-small:hover {
-            background: #4b5563;
-        }
-        
-        /* MODAL */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #6b7280;
-            cursor: pointer;
-            padding: 4px;
-        }
-        
-        .modal-close:hover {
-            color: #374151;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        
-        /* DASHBOARD */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1252,15 +1513,39 @@
             color: #6b7280;
             font-size: 12px;
         }
-
+        
         /* ATLETAS */
-        .athletes-table {
-            width: 100%;
-            border-collapse: collapse;
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
         }
         
-        .athletes-table th {
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
             background: #f9fafb;
+        }
+        
+        .card-title {
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .athletes-table {
+            width: 100%;
+        }
+        
+        .table-header {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-header th {
             padding: 12px 16px;
             text-align: left;
             color: #374151;
@@ -1268,19 +1553,21 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid #e5e7eb;
         }
         
-        .athletes-table td {
+        .table-body tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .table-body tr:hover {
+            background: #f9fafb;
+        }
+        
+        .table-body td {
             padding: 12px 16px;
             font-size: 14px;
             color: #374151;
             vertical-align: middle;
-            border-bottom: 1px solid #f3f4f6;
-        }
-        
-        .athletes-table tr:hover {
-            background: #f9fafb;
         }
         
         .athlete-info {
@@ -1331,7 +1618,26 @@
             background: #fef3c7;
             color: #92400e;
         }
-
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #d1d5db;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
         /* PERFIL DO ATLETA */
         .profile-header {
             background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
@@ -1370,6 +1676,25 @@
             font-size: 16px;
             opacity: 0.9;
             margin-bottom: 2px;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .profile-tabs {
@@ -1460,7 +1785,7 @@
             font-weight: 500;
             font-size: 14px;
         }
-
+        
         /* EVENTOS */
         .event-card {
             border: 1px solid #e5e7eb;
@@ -1496,6 +1821,40 @@
             font-weight: 500;
         }
         
+        .event-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .event-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .event-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        .event-btn.edit:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .event-btn.delete:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+        
         .event-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1515,6 +1874,190 @@
             color: #3b82f6;
             width: 16px;
         }
+        
+        .event-participants {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .participants-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .participants-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .participant-badge {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .modal-close:hover {
+            color: #374151;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .athletes-selection {
+            margin-top: 24px;
+        }
+        
+        .athletes-selection h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        
+        .athlete-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .athlete-checkbox:hover {
+            background: #f9fafb;
+        }
+        
+        .athlete-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .add-event-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .add-event-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* PLANEJAMENTO */
         .planning-header {
             display: flex;
             justify-content: space-between;
@@ -1544,8 +2087,38 @@
             gap: 12px;
         }
         
+        .btn-small {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-small:hover {
+            background: #4b5563;
+        }
+        
         .planning-section {
             margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
         }
         
         .periods-table-container {
@@ -1598,11 +2171,6 @@
             text-transform: uppercase;
         }
         
-        .status-active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
         .status-planned {
             background: #dbeafe;
             color: #1e40af;
@@ -1613,6 +2181,84 @@
             color: #374151;
         }
         
+        .empty-state-small {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .empty-state-small i {
+            font-size: 32px;
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
+        
+        .empty-state-small h4 {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .period-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+        }
+        
+        .period-duration {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .period-dates {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .period-orientation {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .period-orientation h4 {
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .orientation-content {
+            margin-bottom: 12px;
+        }
+        
+        .orientation-content p {
+            color: #374151;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
         .action-btn {
             background: none;
             border: 1px solid #d1d5db;
@@ -1621,261 +2267,3 @@
             border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
-            margin: 0 2px;
-            transition: all 0.2s ease;
-        }
-        
-        .action-btn:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-        
-        .action-btn.edit:hover {
-            color: #3b82f6;
-            border-color: #3b82f6;
-        }
-        
-        .action-btn.delete:hover {
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .planning-header {
-                flex-direction: column;
-                gap: 16px;
-                align-items: stretch;
-            }
-            
-            .planning-actions {
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- LOGIN -->
-    <div id="loginContainer" class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">
-                    <i class="fas fa-user-tie"></i>
-                    <h1>Bastos Run Coach</h1>
-                </div>
-                <div class="role-badge">TREINADOR</div>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" required placeholder="treinador@bastos.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginPassword">Senha</label>
-                    <input type="password" id="loginPassword" required placeholder="Digite sua senha">
-                </div>
-                
-                <button type="submit" class="login-btn" id="loginBtn">
-                    Entrar como Treinador
-                </button>
-            </form>
-            
-            <div class="demo-info">
-                <strong>Credenciais de Teste:</strong><br>
-                E-mail: treinador@bastos.com<br>
-                Senha: 123456
-            </div>
-        </div>
-    </div>
-
-    <!-- APP -->
-    <div id="appContainer" class="app-container">
-        <header class="header">
-            <nav class="nav">
-                <div class="logo">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Bastos Run Coach</span>
-                </div>
-                <div class="nav-buttons">
-                    <button class="nav-btn active" data-page="dashboard">
-                        <i class="fas fa-chart-bar"></i> Dashboard
-                    </button>
-                    <button class="nav-btn" data-page="athletes">
-                        <i class="fas fa-users"></i> Meus Atletas
-                    </button>
-                    <div class="user-info">
-                        <i class="fas fa-user"></i>
-                        <span id="trainerName">Treinador</span>
-                        <button class="logout-btn" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <div class="container">
-            <!-- DASHBOARD -->
-            <div id="dashboardPage" class="page active">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Visão geral dos seus atletas e atividades</p>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon blue">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-title">Atletas Ativos</div>
-                        </div>
-                        <div class="stat-value">2</div>
-                        <div class="stat-description">Total de atletas cadastrados</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon red">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="stat-title">Sem Planejamento</div>
-                        </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Atletas sem plano de treino</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon yellow">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="stat-title">Planilhas Vazias</div>
-                        </div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Planilhas sem treinos</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-card-header">
-                            <div class="stat-icon green">
-                                <i class="fas fa-comment-dots"></i>
-                            </div>
-                            <div class="stat-title">Sem Feedback</div>
-                        </div>
-                        <div class="stat-value">1</div>
-                        <div class="stat-description">Treinos aguardando feedback</div>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Próximos Eventos</h2>
-                        <p style="color: #6b7280; font-size: 14px;">Eventos cadastrados para os próximos dias</p>
-                        <button class="btn-primary" onclick="openEventModal()" style="margin-top: 12px;">
-                            <i class="fas fa-plus"></i> Cadastrar Evento
-                        </button>
-                    </div>
-                    <div id="eventsContent">
-                        <div class="empty-state">
-                            <i class="fas fa-calendar-alt"></i>
-                            <h3>Nenhum evento cadastrado</h3>
-                            <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MEUS ATLETAS -->
-            <div id="athletesPage" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Meus Atletas</h1>
-                </div>
-
-                <div class="content-card">
-                    <div style="padding: 20px;">
-                        <table class="athletes-table">
-                            <thead>
-                                <tr>
-                                    <th>Atleta</th>
-                                    <th>Situação</th>
-                                    <th>Grupo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr onclick="viewAthleteProfile('adao-oliveira')">
-                                    <td>
-                                        <div class="athlete-info">
-                                            <div class="athlete-avatar">A</div>
-                                            <span class="athlete-name">Adão Aparecido de Oliveira</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-preparation">Em preparação</span>
-                                    </td>
-                                    <td>Projeto Corra</td>
-                                </tr>
-                                <tr onclick="viewAthleteProfile('adriana-freitas')">
-                                    <td>
-                                        <div class="athlete-info">
-                                            <div class="athlete-avatar">A</div>
-                                            <span class="athlete-name">Adriana Duque de Freitas</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-active">Liberado</span>
-                                    </td>
-                                    <td>TIME BASTOS</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PERFIL DO ATLETA -->
-            <div id="athleteProfilePage" class="page">
-                <div class="content-card">
-                    <!-- Header do Perfil -->
-                    <div style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; padding: 24px; border-radius: 8px 8px 0 0;">
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <div id="profileAvatar" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: white;">A</div>
-                            <div>
-                                <h1 id="profileName" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">Nome do Atleta</h1>
-                                <p id="profileGroup" style="font-size: 16px; opacity: 0.9; margin-bottom: 2px;">Grupo</p>
-                                <p id="profileStatus" style="font-size: 16px; opacity: 0.9; margin-bottom: 2px;">Status</p>
-                            </div>
-                            <button class="btn-secondary" onclick="backToAthletes()" style="margin-left: auto; background: rgba(255, 255, 255, 0.2); margin-right: 0;">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Abas do Perfil -->
-                    <div style="display: flex; background: white; border-bottom: 1px solid #e5e7eb;">
-                        <button class="profile-tab active" onclick="switchProfileTab('dados')" style="background: none; border: none; padding: 16px 24px; font-size: 14px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s ease;">
-                            <i class="fas fa-user"></i> Dados
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')" style="background: none; border: none; padding: 16px 24px; font-size: 14px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s ease;">
-                            <i class="fas fa-chart-line"></i> Avaliações
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planejamento')" style="background: none; border: none; padding: 16px 24px; font-size: 14px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s ease;">
-                            <i class="fas fa-calendar-alt"></i> Planejamento
-                        </button>
-                    </div>
-
-                    <!-- Conteúdo das Abas -->
-                    <div style="background: white; padding: 24px; border-radius: 0 0 8px 8px;">
-                        <!-- Aba Dados -->
-                        <div id="dadosTab" class="tab-content active">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                                <div style="border: 1px solid #e5e7eb; border-radius:
