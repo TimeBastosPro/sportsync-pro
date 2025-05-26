@@ -83,15 +83,24 @@
             font-size: 14px;
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 14px;
         }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
         
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -322,6 +331,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
             overflow: hidden;
+            margin-bottom: 24px; /* Added margin */
         }
         
         .card-header {
@@ -439,6 +449,73 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
         }
         
         .athletes-table {
@@ -706,6 +783,13 @@
             font-weight: 500;
             font-size: 14px;
         }
+
+        .edit-field {
+            padding: 4px 8px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
         
         /* EVENTOS */
         .event-card {
@@ -924,39 +1008,6 @@
             margin-right: 8px;
         }
         
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-        
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-right: 12px;
-            transition: background 0.2s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-        
         .add-event-btn {
             background: #10b981;
             color: white;
@@ -1021,25 +1072,6 @@
         
         .test-card .form-group {
             margin-bottom: 12px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
         
         .results-grid {
@@ -1147,6 +1179,49 @@
             margin-top: 12px;
         }
 
+        /* PLANEJAMENTOS */
+        .planning-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: white;
+        }
+
+        .planning-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .planning-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .planning-dates {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .planning-details p {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .planning-details strong {
+            color: #1f2937;
+        }
+
+        .planning-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
         @media (max-width: 768px) {
             .nav {
                 flex-direction: column;
@@ -1183,6 +1258,10 @@
 
             .current-period {
                 order: -1;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1237,6 +1316,9 @@
                     </button>
                     <button class="nav-btn" data-page="athletes">
                         <i class="fas fa-users"></i> Meus Atletas
+                    </button>
+                    <button class="nav-btn" data-page="planning">
+                        <i class="fas fa-calendar-alt"></i> Planejamentos
                     </button>
                     <div class="user-info">
                         <i class="fas fa-user"></i>
@@ -1426,162 +1508,107 @@
                                 <p id="profileGroup">Grupo</p>
                                 <p id="profileStatus">Status</p>
                             </div>
-                            <button class="back-btn" onclick="backToAthletes()">
-                                <i class="fas fa-arrow-left"></i> Voltar
+                            <button class="back-btn" onclick="switchPage('athletes')">
+                                <i class="fas fa-arrow-left"></i> Voltar para Atletas
                             </button>
                         </div>
                     </div>
 
                     <!-- Abas do Perfil -->
                     <div class="profile-tabs">
-                        <button class="profile-tab active" onclick="switchProfileTab('dados')">
-                            <i class="fas fa-user"></i> Dados
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">
-                            <i class="fas fa-chart-line"></i> Avaliações
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planejamento')">
-                            <i class="fas fa-calendar-alt"></i> Planejamento
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
-                            <i class="fas fa-file-excel"></i> Planilhas
-                        </button>
-                        <button class="profile-tab" onclick="switchProfileTab('eventos')">
-                            <i class="fas fa-trophy"></i> Eventos
-                        </button>
+                        <button class="profile-tab active" onclick="switchProfileTab('dados')">Dados</button>
+                        <button class="profile-tab" onclick="switchProfileTab('avaliacoes')">Avaliações</button>
+                        <button class="profile-tab" onclick="switchProfileTab('eventos')">Eventos</button>
+                        <button class="profile-tab" onclick="switchProfileTab('planejamentoAtleta')">Planejamento</button>
                     </div>
 
-<!-- Substituir esse trecho no seu código original dentro da aba 'dadosTab' -->
-<div id="dadosTab" class="tab-content active">
-    <div class="info-grid">
-        <!-- Informacoes Pessoais -->
-        <div class="info-card">
-            <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                    <!-- Conteúdo das Abas -->
+                    <div class="profile-content">
+                        <!-- Aba Dados -->
+                        <div id="dadosTab" class="tab-content active">
+                            <div class="info-grid">
+                                <!-- Dados Pessoais -->
+                                <div class="info-card">
+                                    <h3><i class="fas fa-user-circle"></i> Dados Pessoais</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Nome Completo:</span>
+                                        <span class="info-value" id="athleteFullName">-</span>
+                                        <input type="text" class="edit-field" id="editFullName" style="display: none;" />
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">E-mail:</span>
+                                        <span class="info-value" id="athleteEmail">-</span>
+                                        <input type="email" class="edit-field" id="editEmail" style="display: none;" />
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Telefone:</span>
+                                        <span class="info-value" id="athletePhone">-</span>
+                                        <input type="tel" class="edit-field" id="editPhone" style="display: none;" />
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Data de Nascimento:</span>
+                                        <span class="info-value" id="athleteBirthdate">-</span>
+                                        <input type="date" class="edit-field" id="editBirthdate" style="display: none;" />
+                                    </div>
+                                    <button class="btn-secondary" onclick="toggleEditFields('pessoais')" id="editDadosBtn">Editar Dados</button>
+                                    <button class="btn-primary" onclick="saveEditedFields('pessoais')" id="saveDadosBtn" style="display:none;">Salvar</button>
+                                </div>
 
-            <div class="info-item">
-                <span class="info-label">Nome Completo:</span>
-                <span class="info-value" id="fullName">-</span>
-                <input type="text" class="edit-field" id="editFullName" style="display: none;" />
-            </div>
+                                <!-- Dados Esportivos -->
+                                <div class="info-card">
+                                    <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
+                                    <div class="info-item">
+                                        <span class="info-label">Grupo:</span>
+                                        <span class="info-value" id="athleteGroup">-</span>
+                                        <input type="text" class="edit-field" id="editGroup" style="display: none;" />
+                                    </div>
 
-            <div class="info-item">
-                <span class="info-label">Data de Nascimento:</span>
-                <span class="info-value">15/03/1985</span>
-                <input type="text" class="edit-field" id="editBirth" value="15/03/1985" style="display: none;" />
-            </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Nível do Atleta:</span>
+                                        <span class="info-value" id="athleteLevel">A definir</span>
+                                        <input type="text" class="edit-field" id="editLevel" value="A definir" style="display: none;" />
+                                    </div>
 
-            <div class="info-item">
-                <span class="info-label">Idade:</span>
-                <span class="info-value">40 anos</span>
-                <input type="text" class="edit-field" id="editAge" value="40 anos" style="display: none;" />
-            </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Tempo de Treino:</span>
+                                        <span class="info-value">2 anos</span>
+                                        <input type="text" class="edit-field" id="editExperience" value="2 anos" style="display: none;" />
+                                    </div>
 
-            <div class="info-item">
-                <span class="info-label">E-mail:</span>
-                <span class="info-value">atleta@email.com</span>
-                <input type="email" class="edit-field" id="editEmail" value="atleta@email.com" style="display: none;" />
-            </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Objetivo Principal:</span>
+                                        <span class="info-value" id="mainObjective">-</span>
+                                        <input type="text" class="edit-field" id="editGoal" style="display: none;" />
+                                    </div>
 
-            <div class="info-item">
-                <span class="info-label">Telefone:</span>
-                <span class="info-value">(11) 99999-9999</span>
-                <input type="text" class="edit-field" id="editPhone" value="(11) 99999-9999" style="display: none;" />
-            </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Prova Alvo:</span>
+                                        <span class="info-value" id="targetRace">-</span>
+                                        <input type="text" class="edit-field" id="editTargetRace" style="display: none;" />
+                                    </div>
 
-            <button class="btn-secondary" onclick="toggleEditFields('pessoais')" id="editDadosBtn">Editar Dados</button>
-            <button class="btn-primary" onclick="saveEditedFields('pessoais')" id="saveDadosBtn" style="display:none;">Salvar</button>
-        </div>
+                                    <button class="btn-secondary" onclick="toggleEditFields('esportivos')" id="editEsportivosBtn">Editar Dados</button>
+                                    <button class="btn-primary" onclick="saveEditedFields('esportivos')" id="saveEsportivosBtn" style="display:none;">Salvar</button>
+                                </div>
 
-        <!-- Dados Esportivos -->
-        <div class="info-card">
-            <h3><i class="fas fa-running"></i> Dados Esportivos</h3>
-
-            <div class="info-item">
-                <span class="info-label">Grupo:</span>
-                <span class="info-value" id="athleteGroup">-</span>
-                <input type="text" class="edit-field" id="editGroup" style="display: none;" />
-            </div>
-
-            <div class="info-item">
-                <span class="info-label">Nível do Atleta:</span>
-                <span class="info-value" id="athleteLevel">A definir</span>
-                <input type="text" class="edit-field" id="editLevel" value="A definir" style="display: none;" />
-            </div>
-
-            <div class="info-item">
-                <span class="info-label">Tempo de Treino:</span>
-                <span class="info-value">2 anos</span>
-                <input type="text" class="edit-field" id="editExperience" value="2 anos" style="display: none;" />
-            </div>
-
-            <div class="info-item">
-                <span class="info-label">Objetivo Principal:</span>
-                <span class="info-value" id="mainObjective">-</span>
-                <input type="text" class="edit-field" id="editGoal" style="display: none;" />
-            </div>
-
-            <div class="info-item">
-                <span class="info-label">Prova Alvo:</span>
-                <span class="info-value" id="targetRace">-</span>
-                <input type="text" class="edit-field" id="editTargetRace" style="display: none;" />
-            </div>
-
-            <button class="btn-secondary" onclick="toggleEditFields('pessoais')" id="editEsportivosBtn">Editar Dados</button>
-            <button class="btn-primary" onclick="saveEditedFields('pessoais')" id="saveEsportivosBtn" style="display:none;">Salvar</button>
-        </div>
-
-        <!-- Melhores Resultados -->
-        <div class="info-card">
-            <h3><i class="fas fa-trophy"></i> Melhores Resultados</h3>
-            <div style="margin-bottom: 12px;">
-                <button class="btn-primary" onclick="addBestResult()" style="padding: 6px 12px; font-size: 12px;">
-                    <i class="fas fa-plus"></i> Adicionar Resultado
-                </button>
-            </div>
-            <div id="bestResultsList">
-                <!-- Resultados serão listados aqui -->
-                <div class="empty-state" style="padding: 20px;">
-                    <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
-                    <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function toggleEditFields(section) {
-    const inputs = document.querySelectorAll(`#dadosTab .edit-field`);
-    const spans = document.querySelectorAll(`#dadosTab .info-value`);
-
-    inputs.forEach(input => input.style.display = 'inline-block');
-    spans.forEach(span => span.style.display = 'none');
-
-    document.getElementById('editDadosBtn').style.display = 'none';
-    document.getElementById('saveDadosBtn').style.display = 'inline-block';
-    document.getElementById('editEsportivosBtn').style.display = 'none';
-    document.getElementById('saveEsportivosBtn').style.display = 'inline-block';
-}
-
-function saveEditedFields(section) {
-    const inputs = document.querySelectorAll(`#dadosTab .edit-field`);
-    const spans = document.querySelectorAll(`#dadosTab .info-value`);
-
-    inputs.forEach((input, i) => {
-        spans[i].textContent = input.value;
-        input.style.display = 'none';
-        spans[i].style.display = 'inline-block';
-    });
-
-    document.getElementById('editDadosBtn').style.display = 'inline-block';
-    document.getElementById('saveDadosBtn').style.display = 'none';
-    document.getElementById('editEsportivosBtn').style.display = 'inline-block';
-    document.getElementById('saveEsportivosBtn').style.display = 'none';
-
-    alert('Dados atualizados com sucesso!');
-}
-</script>
-
+                                <!-- Melhores Resultados -->
+                                <div class="info-card">
+                                    <h3><i class="fas fa-trophy"></i> Melhores Resultados</h3>
+                                    <div style="margin-bottom: 12px;">
+                                        <button class="btn-primary" onclick="openBestResultModal()" style="padding: 6px 12px; font-size: 12px;">
+                                            <i class="fas fa-plus"></i> Adicionar Resultado
+                                        </button>
+                                    </div>
+                                    <div id="bestResultsList">
+                                        <!-- Resultados serão listados aqui -->
+                                        <div class="empty-state" style="padding: 20px;">
+                                            <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                            <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Aba Avaliações -->
                         <div id="avaliacoesTab" class="tab-content">
@@ -1771,117 +1798,180 @@ function saveEditedFields(section) {
                             </div>
                         </div>
 
-                        <!-- Planejamento de Macrociclo -->
-                        <div id="planejamentoTab" class="tab-content">
-                            <div class="evaluation-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-layer-group"></i> Planejamento de Macrociclo
-                                </h3>
-
-                                <form id="macroForm">
-                                    <div class="form-group">
-                                        <label for="macroNome">Nome do Macrociclo</label>
-                                        <input type="text" id="macroNome" required placeholder="Ex: Base Geral">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="macroObs">Objetivo / Observação</label>
-                                        <textarea id="macroObs" rows="3" placeholder="Descreva o foco deste período..."></textarea>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="inicioMacro">Início</label>
-                                            <input type="date" id="inicioMacro" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="fimMacro">Término</label>
-                                            <input type="date" id="fimMacro" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="semanasMacro">Semanas</label>
-                                        <input type="number" id="semanasMacro" min="1" required readonly style="background: #f3f4f6;">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="mesociclos">Distribuição dos Mesociclos</label>
-                                        <textarea id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)"></textarea>
-                                    </div>
-
-                                    <button type="button" class="btn-primary" onclick="gerarPlanejamentoPersonalizado()">
-                                        <i class="fas fa-layer-group"></i> Gerar Estrutura
-                                    </button>
-                                </form>
-
-                                <div id="mesoResultado" style="margin-top: 24px; display: none;">
-                                    <h4 style="margin-bottom: 12px;">Estrutura do Plano:</h4>
-                                    <div id="estruturaMesociclos"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Aba Planilhas -->
-                        <div id="planilhasTab" class="tab-content">
-                            <div class="empty-state">
-                                <i class="fas fa-file-excel"></i>
-                                <h3>Planilhas em Desenvolvimento</h3>
-                                <p>Esta seção conterá as planilhas de treino e histórico de atividades</p>
-                            </div>
-                        </div>
-
                         <!-- Aba Eventos -->
                         <div id="eventosTab" class="tab-content">
+                            <h3 class="section-title">
+                                <i class="fas fa-calendar-check"></i> Eventos Inscritos
+                            </h3>
                             <div id="athleteEvents">
                                 <!-- Eventos do atleta serão carregados aqui -->
+                            </div>
+                        </div>
+
+                        <!-- Aba Planejamento do Atleta -->
+                        <div id="planejamentoAtletaTab" class="tab-content">
+                            <h3 class="section-title">
+                                <i class="fas fa-clipboard-list"></i> Planejamento Atual
+                            </h3>
+                            <div class="info-card">
+                                <h4><i class="fas fa-bullseye"></i> Macrociclo Ativo</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Nome:</span>
+                                    <span class="info-value" id="athleteMacroName">Maratona SP 2025</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Período:</span>
+                                    <span class="info-value" id="athleteMacroPeriod">01/01/2025 - 30/06/2025</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Objetivo:</span>
+                                    <span class="info-value" id="athleteMacroObjective">Completar a maratona</span>
+                                </div>
+                                <button class="btn-secondary" style="margin-top: 12px; padding: 6px 12px; font-size: 12px;">
+                                    <i class="fas fa-eye"></i> Ver Detalhes do Macrociclo
+                                </button>
+                            </div>
+
+                            <div class="info-card" style="margin-top: 20px;">
+                                <h4><i class="fas fa-tasks"></i> Mesociclo Atual</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Tipo:</span>
+                                    <span class="info-value" id="athleteMesoType">Base Geral</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Semanas:</span>
+                                    <span class="info-value" id="athleteMesoWeeks">1 a 4</span>
+                                </div>
+                            </div>
+
+                            <div class="info-card" style="margin-top: 20px;">
+                                <h4><i class="fas fa-calendar-week"></i> Microciclo Atual</h4>
+                                <div class="info-item">
+                                    <span class="info-label">Tipo:</span>
+                                    <span class="info-value" id="athleteMicroType">Choque</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Semana:</span>
+                                    <span class="info-value" id="athleteMicroWeek">3</span>
+                                </div>
+                                <button class="btn-primary" style="margin-top: 12px; padding: 6px 12px; font-size: 12px;">
+                                    <i class="fas fa-edit"></i> Editar Treinos da Semana
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- MODAL CADASTRO/EDIÇÃO DE EVENTO -->
+            <!-- PLANEJAMENTOS -->
+            <div id="planningPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Planejamentos</h1>
+                    <p class="page-subtitle">Crie e gerencie os macrociclos de treinamento</p>
+                </div>
+
+                <!-- Formulário de Criação/Edição -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title" id="planningFormTitle">Criar Novo Planejamento (Macrociclo)</h2>
+                    </div>
+                    <form id="planningForm" style="padding: 20px;">
+                        <input type="hidden" id="planningId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="planMacroName">Nome do Macrociclo</label>
+                                <input type="text" id="planMacroName" required placeholder="Ex: Maratona SP 2025">
+                            </div>
+                            <div class="form-group">
+                                <label for="planObjective">Objetivo Principal</label>
+                                <input type="text" id="planObjective" required placeholder="Ex: Completar a prova, Sub-4h">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="planStartDate">Data de Início</label>
+                                <input type="date" id="planStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="planEndDate">Data de Término</label>
+                                <input type="date" id="planEndDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="planMesocycles">Mesociclos (Tipos e Quantidade de Semanas)</label>
+                            <textarea id="planMesocycles" placeholder="Ex: Base Geral (4 semanas), Específico (8 semanas), Polimento (3 semanas)" required></textarea>
+                            <small style="color: #6b7280; font-size: 12px;">Descreva os tipos de mesociclos e a duração de cada um.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="planMicrocycles">Microciclos (Tipos e Distribuição)</label>
+                            <textarea id="planMicrocycles" placeholder="Ex: Base Geral: Adaptativa, Choque, Choque, Regenerativa. Específico: ..." required></textarea>
+                            <small style="color: #6b7280; font-size: 12px;">Detalhe os tipos de microciclos dentro de cada mesociclo.</small>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary" id="savePlanBtn">
+                            <i class="fas fa-save"></i> Salvar Planejamento
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetPlanningForm()" id="cancelEditPlanBtn" style="display: none;">
+                            <i class="fas fa-times"></i> Cancelar Edição
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Lista de Planejamentos Salvos -->
+                <div class="content-card" style="margin-top: 32px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Planejamentos Salvos</h2>
+                    </div>
+                    <div id="savedPlansList" style="padding: 20px;">
+                        <!-- Planejamentos salvos serão carregados aqui -->
+                        <div class="empty-state" id="emptyPlansState">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>Nenhum planejamento salvo</h3>
+                            <p>Crie um novo planejamento usando o formulário acima.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Fim .container -->
+    </div> <!-- Fim #appContainer -->
+
+    <!-- MODAL DE EVENTOS -->
     <div id="eventModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">Cadastrar Novo Evento</h2>
                 <button class="modal-close" onclick="closeEventModal()">&times;</button>
             </div>
-            
             <form id="eventForm">
-                <input type="hidden" id="eventId" value="">
+                <input type="hidden" id="eventId">
                 <div class="form-group">
                     <label for="eventName">Nome do Evento</label>
-                    <input type="text" id="eventName" required placeholder="Ex: Corrida da Primavera">
+                    <input type="text" id="eventName" required>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="eventDate">Data do Evento</label>
+                        <label for="eventDate">Data</label>
                         <input type="date" id="eventDate" required>
                     </div>
                     <div class="form-group">
                         <label for="eventDistance">Distância</label>
-                        <input type="text" id="eventDistance" required placeholder="Ex: 10km, 21km, 42km">
+                        <input type="text" id="eventDistance" placeholder="Ex: 10km, 21km, 42km" required>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label for="eventLocation">Local</label>
-                    <input type="text" id="eventLocation" required placeholder="Ex: Parque Ibirapuera, São Paulo">
+                    <input type="text" id="eventLocation" placeholder="Ex: São Paulo, SP" required>
                 </div>
                 
                 <div class="athletes-selection">
                     <h3>Selecionar Atletas Participantes</h3>
-                    <div id="athletesList">
-                        <!-- Lista de atletas será carregada aqui -->
+                    <div id="athletesList" style="max-height: 150px; overflow-y: auto; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;">
+                        <!-- Lista de atletas para seleção -->
                     </div>
                 </div>
                 
-                <div style="text-align: right; margin-top: 24px;">
+                <div style="margin-top: 24px; text-align: right;">
                     <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
                     <button type="submit" class="btn-primary" id="submitEventBtn">Cadastrar Evento</button>
                 </div>
@@ -1889,69 +1979,43 @@ function saveEditedFields(section) {
         </div>
     </div>
 
-    <!-- MODAL CADASTRO DE MELHOR RESULTADO -->
+    <!-- MODAL MELHORES RESULTADOS -->
     <div id="bestResultModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">Cadastrar Melhor Resultado</h2>
+                <h2 class="modal-title">Adicionar Melhor Resultado</h2>
                 <button class="modal-close" onclick="closeBestResultModal()">&times;</button>
             </div>
-            
             <form id="bestResultForm">
                 <div class="form-group">
-                    <label for="raceName">Nome da Prova</label>
-                    <input type="text" id="raceName" required placeholder="Ex: Maratona de São Paulo">
+                    <label for="raceDistance">Distância</label>
+                    <select id="raceDistance" required>
+                        <option value="">Selecione</option>
+                        <option value="5km">5 km</option>
+                        <option value="10km">10 km</option>
+                        <option value="15km">15 km</option>
+                        <option value="21km">21 km (Meia Maratona)</option>
+                        <option value="42km">42 km (Maratona)</option>
+                        <option value="other">Outra</option>
+                    </select>
                 </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="raceDistance">Distância</label>
-                        <select id="raceDistance" required>
-                            <option value="">Selecionar</option>
-                            <option value="5km">5km</option>
-                            <option value="10km">10km</option>
-                            <option value="15km">15km</option>
-                            <option value="21km">21km (Meia Maratona)</option>
-                            <option value="42km">42km (Maratona)</option>
-                            <option value="other">Outra distância</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="raceType">Tipo de Prova</label>
-                        <select id="raceType" required>
-                            <option value="">Selecionar</option>
-                            <option value="rua">Corrida de Rua</option>
-                            <option value="pista">Pista</option>
-                            <option value="trail">Trail</option>
-                            <option value="cross">Cross Country</option>
-                            <option value="montanha">Corrida de Montanha</option>
-                            <option value="ultra">Ultra</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="form-group" id="customDistanceGroup" style="display: none;">
-                    <label for="customDistance">Distância Personalizada</label>
-                    <input type="text" id="customDistance" placeholder="Ex: 8km, 25km">
+                    <label for="customDistance">Distância Personalizada (km)</label>
+                    <input type="number" step="0.1" id="customDistance" placeholder="Ex: 7.5">
                 </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="finishTime">Tempo de Conclusão</label>
-                        <input type="text" id="finishTime" required placeholder="Ex: 1:45:30 ou 45:30" pattern="([0-9]{1,2}:)?[0-9]{1,2}:[0-9]{2}">
-                    </div>
-                    <div class="form-group">
-                        <label for="classification">Classificação</label>
-                        <input type="text" id="classification" placeholder="Ex: 15º Geral, 3º Categoria">
-                    </div>
+                <div class="form-group">
+                    <label for="raceTime">Tempo (hh:mm:ss)</label>
+                    <input type="text" id="raceTime" required placeholder="Ex: 00:45:30">
                 </div>
-
                 <div class="form-group">
                     <label for="raceDate">Data da Prova</label>
-                    <input type="date" id="raceDate">
+                    <input type="date" id="raceDate" required>
                 </div>
-                
-                <div style="text-align: right; margin-top: 24px;">
+                <div class="form-group">
+                    <label for="raceName">Nome da Prova (Opcional)</label>
+                    <input type="text" id="raceName" placeholder="Ex: Corrida da Cidade">
+                </div>
+                <div style="margin-top: 24px; text-align: right;">
                     <button type="button" class="btn-secondary" onclick="closeBestResultModal()">Cancelar</button>
                     <button type="submit" class="btn-primary">Salvar Resultado</button>
                 </div>
@@ -1959,943 +2023,1011 @@ function saveEditedFields(section) {
         </div>
     </div>
 
-    <script>
-        // Estado do sistema
-        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        let currentWeekStart = new Date('2025-05-26'); // Data inicial
-        let currentFilter = 'geral';
-        let currentAthlete = null;
-        let events = JSON.parse(localStorage.getItem('events') || '[]');
-        let editingEventId = null;
-        let bestResults = JSON.parse(localStorage.getItem('bestResults') || '{}'); // Organizado por atleta
+<script>
+    // --- DADOS MOCKADOS (Substituir por chamadas de API no futuro) ---
+    const trainerCredentials = { email: 'treinador@bastos.com', password: '123456' };
+    let currentUser = null;
+    let currentAthlete = null;
+    let currentFilter = 'geral';
+    let currentWeekStart = new Date();
+    let editingEventId = null;
+    let editingPlanningId = null; // Para controlar edição de planejamentos
 
-        // Dados dos atletas
-        const athletesData = {
-            'adao-oliveira': {
-                name: 'Adão Aparecido de Oliveira',
-                group: 'Projeto Corra',
-                status: 'Em preparação',
-                level: 'Iniciante',
-                mainObjective: 'Completar primeira 10km',
-                targetRace: '10km São Silvestre'
-            },
-            'adriana-freitas': {
-                name: 'Adriana Duque de Freitas',
-                group: 'TIME BASTOS',
-                status: 'Liberado',
-                level: 'Intermediário',
-                mainObjective: 'Melhorar tempo na meia maratona',
-                targetRace: 'Meia Maratona de São Paulo'
-            }
-        };
+    // Define o início da semana atual como a última segunda-feira
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ...
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    currentWeekStart.setDate(today.getDate() + diffToMonday);
 
-        // Credenciais
-        const trainerCredentials = {
-            email: 'treinador@bastos.com',
-            password: '123456'
-        };
+    const athletesData = {
+        'adao-oliveira': {
+            id: 'adao-oliveira',
+            name: 'Adão Aparecido de Oliveira',
+            group: 'Projeto Corra',
+            status: 'preparacao',
+            mesocycle: 'Base Geral',
+            microcycle: '14/27 Choque',
+            email: 'adao.oliveira@email.com',
+            phone: '(11) 98765-4321',
+            birthdate: '1985-03-15',
+            level: 'Intermediário',
+            experience: '3 anos',
+            goal: 'Correr 10km abaixo de 50min',
+            targetRace: 'Corrida de Rua ABC',
+            bestResults: []
+        },
+        'adriana-freitas': {
+            id: 'adriana-freitas',
+            name: 'Adriana Duque de Freitas',
+            group: 'TIME BASTOS',
+            status: 'liberado',
+            mesocycle: 'Específico',
+            microcycle: '22/25',
+            email: 'adriana.freitas@email.com',
+            phone: '(21) 91234-5678',
+            birthdate: '1990-11-20',
+            level: 'Avançado',
+            experience: '5 anos',
+            goal: 'Completar Maratona SP',
+            targetRace: 'Maratona Internacional de São Paulo',
+            bestResults: [
+                { id: 'br1', distance: '21km', time: '01:55:30', date: '2024-10-15', name: 'Meia Maratona do Rio' }
+            ]
+        }
+    };
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            if (currentUser) {
+    // Carregar eventos do localStorage ou usar array vazio
+    let events = JSON.parse(localStorage.getItem('events')) || [];
+
+    // Carregar planejamentos do localStorage ou usar array vazio
+    let plans = JSON.parse(localStorage.getItem('plans')) || [];
+
+    // --- INICIALIZAÇÃO --- 
+    document.addEventListener('DOMContentLoaded', () => {
+        // Verifica se há usuário logado
+        currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser && currentUser.role === 'trainer') {
+            showApp();
+            initializeApp();
+            loadEvents();
+            loadPlans(); // Carrega os planejamentos salvos
+        } else {
+            showLogin();
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+        document.getElementById('bestResultForm').addEventListener('submit', handleBestResultSubmit);
+        document.getElementById('planningForm').addEventListener('submit', handlePlanningSubmit); // Listener para form de planejamento
+        
+        // Adicionar listeners para cálculo automático do IMC
+        const heightInput = document.getElementById('height');
+        const weightInput = document.getElementById('weight');
+        if (heightInput) heightInput.addEventListener('input', calculateIMC);
+        if (weightInput) weightInput.addEventListener('input', calculateIMC);
+
+        // Listener para busca de atletas
+        const searchInput = document.getElementById('athleteSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                if (this.value === '') {
+                    searchAthletes();
+                }
+            });
+        }
+
+        // Listener para mostrar/esconder campo de distância personalizada (Melhores Resultados)
+        const raceDistanceSelect = document.getElementById('raceDistance');
+        if (raceDistanceSelect) {
+            raceDistanceSelect.addEventListener('change', function() {
+                const customGroup = document.getElementById('customDistanceGroup');
+                if (this.value === 'other') {
+                    customGroup.style.display = 'block';
+                    document.getElementById('customDistance').required = true;
+                } else {
+                    customGroup.style.display = 'none';
+                    document.getElementById('customDistance').required = false;
+                }
+            });
+        }
+
+        updateWeekDisplay(); // Atualiza a data da semana inicial
+    });
+
+    // --- FUNÇÕES AUXILIARES --- 
+    function calculateIMC() {
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const imcField = document.getElementById('imc');
+        
+        if (height && weight && height > 0) {
+            const heightInMeters = height / 100;
+            const imc = weight / (heightInMeters * heightInMeters);
+            imcField.value = imc.toFixed(1);
+        } else {
+            imcField.value = '';
+        }
+    }
+
+    function formatDate(date) {
+        if (!date) return '--';
+        const d = new Date(date);
+        // Adiciona um dia para corrigir possível problema de fuso horário na exibição
+        d.setDate(d.getDate() + 1);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatDateForInput(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        // Adiciona um dia para corrigir possível problema de fuso horário ao carregar no input date
+        date.setDate(date.getDate() + 1);
+        return date.toISOString().split('T')[0];
+    }
+
+    // --- AUTENTICAÇÃO --- 
+    function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const loginBtn = document.getElementById('loginBtn');
+        
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Entrando...';
+        
+        setTimeout(() => {
+            if (email === trainerCredentials.email && password === trainerCredentials.password) {
+                currentUser = {
+                    name: 'Treinador Bastos',
+                    email: email,
+                    role: 'trainer'
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 showApp();
                 initializeApp();
                 loadEvents();
+                loadPlans(); // Carrega planejamentos após login
             } else {
-                showLogin();
+                alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Entrar como Treinador';
             }
-            
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
-            document.getElementById('bestResultForm').addEventListener('submit', handleBestResultSubmit);
-            
-            // Adicionar listeners para cálculo automático do IMC
-            const heightInput = document.getElementById('height');
-            const weightInput = document.getElementById('weight');
-            if (heightInput) heightInput.addEventListener('input', calculateIMC);
-            if (weightInput) weightInput.addEventListener('input', calculateIMC);
+        }, 1000);
+    }
 
-            // Listeners para o planejamento de macrociclo
-            const inicioMacroInput = document.getElementById('inicioMacro');
-            const fimMacroInput = document.getElementById('fimMacro');
-            const semanasMacroInput = document.getElementById('semanasMacro');
-            
-            if (inicioMacroInput) inicioMacroInput.addEventListener('change', calcularSemanas);
-            if (fimMacroInput) fimMacroInput.addEventListener('change', calcularSemanas);
-            if (semanasMacroInput) semanasMacroInput.addEventListener('input', ajustarFimPorSemanas);
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        // Limpar dados temporários se necessário
+        // localStorage.removeItem('events'); 
+        // localStorage.removeItem('plans');
+        showLogin();
+    }
 
-            // Listener para busca de atletas
-            const searchInput = document.getElementById('athleteSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    if (this.value === '') {
-                        searchAthletes();
-                    }
-                });
+    function showLogin() {
+        document.getElementById('loginContainer').style.display = 'flex';
+        document.getElementById('appContainer').classList.remove('active');
+    }
+
+    function showApp() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('appContainer').classList.add('active');
+    }
+
+    function initializeApp() {
+        if (currentUser) {
+            document.getElementById('trainerName').textContent = currentUser.name;
+        }
+        
+        // Navegação principal
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const page = btn.dataset.page;
+                switchPage(page);
+            });
+        });
+
+        // Navegação das abas do perfil
+        const profileTabs = document.querySelectorAll('.profile-tab');
+        profileTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('onclick').match(/\('([^']+)\'\)/)[1];
+                switchProfileTab(tabId);
+            });
+        });
+
+        // Carregar dados iniciais da tabela de atletas
+        renderAthletesTable();
+    }
+
+    // --- NAVEGAÇÃO --- 
+    function switchPage(pageId) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => page.classList.remove('active'));
+        
+        const targetPage = document.getElementById(pageId + 'Page');
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+
+        // Atualizar botão ativo na navegação principal
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`.nav-btn[data-page="${pageId}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+
+    function switchProfileTab(tabId) {
+        // Esconder todos os conteúdos das abas
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Mostrar o conteúdo da aba selecionada
+        const targetContent = document.getElementById(tabId + 'Tab');
+        if (targetContent) {
+            targetContent.classList.add('active');
+        }
+
+        // Atualizar botão ativo nas abas do perfil
+        const profileTabs = document.querySelectorAll('.profile-tab');
+        profileTabs.forEach(tab => tab.classList.remove('active'));
+        const activeTab = document.querySelector(`.profile-tab[onclick*="'${tabId}'"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+
+        // Carregar dados específicos da aba, se necessário
+        if (tabId === 'eventos') {
+            loadAthleteEvents();
+        }
+        if (tabId === 'dados') {
+            loadBestResults();
+        }
+    }
+
+    // --- ATLETAS --- 
+    function renderAthletesTable() {
+        const tableBody = document.getElementById('athletesTableBody');
+        tableBody.innerHTML = ''; // Limpa a tabela
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        let hasVisibleRows = false;
+
+        Object.values(athletesData).forEach(athlete => {
+            const matchesFilter = currentFilter === 'geral' || athlete.status === currentFilter;
+            const row = document.createElement('tr');
+            row.className = 'athlete-row';
+            row.dataset.status = athlete.status;
+            row.innerHTML = `
+                <td>
+                    <div class="athlete-info">
+                        <div class="athlete-avatar">${athlete.name.charAt(0)}</div>
+                        <div class="athlete-name" onclick="viewAthleteProfile('${athlete.id}')">${athlete.name}</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge ${athlete.status === 'liberado' ? 'status-active' : 'status-preparation'}">
+                        ${athlete.status === 'liberado' ? 'Liberado' : 'Em preparação'}
+                    </span>
+                </td>
+                <td>${athlete.group}</td>
+                <td>${athlete.mesocycle || '--'}</td>
+                <td>${athlete.microcycle || '--'}</td>
+            `;
+            
+            if (!matchesFilter) {
+                row.classList.add('hidden');
+            } else {
+                hasVisibleRows = true;
             }
+            tableBody.appendChild(row);
+        });
 
-            // Listener para mostrar/esconder campo de distância personalizada
-            const raceDistanceSelect = document.getElementById('raceDistance');
-            if (raceDistanceSelect) {
-                raceDistanceSelect.addEventListener('change', function() {
-                    const customGroup = document.getElementById('customDistanceGroup');
-                    if (this.value === 'other') {
-                        customGroup.style.display = 'block';
-                        document.getElementById('customDistance').required = true;
-                    } else {
-                        customGroup.style.display = 'none';
-                        document.getElementById('customDistance').required = false;
-                    }
-                });
+        noResultsMessage.style.display = hasVisibleRows ? 'none' : 'block';
+    }
+
+    function searchAthletes() {
+        const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
+        const athleteRows = document.querySelectorAll('.athlete-row');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        let visibleRows = 0;
+
+        athleteRows.forEach(row => {
+            const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
+            const athleteStatus = row.dataset.status;
+            
+            const matchesSearch = athleteName.includes(searchTerm);
+            const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
+            
+            if (matchesSearch && matchesFilter) {
+                row.classList.remove('hidden');
+                visibleRows++;
+            } else {
+                row.classList.add('hidden');
             }
         });
 
-        // Função para calcular IMC automaticamente
-        function calculateIMC() {
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
-            const imcField = document.getElementById('imc');
-            
-            if (height && weight && height > 0) {
-                const heightInMeters = height / 100;
-                const imc = weight / (heightInMeters * heightInMeters);
-                imcField.value = imc.toFixed(1);
-            } else {
-                imcField.value = '';
-            }
-        }
+        noResultsMessage.style.display = visibleRows === 0 ? 'block' : 'none';
+    }
 
-        // Funções para o planejamento de macrociclo
-        function calcularSemanas() {
-            const inicio = new Date(document.getElementById('inicioMacro').value);
-            const fim = new Date(document.getElementById('fimMacro').value);
-            if (inicio && fim && fim > inicio) {
-                const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
-                const semanas = Math.ceil(diff / 7);
-                document.getElementById('semanasMacro').value = semanas;
-            } else {
-                document.getElementById('semanasMacro').value = '';
-            }
-        }
+    function previousWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        updateWeekDisplay();
+        // Aqui você pode adicionar lógica para recarregar dados da semana, se necessário
+    }
 
-        function ajustarFimPorSemanas() {
-            const inicio = new Date(document.getElementById('inicioMacro').value);
-            const semanas = parseInt(document.getElementById('semanasMacro').value);
-            if (inicio && semanas > 0) {
-                const fim = new Date(inicio);
-                fim.setDate(fim.getDate() + (semanas * 7) - 1);
-                document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
-            }
-        }
+    function nextWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        updateWeekDisplay();
+        // Aqui você pode adicionar lógica para recarregar dados da semana, se necessário
+    }
 
-        function gerarPlanejamentoPersonalizado() {
-            try {
-                const nome = document.getElementById('macroNome').value.trim();
-                const obs = document.getElementById('macroObs').value.trim();
-                const inicio = new Date(document.getElementById('inicioMacro').value);
-                const semanas = parseInt(document.getElementById('semanasMacro').value);
-                const inputMesos = document.getElementById('mesociclos').value.trim();
+    function updateWeekDisplay() {
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        
+        const startStr = formatDate(currentWeekStart);
+        const endStr = formatDate(weekEnd);
+        
+        document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
+    }
 
-                if (!nome || !inicio || semanas <= 0 || !inputMesos) {
-                    alert('Preencha todos os campos corretamente.');
-                    return;
-                }
+    function filterByStatus(status) {
+        currentFilter = status;
+        
+        document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        renderAthletesTable(); // Re-renderiza a tabela com o filtro
+        searchAthletes(); // Aplica a busca sobre o filtro
+    }
 
-                // Processar distribuição dos mesociclos
-                const distribuicao = inputMesos.split(',').map(s => {
-                    const num = parseInt(s.trim());
-                    if (isNaN(num) || num <= 0) {
-                        throw new Error(`Valor inválido: "${s.trim()}". Use apenas números positivos.`);
-                    }
-                    return num;
-                });
+    // --- PERFIL DO ATLETA --- 
+    function viewAthleteProfile(athleteId) {
+        currentAthlete = athletesData[athleteId];
+        if (!currentAthlete) return;
 
-                const soma = distribuicao.reduce((a, b) => a + b, 0);
-                if (soma !== semanas) {
-                    alert(`A soma das semanas dos mesociclos (${soma}) não corresponde ao total informado (${semanas}).`);
-                    return;
-                }
+        // Preencher dados do header
+        document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
+        document.getElementById('profileName').textContent = currentAthlete.name;
+        document.getElementById('profileGroup').textContent = currentAthlete.group;
+        document.getElementById('profileStatus').textContent = currentAthlete.status === 'liberado' ? 'Liberado' : 'Em preparação';
 
-                const estrutura = document.getElementById('estruturaMesociclos');
-                estrutura.innerHTML = '';
+        // Preencher Aba Dados
+        document.getElementById('athleteFullName').textContent = currentAthlete.name;
+        document.getElementById('athleteEmail').textContent = currentAthlete.email;
+        document.getElementById('athletePhone').textContent = currentAthlete.phone;
+        document.getElementById('athleteBirthdate').textContent = formatDate(currentAthlete.birthdate);
+        document.getElementById('athleteGroup').textContent = currentAthlete.group;
+        document.getElementById('athleteLevel').textContent = currentAthlete.level;
+        document.getElementById('editExperience').value = currentAthlete.experience; // Input editável
+        document.getElementById('mainObjective').textContent = currentAthlete.goal;
+        document.getElementById('targetRace').textContent = currentAthlete.targetRace;
 
-                const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
-                const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
+        // Resetar campos de edição
+        resetEditFields();
+        loadBestResults();
 
-                let semanaAtual = 1;
-                distribuicao.forEach((semanasNeste, m) => {
-                    const inicioSemana = semanaAtual;
-                    const fimSemana = semanaAtual + semanasNeste - 1;
-                    semanaAtual = fimSemana + 1;
+        // Preencher Aba Avaliações (se houver dados salvos)
+        // ... (lógica para carregar dados de avaliações salvas)
 
-                    const bloco = document.createElement('div');
-                    bloco.className = 'info-card';
-                    bloco.style.marginBottom = '16px';
+        // Preencher Aba Planejamento (se houver dados salvos)
+        // ... (lógica para carregar dados de planejamento do atleta)
 
-                    const selectMesociclo = document.createElement('select');
-                    selectMesociclo.style.marginLeft = '8px';
-                    selectMesociclo.style.padding = '4px 8px';
-                    selectMesociclo.style.borderRadius = '4px';
-                    selectMesociclo.style.border = '1px solid #ccc';
-                    
-                    tiposMesociclo.forEach(tipo => {
-                        const opt = document.createElement('option');
-                        opt.value = tipo;
-                        opt.textContent = tipo;
-                        selectMesociclo.appendChild(opt);
-                    });
+        switchPage('athleteProfile');
+        switchProfileTab('dados'); // Começa na aba 'Dados'
+    }
 
-                    const titulo = document.createElement('h3');
-                    titulo.textContent = `Mesociclo ${m + 1} (Semanas ${inicioSemana} a ${fimSemana})`;
-                    titulo.style.marginBottom = '12px';
+    function toggleEditFields(section) {
+        const sectionElement = section === 'pessoais' ? document.querySelector('.info-card:nth-child(1)') : document.querySelector('.info-card:nth-child(2)');
+        const inputs = sectionElement.querySelectorAll('.edit-field');
+        const spans = sectionElement.querySelectorAll('.info-value');
+        const editBtn = section === 'pessoais' ? document.getElementById('editDadosBtn') : document.getElementById('editEsportivosBtn');
+        const saveBtn = section === 'pessoais' ? document.getElementById('saveDadosBtn') : document.getElementById('saveEsportivosBtn');
 
-                    const containerTipo = document.createElement('div');
-                    containerTipo.style.margin = '12px 0';
-                    containerTipo.innerHTML = '<label style="margin-right: 8px;">Tipo:</label>';
-                    containerTipo.appendChild(selectMesociclo);
-
-                    const listaSemanas = document.createElement('ul');
-                    listaSemanas.style.paddingLeft = '16px';
-                    listaSemanas.style.marginTop = '12px';
-
-                    for (let i = 0; i < semanasNeste; i++) {
-                        const semana = inicioSemana + i;
-                        const li = document.createElement('li');
-                        li.style.margin = '6px 0';
-                        
-                        const selectMicro = document.createElement('select');
-                        selectMicro.style.marginLeft = '8px';
-                        selectMicro.style.padding = '4px 8px';
-                        selectMicro.style.borderRadius = '4px';
-                        selectMicro.style.border = '1px solid #ccc';
-                        
-                        tiposMicro.forEach(tipo => {
-                            const opt = document.createElement('option');
-                            opt.value = tipo;
-                            opt.textContent = tipo;
-                            selectMicro.appendChild(opt);
-                        });
-                        
-                        li.innerHTML = `Semana ${semana}: `;
-                        li.appendChild(selectMicro);
-                        listaSemanas.appendChild(li);
-                    }
-
-                    bloco.appendChild(titulo);
-                    bloco.appendChild(containerTipo);
-                    bloco.appendChild(listaSemanas);
-                    estrutura.appendChild(bloco);
-                });
-
-                document.getElementById('mesoResultado').style.display = 'block';
-                
-            } catch (error) {
-                alert('Erro: ' + error.message);
-            }
-        }
-
-        // Funções de autenticação
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Entrando...';
-            
-            setTimeout(() => {
-                if (email === trainerCredentials.email && password === trainerCredentials.password) {
-                    currentUser = {
-                        name: 'Treinador Bastos',
-                        email: email,
-                        role: 'trainer'
-                    };
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showApp();
-                    initializeApp();
+        inputs.forEach((input, i) => {
+            // Preenche o input com o valor atual do span correspondente
+            if (spans[i]) {
+                if (input.type === 'date') {
+                    // Encontra o ID do span para buscar o dado original
+                    const spanId = spans[i].id;
+                    const originalDate = currentAthlete[spanId.replace('athlete', '').toLowerCase()];
+                    input.value = formatDateForInput(originalDate);
                 } else {
-                    alert('Credenciais inválidas! Use: treinador@bastos.com / 123456');
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Entrar como Treinador';
-                }
-            }, 1000);
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showLogin();
-        }
-
-        function showLogin() {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('appContainer').classList.remove('active');
-        }
-
-        function showApp() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('appContainer').classList.add('active');
-        }
-
-        function initializeApp() {
-            if (currentUser) {
-                document.getElementById('trainerName').textContent = currentUser.name;
-            }
-            
-            // Navegação
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = btn.dataset.page;
-                    switchPage(page);
-                    
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-        }
-
-        function switchPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const targetPage = document.getElementById(pageId + 'Page');
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-
-            // Atualizar navegação se não for perfil
-            if (pageId !== 'athleteProfile') {
-                const navButtons = document.querySelectorAll('.nav-btn');
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                
-                const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
-                if (activeBtn) {
-                    activeBtn.classList.add('active');
+                    input.value = spans[i].textContent;
                 }
             }
-        }
+            input.style.display = 'inline-block';
+        });
+        spans.forEach(span => span.style.display = 'none');
 
-        // Função de busca de atletas
-        function searchAthletes() {
-            const searchTerm = document.getElementById('athleteSearch').value.toLowerCase();
-            const athleteRows = document.querySelectorAll('.athlete-row');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            let visibleRows = 0;
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+    }
 
-            athleteRows.forEach(row => {
-                const athleteName = row.querySelector('.athlete-name').textContent.toLowerCase();
-                const athleteStatus = row.dataset.status;
-                
-                // Verifica se corresponde à busca e ao filtro atual
-                const matchesSearch = athleteName.includes(searchTerm);
-                const matchesFilter = currentFilter === 'geral' || athleteStatus === currentFilter;
-                
-                if (matchesSearch && matchesFilter) {
-                    row.classList.remove('hidden');
-                    visibleRows++;
-                } else {
-                    row.classList.add('hidden');
+    function saveEditedFields(section) {
+        const sectionElement = section === 'pessoais' ? document.querySelector('.info-card:nth-child(1)') : document.querySelector('.info-card:nth-child(2)');
+        const inputs = sectionElement.querySelectorAll('.edit-field');
+        const spans = sectionElement.querySelectorAll('.info-value');
+        const editBtn = section === 'pessoais' ? document.getElementById('editDadosBtn') : document.getElementById('editEsportivosBtn');
+        const saveBtn = section === 'pessoais' ? document.getElementById('saveDadosBtn') : document.getElementById('saveEsportivosBtn');
+
+        inputs.forEach((input, i) => {
+            if (spans[i]) {
+                const newValue = input.value;
+                spans[i].textContent = (input.type === 'date') ? formatDate(newValue) : newValue;
+                // Atualizar o objeto currentAthlete (simulação)
+                const fieldName = input.id.replace('edit', '').toLowerCase();
+                if (currentAthlete.hasOwnProperty(fieldName)) {
+                    currentAthlete[fieldName] = newValue;
                 }
-            });
+                // Atualizar nome completo e grupo no header se necessário
+                if (input.id === 'editFullName') document.getElementById('profileName').textContent = newValue;
+                if (input.id === 'editGroup') document.getElementById('profileGroup').textContent = newValue;
+            }
+            input.style.display = 'none';
+        });
+        spans.forEach(span => span.style.display = 'inline-block');
 
-            // Mostrar/esconder mensagem de "nenhum resultado"
-            if (visibleRows === 0 && (searchTerm !== '' || currentFilter !== 'geral')) {
-                noResultsMessage.style.display = 'block';
-            } else {
-                noResultsMessage.style.display = 'none';
+        editBtn.style.display = 'inline-block';
+        saveBtn.style.display = 'none';
+
+        // Simular salvamento (no futuro, seria uma chamada API)
+        athletesData[currentAthlete.id] = { ...currentAthlete };
+        alert('Dados atualizados com sucesso!');
+        renderAthletesTable(); // Atualiza a tabela principal caso o grupo mude
+    }
+
+    function resetEditFields() {
+        const allInputs = document.querySelectorAll('#dadosTab .edit-field');
+        const allSpans = document.querySelectorAll('#dadosTab .info-value');
+        allInputs.forEach(input => input.style.display = 'none');
+        allSpans.forEach(span => span.style.display = 'inline-block');
+        document.getElementById('editDadosBtn').style.display = 'inline-block';
+        document.getElementById('saveDadosBtn').style.display = 'none';
+        document.getElementById('editEsportivosBtn').style.display = 'inline-block';
+        document.getElementById('saveEsportivosBtn').style.display = 'none';
+    }
+
+    // --- MELHORES RESULTADOS (Modal) ---
+    function openBestResultModal() {
+        document.getElementById('bestResultForm').reset();
+        document.getElementById('customDistanceGroup').style.display = 'none';
+        document.getElementById('bestResultModal').classList.add('active');
+    }
+
+    function closeBestResultModal() {
+        document.getElementById('bestResultModal').classList.remove('active');
+    }
+
+    function handleBestResultSubmit(e) {
+        e.preventDefault();
+        if (!currentAthlete) return;
+
+        const distanceType = document.getElementById('raceDistance').value;
+        const distance = distanceType === 'other' 
+            ? document.getElementById('customDistance').value + 'km' 
+            : distanceType;
+        
+        const newResult = {
+            id: 'br' + Date.now(), // ID simples
+            distance: distance,
+            time: document.getElementById('raceTime').value,
+            date: document.getElementById('raceDate').value,
+            name: document.getElementById('raceName').value || ''
+        };
+
+        currentAthlete.bestResults.push(newResult);
+        athletesData[currentAthlete.id] = { ...currentAthlete }; // Atualiza mock
+        loadBestResults();
+        closeBestResultModal();
+        alert('Melhor resultado adicionado!');
+    }
+
+    function loadBestResults() {
+        const listContainer = document.getElementById('bestResultsList');
+        listContainer.innerHTML = ''; // Limpa a lista
+
+        if (!currentAthlete || currentAthlete.bestResults.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state" style="padding: 20px;">
+                    <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                    <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                </div>`;
+            return;
+        }
+
+        currentAthlete.bestResults.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(result => {
+            const item = document.createElement('div');
+            item.className = 'info-item'; // Reutiliza estilo
+            item.innerHTML = `
+                <div>
+                    <span class="info-label">${result.distance} (${formatDate(result.date)}):</span>
+                    <span class="info-value"> ${result.time}</span>
+                    ${result.name ? `<small style='display: block; color: #6b7280;'>(${result.name})</small>` : ''}
+                </div>
+                <button onclick="deleteBestResult('${result.id}')" class="btn-danger" style="padding: 4px 8px; font-size: 10px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    function deleteBestResult(resultId) {
+        if (!currentAthlete || !confirm('Tem certeza que deseja excluir este resultado?')) return;
+
+        currentAthlete.bestResults = currentAthlete.bestResults.filter(r => r.id !== resultId);
+        athletesData[currentAthlete.id] = { ...currentAthlete }; // Atualiza mock
+        loadBestResults();
+        alert('Resultado excluído.');
+    }
+
+    // --- EVENTOS (Modal e Lista) ---
+    function openEventModal(eventId = null) {
+        editingEventId = eventId;
+        
+        if (eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                document.getElementById('modalTitle').textContent = 'Editar Evento';
+                document.getElementById('submitEventBtn').textContent = 'Salvar Alterações';
+                document.getElementById('eventId').value = eventId;
+                document.getElementById('eventName').value = event.name;
+                document.getElementById('eventDate').value = formatDateForInput(event.date);
+                document.getElementById('eventDistance').value = event.distance;
+                document.getElementById('eventLocation').value = event.location;
+            }
+        } else {
+            document.getElementById('modalTitle').textContent = 'Cadastrar Novo Evento';
+            document.getElementById('submitEventBtn').textContent = 'Cadastrar Evento';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = '';
+        }
+        
+        document.getElementById('eventModal').classList.add('active');
+        loadAthletesForSelection(eventId);
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModal').classList.remove('active');
+        document.getElementById('eventForm').reset();
+        editingEventId = null;
+    }
+
+    function loadAthletesForSelection(eventId = null) {
+        const athletesList = document.getElementById('athletesList');
+        athletesList.innerHTML = '';
+        
+        let selectedParticipants = [];
+        if (eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                selectedParticipants = event.participants;
             }
         }
+        
+        Object.keys(athletesData).forEach(athleteId => {
+            const athlete = athletesData[athleteId];
+            const isSelected = selectedParticipants.includes(athleteId);
+            const div = document.createElement('div');
+            div.className = 'athlete-checkbox';
+            div.innerHTML = `
+                <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}" ${isSelected ? 'checked' : ''}>
+                <label for="athlete_${athleteId}">${athlete.name}</label>
+            `;
+            athletesList.appendChild(div);
+        });
+    }
 
-        // Função para navegar entre semanas
-        function previousWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-            updateWeekDisplay();
-        }
-
-        function nextWeek() {
-            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-            updateWeekDisplay();
-        }
-
-        function updateWeekDisplay() {
-            const weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            
-            const startStr = formatDate(currentWeekStart);
-            const endStr = formatDate(weekEnd);
-            
-            document.getElementById('currentPeriod').textContent = `${startStr} a ${endStr}`;
-        }
-
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        // Função para filtrar por status
-        function filterByStatus(status) {
-            currentFilter = status;
-            
-            // Atualizar botões ativos
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            event.target.classList.add('active');
-            
-            // Aplicar filtro
-            searchAthletes();
-        }
-
-        // Função para visualizar perfil do atleta
-        function viewAthleteProfile(athleteId) {
-            currentAthlete = athletesData[athleteId];
-            if (!currentAthlete) return;
-
-            // Preencher dados do header
-            document.getElementById('profileAvatar').textContent = currentAthlete.name.charAt(0);
-            document.getElementById('profileName').textContent = currentAthlete.name;
-            document.getElementById('profileGroup').textContent = currentAthlete.group;
-            document.getElementById('profileStatus').textContent = currentAthlete.status;
-
-            // Preencher dados na aba de dados
-            document.getElementById('fullName').textContent = currentAthlete.name;
-            document.getElementById('athleteGroup').textContent = currentAthlete.group;
-            document.getElementById('athleteLevel').textContent = currentAthlete.level || 'A definir';
-            document.getElementById('mainObjective').textContent = currentAthlete.mainObjective || '-';
-            document.getElementById('targetRace').textContent = currentAthlete.targetRace || '-';
-
-            // Carregar melhores resultados
-            loadBestResults(athleteId);
-
-            // Mostrar página do perfil
-            switchPage('athleteProfile');
-        }
-
-        // Funções para gerenciar melhores resultados
-        function addBestResult() {
-            document.getElementById('bestResultModal').classList.add('active');
-        }
-
-        function closeBestResultModal() {
-            document.getElementById('bestResultModal').classList.remove('active');
-            document.getElementById('bestResultForm').reset();
-            document.getElementById('customDistanceGroup').style.display = 'none';
-        }
-
-        function handleBestResultSubmit(e) {
-            e.preventDefault();
-            
-            if (!currentAthlete) {
-                alert('Erro: Nenhum atleta selecionado');
-                return;
+    function handleEventSubmit(e) {
+        e.preventDefault();
+        
+        const eventId = document.getElementById('eventId').value;
+        const eventData = {
+            id: eventId || 'evt' + Date.now(), // ID simples
+            name: document.getElementById('eventName').value,
+            date: document.getElementById('eventDate').value,
+            distance: document.getElementById('eventDistance').value,
+            location: document.getElementById('eventLocation').value,
+            participants: []
+        };
+        
+        const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
+        checkboxes.forEach(checkbox => {
+            eventData.participants.push(checkbox.value);
+        });
+        
+        if (eventId) {
+            const eventIndex = events.findIndex(e => e.id === eventId);
+            if (eventIndex !== -1) {
+                events[eventIndex] = eventData;
             }
-
-            const athleteId = Object.keys(athletesData).find(id => 
-                athletesData[id].name === currentAthlete.name
-            );
-
-            const distance = document.getElementById('raceDistance').value === 'other' 
-                ? document.getElementById('customDistance').value 
-                : document.getElementById('raceDistance').value;
-
-            const resultData = {
-                id: Date.now().toString(),
-                raceName: document.getElementById('raceName').value,
-                distance: distance,
-                raceType: document.getElementById('raceType').value,
-                finishTime: document.getElementById('finishTime').value,
-                classification: document.getElementById('classification').value || '-',
-                raceDate: document.getElementById('raceDate').value || '-'
-            };
-
-            // Inicializar array se não existir
-            if (!bestResults[athleteId]) {
-                bestResults[athleteId] = [];
-            }
-
-            bestResults[athleteId].push(resultData);
-            localStorage.setItem('bestResults', JSON.stringify(bestResults));
-
-            closeBestResultModal();
-            loadBestResults(athleteId);
-            alert('Resultado cadastrado com sucesso!');
+        } else {
+            events.push(eventData);
         }
+        
+        localStorage.setItem('events', JSON.stringify(events));
+        
+        closeEventModal();
+        loadEvents(); // Atualiza a lista no Dashboard
+        if (document.getElementById('athleteProfilePage').classList.contains('active') && document.getElementById('eventosTab').classList.contains('active')) {
+             loadAthleteEvents(); // Atualiza a lista no perfil do atleta, se visível
+        }
+        alert(eventId ? 'Evento atualizado com sucesso!' : 'Evento cadastrado com sucesso!');
+    }
 
-        function loadBestResults(athleteId) {
-            const resultsList = document.getElementById('bestResultsList');
-            const athleteResults = bestResults[athleteId] || [];
+    function editEvent(eventId) {
+        openEventModal(eventId);
+    }
 
-            if (athleteResults.length === 0) {
-                resultsList.innerHTML = `
-                    <div class="empty-state" style="padding: 20px;">
-                        <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
-                        <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+    function deleteEvent(eventId) {
+        if (confirm('Tem certeza que deseja excluir este evento?')) {
+            events = events.filter(event => event.id !== eventId);
+            localStorage.setItem('events', JSON.stringify(events));
+            loadEvents();
+            if (document.getElementById('athleteProfilePage').classList.contains('active') && document.getElementById('eventosTab').classList.contains('active')) {
+                 loadAthleteEvents();
+            }
+            alert('Evento excluído com sucesso!');
+        }
+    }
+
+    function loadEvents() {
+        const eventsContent = document.getElementById('eventsContent');
+        
+        if (!eventsContent) return; // Sai se o elemento não existir (ex: na tela de login)
+
+        if (events.length === 0) {
+            eventsContent.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Nenhum evento cadastrado</h3>
+                    <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        eventsContent.innerHTML = sortedEvents.map(event => {
+            return `
+                <div class="event-card">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.name}</div>
+                            <div class="event-date">${formatDate(event.date)}</div>
+                        </div>
+                        <div class="event-actions">
+                            <button class="event-btn edit" onclick="editEvent('${event.id}')" title="Editar evento">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="event-btn delete" onclick="deleteEvent('${event.id}')" title="Excluir evento">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
                     </div>
-                `;
-                return;
-            }
-
-            resultsList.innerHTML = athleteResults.map(result => `
-                <div class="info-item" style="flex-direction: column; align-items: flex-start; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px;">
-                        <strong style="color: #1f2937; font-size: 14px;">${result.raceName}</strong>
-                        <button onclick="deleteBestResult('${athleteId}', '${result.id}')" 
-                                style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px;"
-                                title="Excluir resultado">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div class="event-details">
+                        <div class="event-detail-item">
+                            <i class="fas fa-route"></i>
+                            <span>${event.distance}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
+                        </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; font-size: 12px;">
-                        <div><strong>Distância:</strong> ${result.distance}</div>
-                        <div><strong>Tipo:</strong> ${result.raceType}</div>
-                        <div><strong>Tempo:</strong> ${result.finishTime}</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; font-size: 12px; margin-top: 4px;">
-                        <div><strong>Classificação:</strong> ${result.classification}</div>
-                        <div><strong>Data:</strong> ${result.raceDate !== '-' ? new Date(result.raceDate).toLocaleDateString('pt-BR') : '-'}</div>
+                    <div class="event-participants">
+                        <div class="participants-title">Participantes (${event.participants.length})</div>
+                        <div class="participants-list">
+                            ${event.participants.map(id => 
+                                `<span class="participant-badge">${athletesData[id]?.name || 'Atleta Removido'}</span>`
+                            ).join('') || '<span style="font-size: 12px; color: #6b7280;">Nenhum atleta inscrito</span>'}
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }).join('');
+    }
+
+    function loadAthleteEvents() {
+        if (!currentAthlete) return;
+        
+        const athleteId = currentAthlete.id;
+        const athleteEvents = events.filter(event => 
+            event.participants.includes(athleteId)
+        );
+        
+        const athleteEventsContainer = document.getElementById('athleteEvents');
+        
+        if (athleteEvents.length === 0) {
+            athleteEventsContainer.innerHTML = `
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Nenhum evento para este atleta</h3>
+                    <p>Este atleta ainda não está inscrito em nenhum evento cadastrado.</p>
+                </div>
+            `;
+            return;
         }
-
-        function deleteBestResult(athleteId, resultId) {
-            if (confirm('Tem certeza que deseja excluir este resultado?')) {
-                bestResults[athleteId] = bestResults[athleteId].filter(result => result.id !== resultId);
-                localStorage.setItem('bestResults', JSON.stringify(bestResults));
-                loadBestResults(athleteId);
-                alert('Resultado excluído com sucesso!');
-            }
-        }
-
-        // Função para voltar à lista de atletas
-        function backToAthletes() {
-            switchPage('athletes');
-        }
-
-        // Função para trocar aba do perfil
-        function switchProfileTab(tabName) {
-            // Remover active de todas as abas
-            document.querySelectorAll('.profile-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            // Ativar aba selecionada
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            // Se for aba de eventos, carregar eventos do atleta
-            if (tabName === 'eventos') {
-                loadAthleteEvents();
-            }
-        }
-
-        // Funções de Eventos
-        function openEventModal(eventId = null) {
-            editingEventId = eventId;
-            
-            if (eventId) {
-                // Modo edição
-                const event = events.find(e => e.id === eventId);
-                if (event) {
-                    document.getElementById('modalTitle').textContent = 'Editar Evento';
-                    document.getElementById('submitEventBtn').textContent = 'Salvar Alterações';
-                    document.getElementById('eventId').value = eventId;
-                    document.getElementById('eventName').value = event.name;
-                    document.getElementById('eventDate').value = event.date;
-                    document.getElementById('eventDistance').value = event.distance;
-                    document.getElementById('eventLocation').value = event.location;
-                }
-            } else {
-                // Modo criação
-                document.getElementById('modalTitle').textContent = 'Cadastrar Novo Evento';
-                document.getElementById('submitEventBtn').textContent = 'Cadastrar Evento';
-                document.getElementById('eventForm').reset();
-                document.getElementById('eventId').value = '';
-            }
-            
-            document.getElementById('eventModal').classList.add('active');
-            loadAthletesForSelection(eventId);
-        }
-
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('active');
-            document.getElementById('eventForm').reset();
-            editingEventId = null;
-        }
-
-        function loadAthletesForSelection(eventId = null) {
-            const athletesList = document.getElementById('athletesList');
-            athletesList.innerHTML = '';
-            
-            let selectedParticipants = [];
-            if (eventId) {
-                const event = events.find(e => e.id === eventId);
-                if (event) {
-                    selectedParticipants = event.participants;
-                }
-            }
-            
-            Object.keys(athletesData).forEach(athleteId => {
-                const athlete = athletesData[athleteId];
-                const isSelected = selectedParticipants.includes(athleteId);
-                const div = document.createElement('div');
-                div.className = 'athlete-checkbox';
-                div.innerHTML = `
-                    <input type="checkbox" id="athlete_${athleteId}" value="${athleteId}" ${isSelected ? 'checked' : ''}>
-                    <label for="athlete_${athleteId}">${athlete.name}</label>
-                `;
-                athletesList.appendChild(div);
-            });
-        }
-
-        function handleEventSubmit(e) {
-            e.preventDefault();
-            
-            const eventId = document.getElementById('eventId').value;
-            const eventData = {
-                id: eventId || Date.now().toString(),
-                name: document.getElementById('eventName').value,
-                date: document.getElementById('eventDate').value,
-                distance: document.getElementById('eventDistance').value,
-                location: document.getElementById('eventLocation').value,
-                participants: []
-            };
-            
-            // Pegar atletas selecionados
-            const checkboxes = document.querySelectorAll('#athletesList input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                eventData.participants.push(checkbox.value);
-            });
-            
-            if (eventId) {
-                // Editar evento existente
-                const eventIndex = events.findIndex(e => e.id === eventId);
-                if (eventIndex !== -1) {
-                    events[eventIndex] = eventData;
-                }
-            } else {
-                // Criar novo evento
-                events.push(eventData);
-            }
-            
-            localStorage.setItem('events', JSON.stringify(events));
-            
-            closeEventModal();
-            loadEvents();
-            alert(eventId ? 'Evento atualizado com sucesso!' : 'Evento cadastrado com sucesso!');
-        }
-
-        function editEvent(eventId) {
-            openEventModal(eventId);
-        }
-
-        function deleteEvent(eventId) {
-            if (confirm('Tem certeza que deseja excluir este evento?')) {
-                events = events.filter(event => event.id !== eventId);
-                localStorage.setItem('events', JSON.stringify(events));
-                loadEvents();
-                alert('Evento excluído com sucesso!');
-            }
-        }
-
-        function loadEvents() {
-            const eventsContent = document.getElementById('eventsContent');
-            
-            if (events.length === 0) {
-                eventsContent.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-alt"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Clique em "Cadastrar Evento" para adicionar novos eventos</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            eventsContent.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
-                            <div class="event-actions">
-                                <button class="event-btn edit" onclick="editEvent('${event.id}')" title="Editar evento">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                                <button class="event-btn delete" onclick="deleteEvent('${event.id}')" title="Excluir evento">
-                                    <i class="fas fa-trash"></i> Excluir
-                                </button>
-                            </div>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
-                        </div>
-                        <div class="event-participants">
-                            <div class="participants-title">Participantes</div>
-                            <div class="participants-list">
-                                ${event.participants.map(id => 
-                                    `<span class="participant-badge">${athletesData[id]?.name || 'Atleta'}</span>`
-                                ).join('')}
-                            </div>
+        
+        const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        athleteEventsContainer.innerHTML = sortedEvents.map(event => {
+            return `
+                <div class="event-card">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-title">${event.name}</div>
+                            <div class="event-date">${formatDate(event.date)}</div>
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
-
-        function loadAthleteEvents() {
-            if (!currentAthlete) return;
-            
-            const athleteId = Object.keys(athletesData).find(id => 
-                athletesData[id].name === currentAthlete.name
-            );
-            
-            const athleteEvents = events.filter(event => 
-                event.participants.includes(athleteId)
-            );
-            
-            const athleteEventsContainer = document.getElementById('athleteEvents');
-            
-            if (athleteEvents.length === 0) {
-                athleteEventsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-trophy"></i>
-                        <h3>Nenhum evento cadastrado</h3>
-                        <p>Este atleta ainda não está inscrito em nenhum evento</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedEvents = athleteEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            athleteEventsContainer.innerHTML = sortedEvents.map(event => {
-                const eventDate = new Date(event.date);
-                const formattedDate = eventDate.toLocaleDateString('pt-BR');
-                
-                return `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div>
-                                <div class="event-title">${event.name}</div>
-                                <div class="event-date">${formattedDate}</div>
-                            </div>
+                    <div class="event-details">
+                        <div class="event-detail-item">
+                            <i class="fas fa-route"></i>
+                            <span>${event.distance}</span>
                         </div>
-                        <div class="event-details">
-                            <div class="event-detail-item">
-                                <i class="fas fa-route"></i>
-                                <span>${event.distance}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${event.location}</span>
-                            </div>
+                        <div class="event-detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `;
+        }).join('');
+    }
+
+    // --- AVALIAÇÕES (Cálculos) ---
+    function calculatePerformanceData() {
+        // Pegar valores dos inputs
+        const age = parseInt(document.getElementById('age').value) || 0;
+        const gender = document.getElementById('gender').value;
+        const height = parseInt(document.getElementById('height').value) || 0;
+        const weight = parseInt(document.getElementById('weight').value) || 0;
+        const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
+        let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
+        const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
+        const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
+        const test5km = document.getElementById('test5km').value;
+        const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+
+        if (!age || !gender || !height || !weight) {
+            alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
+            return;
+        }
+        if (!cooperTest && !vamTest && !test5km && !vo2MaxInput && !fcRest) {
+            alert('Por favor, preencha pelo menos um teste de esforço OU a FC de repouso para estimativas');
+            return;
         }
 
-        // Funções de Cálculo de Performance
-        function calculatePerformanceData() {
-            // Pegar valores dos inputs
-            const age = parseInt(document.getElementById('age').value) || 0;
-            const gender = document.getElementById('gender').value;
-            const height = parseInt(document.getElementById('height').value) || 0;
-            const weight = parseInt(document.getElementById('weight').value) || 0;
-            const fcRest = parseInt(document.getElementById('fcRest').value) || 0;
-            let fcMax = parseInt(document.getElementById('fcMax').value) || 0;
-            const cooperTest = parseInt(document.getElementById('cooperTest').value) || 0;
-            const vamTest = parseFloat(document.getElementById('vamTest').value) || 0;
-            const test5km = document.getElementById('test5km').value;
-            const vo2MaxInput = parseFloat(document.getElementById('vo2Max').value) || 0;
+        if (!fcMax) {
+            fcMax = Math.round(208 - (0.7 * age));
+        }
 
-            // Validações básicas
-            if (!age || !gender || !height || !weight) {
-                alert('Por favor, preencha os dados físicos básicos (idade, sexo, altura, peso)');
-                return;
-            }
+        let vo2Max = vo2MaxInput;
+        if (!vo2Max && cooperTest > 0) {
+            vo2Max = (cooperTest - 504.9) / 44.73;
+        }
+        if (!vo2Max && fcMax > 0 && fcRest > 0) {
+            vo2Max = 15.3 * (fcMax / fcRest);
+        }
 
-            // Para estimativas por FC, precisamos pelo menos FC repouso
-            if (!cooperTest && !vamTest && !test5km && !vo2MaxInput && !fcRest) {
-                alert('Por favor, preencha pelo menos um teste de esforço OU a FC de repouso para estimativas');
-                return;
-            }
-
-            // Calcular FC Máxima se não informada - usando fórmula de Tanaka
-            if (!fcMax) {
-                fcMax = Math.round(208 - (0.7 * age));
-            }
-
-            // Calcular VO2 máximo (prioridade: testes > fórmulas por FC)
-            let vo2Max = vo2MaxInput;
-            if (!vo2Max && cooperTest > 0) {
-                // Fórmula de Cooper: VO2 max = (distância em metros - 504.9) / 44.73
-                vo2Max = (cooperTest - 504.9) / 44.73;
-            }
-            // Se ainda não temos VO2, estimar pela FC (fórmula de Uth)
-            if (!vo2Max && fcMax > 0 && fcRest > 0) {
-                // Fórmula de Uth: VO2 max = 15.3 × (FCmax / FCrepouso)
-                vo2Max = 15.3 * (fcMax / fcRest);
-            }
-
-            // Calcular VAM (prioridade: teste direto > tempo 5km > VO2)
-            let vam = vamTest;
-            if (!vam && test5km) {
-                // Converter tempo de 5km para VAM
-                const [minutes, seconds] = test5km.split(':').map(Number);
-                if (minutes && !isNaN(seconds)) {
-                    const totalMinutes = minutes + (seconds / 60);
+        let vam = vamTest;
+        if (!vam && test5km) {
+            const timeParts = test5km.split(':').map(Number);
+            if (timeParts.length === 2 && !isNaN(timeParts[0]) && !isNaN(timeParts[1])) {
+                const totalMinutes = timeParts[0] + (timeParts[1] / 60);
+                if (totalMinutes > 0) {
                     const speed = 5 / (totalMinutes / 60); // km/h
-                    vam = speed * 1.05; // VAM é aproximadamente 5% maior que velocidade de 5km
+                    vam = speed * 1.05; 
                 }
             }
-            if (!vam && vo2Max > 0) {
-                // Estimar VAM a partir do VO2 (fórmula de Léger-Boucher)
-                vam = vo2Max * 0.278;
-            }
-            // Se ainda não temos VAM, estimar diretamente pela FC
-            if (!vam && fcMax > 0 && fcRest > 0) {
-                // Estimar VAM pela FC usando relação empírica
-                const fcReserve = fcMax - fcRest;
-                vam = (fcReserve * 0.15) + 8; // Fórmula empírica: VAM baseada na FC de reserva
-            }
-
-            // Calcular FC Reserva
+        }
+        if (!vam && vo2Max > 0) {
+            vam = vo2Max / 3.5; // Estimativa VAM = VO2max / 3.5
+        }
+        if (!vam && fcMax > 0 && fcRest > 0) {
             const fcReserve = fcMax - fcRest;
-
-            // Mostrar resultados
-            document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
-            document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
-            document.getElementById('calculatedFCMax').textContent = fcMax;
-            document.getElementById('calculatedFCReserve').textContent = fcReserve;
-
-            // Gerar tabela de zonas
-            generateTrainingZones(fcMax, fcRest, vam);
-
-            // Mostrar seção de resultados
-            document.getElementById('performanceResults').style.display = 'block';
+            vam = (fcReserve * 0.15) + 8; 
         }
 
-        function generateTrainingZones(fcMax, fcRest, vam) {
-            const zones = [
-                {
-                    zone: 1,
-                    name: 'Recuperação Ativa',
-                    color: 'zone-1',
-                    fcPercent: [50, 60],
-                    vamPercent: [60, 70],
-                    description: 'Recuperação e aquecimento'
-                },
-                {
-                    zone: 2,
-                    name: 'Base Aeróbia',
-                    color: 'zone-2',
-                    fcPercent: [60, 70],
-                    vamPercent: [70, 80],
-                    description: 'Resistência aeróbia básica'
-                },
-                {
-                    zone: 3,
-                    name: 'Aeróbio Intenso',
-                    color: 'zone-3',
-                    fcPercent: [70, 80],
-                    vamPercent: [80, 90],
-                    description: 'Limiar aeróbio'
-                },
-                {
-                    zone: 4,
-                    name: 'Limiar Anaeróbio',
-                    color: 'zone-4',
-                    fcPercent: [80, 90],
-                    vamPercent: [90, 100],
-                    description: 'Limiar anaeróbio/lactato'
-                },
-                {
-                    zone: 5,
-                    name: 'Potência Aeróbia',
-                    color: 'zone-5',
-                    fcPercent: [90, 100],
-                    vamPercent: [100, 120],
-                    description: 'VO2 máximo'
-                }
-            ];
+        const fcReserve = fcMax > 0 && fcRest > 0 ? fcMax - fcRest : 0;
 
-            const tbody = document.getElementById('zonesTableBody');
-            tbody.innerHTML = zones.map(zone => {
-                let fcMin, fcMaxZone;
-                
-                // Usar fórmula de Karvonen se FC repouso estiver preenchida, senão usar percentual direto
-                if (fcRest && fcRest > 0) {
-                    // Método Karvonen (FC de reserva)
+        document.getElementById('calculatedVO2').textContent = vo2Max ? vo2Max.toFixed(1) : '--';
+        document.getElementById('calculatedVAM').textContent = vam ? vam.toFixed(1) : '--';
+        document.getElementById('calculatedFCMax').textContent = fcMax || '--';
+        document.getElementById('calculatedFCReserve').textContent = fcReserve || '--';
+
+        generateTrainingZones(fcMax, fcRest, vam);
+        document.getElementById('performanceResults').style.display = 'block';
+    }
+
+    function generateTrainingZones(fcMax, fcRest, vam) {
+        const zones = [
+            { zone: 1, name: 'Z1', fcPercent: [50, 60], vamPercent: [60, 70], description: 'Recuperação', color: 'zone-1' },
+            { zone: 2, name: 'Z2', fcPercent: [60, 70], vamPercent: [70, 80], description: 'Aeróbio Leve', color: 'zone-2' },
+            { zone: 3, name: 'Z3', fcPercent: [70, 80], vamPercent: [80, 90], description: 'Aeróbio Moderado', color: 'zone-3' },
+            { zone: 4, name: 'Z4', fcPercent: [80, 90], vamPercent: [90, 100], description: 'Limiar Anaeróbio', color: 'zone-4' },
+            { zone: 5, name: 'Z5', fcPercent: [90, 100], vamPercent: [100, 110], description: 'VO2 Máx', color: 'zone-5' }
+        ];
+
+        const tbody = document.getElementById('zonesTableBody');
+        tbody.innerHTML = ''; // Limpa tabela
+
+        zones.forEach(zone => {
+            let fcRange = '--';
+            if (fcMax > 0) {
+                if (fcRest > 0) { // Karvonen
                     const fcReserve = fcMax - fcRest;
-                    fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
-                    fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
-                } else {
-                    // Percentual direto da FC máxima
-                    fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
-                    fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
+                    const fcMin = Math.round(fcRest + (fcReserve * zone.fcPercent[0] / 100));
+                    const fcMaxZone = Math.round(fcRest + (fcReserve * zone.fcPercent[1] / 100));
+                    fcRange = `${fcMin} - ${fcMaxZone}`;
+                } else { // % Direto FC Max
+                    const fcMin = Math.round(fcMax * zone.fcPercent[0] / 100);
+                    const fcMaxZone = Math.round(fcMax * zone.fcPercent[1] / 100);
+                    fcRange = `${fcMin} - ${fcMaxZone}`;
                 }
-                
-                // Calcular ritmo baseado na VAM
-                let paceMin = '--', paceMax = '--';
-                if (vam > 0) {
-                    const speedMin = vam * (zone.vamPercent[0] / 100);
-                    const speedMax = vam * (zone.vamPercent[1] / 100);
-                    
-                    // Converter km/h para min/km
-                    const paceMinCalc = 60 / speedMax; // min/km (velocidade maior = ritmo menor)
-                    const paceMaxCalc = 60 / speedMin; // min/km
-                    
-                    const formatPace = (pace) => {
-                        const minutes = Math.floor(pace);
-                        const seconds = Math.round((pace - minutes) * 60);
-                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                    };
-                    
-                    paceMin = formatPace(paceMinCalc);
-                    paceMax = formatPace(paceMaxCalc);
-                }
+            }
 
-                return `
-                    <tr>
-                        <td>
-                            <span class="zone-color ${zone.color}"></span>
-                            Zona ${zone.zone}
-                        </td>
-                        <td><strong>${zone.name}</strong><br><small>${zone.description}</small></td>
-                        <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
-                        <td>${fcMin}-${fcMaxZone} bpm</td>
-                        <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
-                        <td>${paceMin}-${paceMax} /km</td>
-                    </tr>
-                `;
-            }).join('');
+            let paceRange = '--';
+            if (vam > 0) {
+                const vamMin = vam * (zone.vamPercent[0] / 100);
+                const vamMax = vam * (zone.vamPercent[1] / 100);
+                const paceMin = 60 / vamMax; // min/km
+                const paceMax = 60 / vamMin; // min/km
+                paceRange = `${formatPace(paceMax)} - ${formatPace(paceMin)}`;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><span class="zone-color ${zone.color}"></span> ${zone.name}</td>
+                <td>${zone.description}</td>
+                <td>${zone.fcPercent[0]}-${zone.fcPercent[1]}%</td>
+                <td>${fcRange}</td>
+                <td>${zone.vamPercent[0]}-${zone.vamPercent[1]}%</td>
+                <td>${paceRange}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function formatPace(decimalMinutes) {
+        if (!decimalMinutes || !isFinite(decimalMinutes)) return '--:--';
+        const totalSeconds = Math.round(decimalMinutes * 60);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // --- PLANEJAMENTOS (CRUD) ---
+    function handlePlanningSubmit(e) {
+        e.preventDefault();
+        
+        const planData = {
+            id: editingPlanningId || 'plan' + Date.now(), // Reusa ID se editando, senão cria novo
+            name: document.getElementById('planMacroName').value,
+            objective: document.getElementById('planObjective').value,
+            startDate: document.getElementById('planStartDate').value,
+            endDate: document.getElementById('planEndDate').value,
+            mesocycles: document.getElementById('planMesocycles').value,
+            microcycles: document.getElementById('planMicrocycles').value
+        };
+
+        if (editingPlanningId) {
+            // Atualizar plano existente
+            const planIndex = plans.findIndex(p => p.id === editingPlanningId);
+            if (planIndex !== -1) {
+                plans[planIndex] = planData;
+            }
+        } else {
+            // Adicionar novo plano
+            plans.push(planData);
         }
-    </script>
+
+        localStorage.setItem('plans', JSON.stringify(plans)); // Salva no localStorage
+        loadPlans(); // Recarrega a lista de planos
+        resetPlanningForm(); // Limpa o formulário
+        alert(editingPlanningId ? 'Planejamento atualizado com sucesso!' : 'Planejamento salvo com sucesso!');
+    }
+
+    function loadPlans() {
+        const listContainer = document.getElementById('savedPlansList');
+        const emptyState = document.getElementById('emptyPlansState');
+        listContainer.innerHTML = ''; // Limpa a lista atual
+
+        if (plans.length === 0) {
+            listContainer.appendChild(emptyState); // Mostra mensagem de vazio se não houver planos
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none'; // Esconde mensagem de vazio
+
+        // Ordena planos (opcional, ex: por data de início)
+        const sortedPlans = [...plans].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+        sortedPlans.forEach(plan => {
+            const card = document.createElement('div');
+            card.className = 'planning-card';
+            card.innerHTML = `
+                <div class="planning-card-header">
+                    <span class="planning-title">${plan.name}</span>
+                    <span class="planning-dates">${formatDate(plan.startDate)} - ${formatDate(plan.endDate)}</span>
+                </div>
+                <div class="planning-details">
+                    <p><strong>Objetivo:</strong> ${plan.objective}</p>
+                    <p><strong>Mesociclos:</strong> ${plan.mesocycles.substring(0, 100)}...</p> 
+                    <p><strong>Microciclos:</strong> ${plan.microcycles.substring(0, 100)}...</p>
+                </div>
+                <div class="planning-actions">
+                    <button class="btn-warning" onclick="editPlan('${plan.id}')">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn-danger" onclick="deletePlan('${plan.id}')">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            `;
+            listContainer.appendChild(card);
+        });
+    }
+
+    function editPlan(planId) {
+        const plan = plans.find(p => p.id === planId);
+        if (!plan) return;
+
+        editingPlanningId = planId;
+
+        // Preenche o formulário com os dados do plano
+        document.getElementById('planningId').value = plan.id;
+        document.getElementById('planMacroName').value = plan.name;
+        document.getElementById('planObjective').value = plan.objective;
+        document.getElementById('planStartDate').value = formatDateForInput(plan.startDate);
+        document.getElementById('planEndDate').value = formatDateForInput(plan.endDate);
+        document.getElementById('planMesocycles').value = plan.mesocycles;
+        document.getElementById('planMicrocycles').value = plan.microcycles;
+
+        // Ajusta a interface do formulário para modo de edição
+        document.getElementById('planningFormTitle').textContent = 'Editar Planejamento';
+        document.getElementById('savePlanBtn').innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+        document.getElementById('cancelEditPlanBtn').style.display = 'inline-block';
+
+        // Rola a página para o formulário
+        document.getElementById('planningForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deletePlan(planId) {
+        if (confirm('Tem certeza que deseja excluir este planejamento? Esta ação não pode ser desfeita.')) {
+            plans = plans.filter(p => p.id !== planId);
+            localStorage.setItem('plans', JSON.stringify(plans));
+            loadPlans();
+            alert('Planejamento excluído com sucesso!');
+            // Se o formulário estava em modo de edição para este plano, reseta
+            if (editingPlanningId === planId) {
+                resetPlanningForm();
+            }
+        }
+    }
+
+    function resetPlanningForm() {
+        editingPlanningId = null;
+        document.getElementById('planningForm').reset();
+        document.getElementById('planningId').value = '';
+        document.getElementById('planningFormTitle').textContent = 'Criar Novo Planejamento (Macrociclo)';
+        document.getElementById('savePlanBtn').innerHTML = '<i class="fas fa-save"></i> Salvar Planejamento';
+        document.getElementById('cancelEditPlanBtn').style.display = 'none';
+    }
+
+</script>
+
 </body>
 </html>
+
