@@ -1487,20 +1487,36 @@
                                         <span class="info-value" id="athleteGroup">-</span>
                                     </div>
                                     <div class="info-item">
-                                        <span class="info-label">Categoria:</span>
-                                        <span class="info-value">Veterano</span>
+                                        <span class="info-label">Nível do Atleta:</span>
+                                        <span class="info-value" id="athleteLevel">A definir</span>
                                     </div>
                                     <div class="info-item">
                                         <span class="info-label">Tempo de Treino:</span>
                                         <span class="info-value">2 anos</span>
                                     </div>
                                     <div class="info-item">
-                                        <span class="info-label">Mesociclo Atual:</span>
-                                        <span class="info-value" id="currentMesocycle">-</span>
+                                        <span class="info-label">Objetivo Principal:</span>
+                                        <span class="info-value" id="mainObjective">-</span>
                                     </div>
                                     <div class="info-item">
-                                        <span class="info-label">Microciclo Atual:</span>
-                                        <span class="info-value" id="currentMicrocycle">-</span>
+                                        <span class="info-label">Prova Alvo:</span>
+                                        <span class="info-value" id="targetRace">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <h3><i class="fas fa-trophy"></i> Melhores Resultados</h3>
+                                    <div style="margin-bottom: 12px;">
+                                        <button class="btn-primary" onclick="addBestResult()" style="padding: 6px 12px; font-size: 12px;">
+                                            <i class="fas fa-plus"></i> Adicionar Resultado
+                                        </button>
+                                    </div>
+                                    <div id="bestResultsList">
+                                        <!-- Resultados serão listados aqui -->
+                                        <div class="empty-state" style="padding: 20px;">
+                                            <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                            <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1812,6 +1828,76 @@
         </div>
     </div>
 
+    <!-- MODAL CADASTRO DE MELHOR RESULTADO -->
+    <div id="bestResultModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Cadastrar Melhor Resultado</h2>
+                <button class="modal-close" onclick="closeBestResultModal()">&times;</button>
+            </div>
+            
+            <form id="bestResultForm">
+                <div class="form-group">
+                    <label for="raceName">Nome da Prova</label>
+                    <input type="text" id="raceName" required placeholder="Ex: Maratona de São Paulo">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="raceDistance">Distância</label>
+                        <select id="raceDistance" required>
+                            <option value="">Selecionar</option>
+                            <option value="5km">5km</option>
+                            <option value="10km">10km</option>
+                            <option value="15km">15km</option>
+                            <option value="21km">21km (Meia Maratona)</option>
+                            <option value="42km">42km (Maratona)</option>
+                            <option value="other">Outra distância</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raceType">Tipo de Prova</label>
+                        <select id="raceType" required>
+                            <option value="">Selecionar</option>
+                            <option value="rua">Corrida de Rua</option>
+                            <option value="pista">Pista</option>
+                            <option value="trail">Trail</option>
+                            <option value="cross">Cross Country</option>
+                            <option value="montanha">Corrida de Montanha</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="customDistanceGroup" style="display: none;">
+                    <label for="customDistance">Distância Personalizada</label>
+                    <input type="text" id="customDistance" placeholder="Ex: 8km, 25km">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="finishTime">Tempo de Conclusão</label>
+                        <input type="text" id="finishTime" required placeholder="Ex: 1:45:30 ou 45:30" pattern="([0-9]{1,2}:)?[0-9]{1,2}:[0-9]{2}">
+                    </div>
+                    <div class="form-group">
+                        <label for="classification">Classificação</label>
+                        <input type="text" id="classification" placeholder="Ex: 15º Geral, 3º Categoria">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="raceDate">Data da Prova</label>
+                    <input type="date" id="raceDate">
+                </div>
+                
+                <div style="text-align: right; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" onclick="closeBestResultModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar Resultado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Estado do sistema
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -1820,6 +1906,7 @@
         let currentAthlete = null;
         let events = JSON.parse(localStorage.getItem('events') || '[]');
         let editingEventId = null;
+        let bestResults = JSON.parse(localStorage.getItem('bestResults') || '{}'); // Organizado por atleta
 
         // Dados dos atletas
         const athletesData = {
@@ -1827,15 +1914,17 @@
                 name: 'Adão Aparecido de Oliveira',
                 group: 'Projeto Corra',
                 status: 'Em preparação',
-                mesocycle: 'Base Geral',
-                microcycle: '14/27 Choque'
+                level: 'Iniciante',
+                mainObjective: 'Completar primeira 10km',
+                targetRace: '10km São Silvestre'
             },
             'adriana-freitas': {
                 name: 'Adriana Duque de Freitas',
                 group: 'TIME BASTOS',
                 status: 'Liberado',
-                mesocycle: 'Específico',
-                microcycle: '22/25'
+                level: 'Intermediário',
+                mainObjective: 'Melhorar tempo na meia maratona',
+                targetRace: 'Meia Maratona de São Paulo'
             }
         };
 
@@ -1857,6 +1946,7 @@
             
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+            document.getElementById('bestResultForm').addEventListener('submit', handleBestResultSubmit);
             
             // Adicionar listeners para cálculo automático do IMC
             const heightInput = document.getElementById('height');
@@ -1879,6 +1969,21 @@
                 searchInput.addEventListener('input', function() {
                     if (this.value === '') {
                         searchAthletes();
+                    }
+                });
+            }
+
+            // Listener para mostrar/esconder campo de distância personalizada
+            const raceDistanceSelect = document.getElementById('raceDistance');
+            if (raceDistanceSelect) {
+                raceDistanceSelect.addEventListener('change', function() {
+                    const customGroup = document.getElementById('customDistanceGroup');
+                    if (this.value === 'other') {
+                        customGroup.style.display = 'block';
+                        document.getElementById('customDistance').required = true;
+                    } else {
+                        customGroup.style.display = 'none';
+                        document.getElementById('customDistance').required = false;
                     }
                 });
             }
@@ -2201,11 +2306,111 @@
             // Preencher dados na aba de dados
             document.getElementById('fullName').textContent = currentAthlete.name;
             document.getElementById('athleteGroup').textContent = currentAthlete.group;
-            document.getElementById('currentMesocycle').textContent = currentAthlete.mesocycle;
-            document.getElementById('currentMicrocycle').textContent = currentAthlete.microcycle;
+            document.getElementById('athleteLevel').textContent = currentAthlete.level || 'A definir';
+            document.getElementById('mainObjective').textContent = currentAthlete.mainObjective || '-';
+            document.getElementById('targetRace').textContent = currentAthlete.targetRace || '-';
+
+            // Carregar melhores resultados
+            loadBestResults(athleteId);
 
             // Mostrar página do perfil
             switchPage('athleteProfile');
+        }
+
+        // Funções para gerenciar melhores resultados
+        function addBestResult() {
+            document.getElementById('bestResultModal').classList.add('active');
+        }
+
+        function closeBestResultModal() {
+            document.getElementById('bestResultModal').classList.remove('active');
+            document.getElementById('bestResultForm').reset();
+            document.getElementById('customDistanceGroup').style.display = 'none';
+        }
+
+        function handleBestResultSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentAthlete) {
+                alert('Erro: Nenhum atleta selecionado');
+                return;
+            }
+
+            const athleteId = Object.keys(athletesData).find(id => 
+                athletesData[id].name === currentAthlete.name
+            );
+
+            const distance = document.getElementById('raceDistance').value === 'other' 
+                ? document.getElementById('customDistance').value 
+                : document.getElementById('raceDistance').value;
+
+            const resultData = {
+                id: Date.now().toString(),
+                raceName: document.getElementById('raceName').value,
+                distance: distance,
+                raceType: document.getElementById('raceType').value,
+                finishTime: document.getElementById('finishTime').value,
+                classification: document.getElementById('classification').value || '-',
+                raceDate: document.getElementById('raceDate').value || '-'
+            };
+
+            // Inicializar array se não existir
+            if (!bestResults[athleteId]) {
+                bestResults[athleteId] = [];
+            }
+
+            bestResults[athleteId].push(resultData);
+            localStorage.setItem('bestResults', JSON.stringify(bestResults));
+
+            closeBestResultModal();
+            loadBestResults(athleteId);
+            alert('Resultado cadastrado com sucesso!');
+        }
+
+        function loadBestResults(athleteId) {
+            const resultsList = document.getElementById('bestResultsList');
+            const athleteResults = bestResults[athleteId] || [];
+
+            if (athleteResults.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <i class="fas fa-medal" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <p style="font-size: 12px; margin: 0;">Nenhum resultado cadastrado</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsList.innerHTML = athleteResults.map(result => `
+                <div class="info-item" style="flex-direction: column; align-items: flex-start; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px;">
+                        <strong style="color: #1f2937; font-size: 14px;">${result.raceName}</strong>
+                        <button onclick="deleteBestResult('${athleteId}', '${result.id}')" 
+                                style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px;"
+                                title="Excluir resultado">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; font-size: 12px;">
+                        <div><strong>Distância:</strong> ${result.distance}</div>
+                        <div><strong>Tipo:</strong> ${result.raceType}</div>
+                        <div><strong>Tempo:</strong> ${result.finishTime}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; font-size: 12px; margin-top: 4px;">
+                        <div><strong>Classificação:</strong> ${result.classification}</div>
+                        <div><strong>Data:</strong> ${result.raceDate !== '-' ? new Date(result.raceDate).toLocaleDateString('pt-BR') : '-'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteBestResult(athleteId, resultId) {
+            if (confirm('Tem certeza que deseja excluir este resultado?')) {
+                bestResults[athleteId] = bestResults[athleteId].filter(result => result.id !== resultId);
+                localStorage.setItem('bestResults', JSON.stringify(bestResults));
+                loadBestResults(athleteId);
+                alert('Resultado excluído com sucesso!');
+            }
         }
 
         // Função para voltar à lista de atletas
