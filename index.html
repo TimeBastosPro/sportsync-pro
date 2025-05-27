@@ -1921,579 +1921,2285 @@ function saveEditedFields(section) {
 
 
                         <!-- Aba Planilhas -->
-                        <div id="planilhasTab" class="tab-content">
-                 // Estado das planilhas
-        let workoutPlans = JSON.parse(localStorage.getItem('workoutPlans') || '{}'); // Organizado por atleta
-        let currentWorkoutWeek = new Date('2025-05-26'); // Semana atual das planilhas
-        let selectedTemplate = null;
-        let editingWorkoutId = null;
-        let currentWorkoutDay = null;
-
-        // Templates de treino predefinidos
-        const workoutTemplates = {
-            easy: {
-                type: 'Corrida Regenerativa',
-                zone: '1',
-                intensity: 'muito-leve',
-                distance: 5,
-                duration: 35,
-                pace: '6:00-6:30/km',
-                description: 'Corrida muito leve para recuperação ativa. Mantenha conversação normal durante todo o treino.'
-            },
-            base: {
-                type: 'Base Aeróbia',
-                zone: '2',
-                intensity: 'leve',
-                distance: 8,
-                duration: 50,
-                pace: '5:30-6:00/km',
-                description: 'Corrida em ritmo confortável, desenvolvendo capacidade aeróbia. Deve conseguir manter conversação.'
-            },
-            tempo: {
-                type: 'Tempo Run',
-                zone: '3',
-                intensity: 'moderada',
-                distance: 6,
-                duration: 35,
-                pace: '5:00-5:20/km',
-                description: 'Corrida em ritmo controlado e sustentado. Aquecimento 10min + 20min no ritmo + volta à calma 5min.'
-            },
-            intervals: {
-                type: 'Treino Intervalado',
-                zone: '4',
-                intensity: 'forte',
-                distance: 7,
-                duration: 45,
-                pace: '4:30-4:50/km',
-                description: 'Aquecimento 15min + 6x800m (rec 2min) + volta à calma 10min. Manter intensidade alta nos tiros.'
-            },
-            long: {
-                type: 'Longão',
-                zone: '2',
-                intensity: 'leve',
-                distance: 15,
-                duration: 90,
-                pace: '5:45-6:15/km',
-                description: 'Corrida longa para resistência. Inicie devagar e mantenha ritmo constante. Hidrate-se regularmente.'
-            }
-        };
-
-        // Inicializar sistema de planilhas quando a aba for ativada
-        function initializeWorkoutSystem() {
-            loadMacrociclosForWorkout();
+                       <!-- Aba Planilhas -->
+<div id="planilhasTab" class="tab-content">
+    <div class="planilhas-container">
+        <!-- Header com navegação e visualização -->
+        <div class="planilha-header">
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="toggleView('week')">
+                    <i class="fas fa-calendar-week"></i> Semanal
+                </button>
+                <button class="view-btn" onclick="toggleView('month')">
+                    <i class="fas fa-calendar-alt"></i> Mensal
+                </button>
+            </div>
             
-            // Listener para seleção de macrociclo
-            const macrocicloSelect = document.getElementById('macrocicloSelect');
-            if (macrocicloSelect) {
-                macrocicloSelect.addEventListener('change', function() {
-                    const createBtn = document.getElementById('createPlanBtn');
-                    if (this.value) {
-                        createBtn.disabled = false;
-                        createBtn.textContent = 'Criar Planilha';
-                    } else {
-                        createBtn.disabled = true;
-                        hideWorkoutCalendar();
-                    }
-                });
-            }
+            <div class="planilha-week-header">
+                <button class="week-nav-arrow" onclick="navigatePeriod(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="week-title-group">
+                    <h3 class="week-title" id="weekTitle">Semana 16</h3>
+                    <span class="week-dates" id="weekDates">13/05 - 19/05/2025</span>
+                    <span class="week-type" id="weekType">Microciclo: 17</span>
+                </div>
+                <button class="week-nav-arrow" onclick="navigatePeriod(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
 
-            // Listener para templates de treino
-            document.querySelectorAll('.template-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedTemplate = this.dataset.template;
-                    
-                    if (selectedTemplate !== 'custom') {
-                        fillWorkoutFormFromTemplate(selectedTemplate);
-                    } else {
-                        clearWorkoutForm();
-                    }
-                });
-            });
+            <div class="planilha-stats">
+                <div class="stat-item">
+                    <i class="fas fa-running"></i>
+                    <span id="weekTotalDistance">0 km</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="weekTotalTime">0h 0min</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-fire"></i>
+                    <span id="weekTotalTSS">0 TSS</span>
+                </div>
+            </div>
+        </div>
 
-            // Listener para o formulário de treino
-            document.getElementById('workoutForm').addEventListener('submit', handleWorkoutSubmit);
-        }
+        <!-- Templates rápidos -->
+        <div class="quick-templates">
+            <h4><i class="fas fa-bookmark"></i> Templates Rápidos</h4>
+            <div class="templates-list">
+                <button class="template-btn" onclick="applyTemplate('base')">
+                    <i class="fas fa-heartbeat"></i> Semana Base
+                </button>
+                <button class="template-btn" onclick="applyTemplate('intensidade')">
+                    <i class="fas fa-bolt"></i> Semana Intensidade
+                </button>
+                <button class="template-btn" onclick="applyTemplate('recuperacao')">
+                    <i class="fas fa-spa"></i> Semana Recuperação
+                </button>
+                <button class="template-btn" onclick="applyTemplate('prova')">
+                    <i class="fas fa-trophy"></i> Semana de Prova
+                </button>
+            </div>
+        </div>
 
-        function loadMacrociclosForWorkout() {
-            const select = document.getElementById('macrocicloSelect');
-            const macrociclos = JSON.parse(localStorage.getItem('macrociclosSalvos') || '[]');
+        <!-- Grid de dias da semana -->
+        <div class="training-grid" id="trainingGrid">
+            <!-- Os dias serão gerados dinamicamente -->
+        </div>
+
+        <!-- Visualização mensal (inicialmente oculta) -->
+        <div class="month-view" id="monthView" style="display: none;">
+            <!-- Calendário mensal será gerado aqui -->
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="planilha-actions-bottom">
+            <button class="btn-action-planilha" onclick="copyWeek()">
+                <i class="fas fa-copy"></i> Copiar Semana
+            </button>
+            <button class="btn-action-planilha" onclick="clearWeek()">
+                <i class="fas fa-eraser"></i> Limpar Semana
+            </button>
+            <button class="btn-action-planilha" onclick="exportWeek()">
+                <i class="fas fa-file-export"></i> Exportar PDF
+            </button>
+            <button class="btn-action-planilha primary" onclick="savePlanilha()">
+                <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Treino Detalhado -->
+<div id="detailedTrainingModal" class="modal-overlay">
+    <div class="modal training-modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Treino</h2>
+            <button class="modal-close" onclick="closeDetailedTrainingModal()">&times;</button>
+        </div>
+        
+        <form id="detailedTrainingForm">
+            <input type="hidden" id="trainingDayId" value="">
+            <input type="hidden" id="editingTrainingIndex" value="">
             
-            select.innerHTML = '<option value="">Selecionar Macrociclo</option>';
-            
-            macrociclos.forEach(macro => {
-                const option = document.createElement('option');
-                option.value = macro.id;
-                option.textContent = `${macro.nome} (${macro.inicio} a ${macro.fim})`;
-                select.appendChild(option);
-            });
+            <!-- Tipo de atividade -->
+            <div class="activity-type-selector">
+                <button type="button" class="activity-type-btn active" data-type="corrida">
+                    <i class="fas fa-running"></i> Corrida
+                </button>
+                <button type="button" class="activity-type-btn" data-type="bike">
+                    <i class="fas fa-biking"></i> Bike
+                </button>
+                <button type="button" class="activity-type-btn" data-type="natacao">
+                    <i class="fas fa-swimmer"></i> Natação
+                </button>
+                <button type="button" class="activity-type-btn" data-type="forca">
+                    <i class="fas fa-dumbbell"></i> Força
+                </button>
+            </div>
+
+            <!-- Configurações básicas -->
+            <div class="training-basic-config">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Treino</label>
+                        <select id="trainingTypeDetail" class="form-select">
+                            <option value="continuo">Contínuo</option>
+                            <option value="intervalado">Intervalado</option>
+                            <option value="fartlek">Fartlek</option>
+                            <option value="tempo">Tempo Run</option>
+                            <option value="longo">Longo</option>
+                            <option value="progressivo">Progressivo</option>
+                            <option value="regenerativo">Regenerativo</option>
+                            <option value="descanso">Descanso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Esforço</label>
+                        <select id="trainingEffort" class="form-select">
+                            <option value="leve">Leve</option>
+                            <option value="moderado">Moderado</option>
+                            <option value="forte">Forte</option>
+                            <option value="maximo">Máximo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Percurso</label>
+                        <select id="trainingTerrain" class="form-select">
+                            <option value="plano">Plano</option>
+                            <option value="ondulado">Ondulado</option>
+                            <option value="subida">Subida</option>
+                            <option value="misto">Misto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ordem</label>
+                        <input type="number" id="trainingOrder" class="form-input" value="1" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags de componentes do treino -->
+            <div class="training-components">
+                <button type="button" class="component-tag" data-component="educativos">
+                    <i class="fas fa-plus"></i> Educativos
+                </button>
+                <button type="button" class="component-tag" data-component="aquecimento">
+                    <i class="fas fa-plus"></i> Aquecer
+                </button>
+                <button type="button" class="component-tag active" data-component="principal">
+                    <i class="fas fa-plus"></i> Correr
+                </button>
+                <button type="button" class="component-tag" data-component="desaquecimento">
+                    <i class="fas fa-plus"></i> Desaquecer
+                </button>
+                <button type="button" class="component-tag" data-component="repeticao">
+                    <i class="fas fa-plus"></i> Repetição
+                </button>
+                <button type="button" class="component-tag" data-component="repeticao-caminhada">
+                    <i class="fas fa-plus"></i> Repetição com caminhada
+                </button>
+                <button type="button" class="component-tag" data-component="repeticao-descanso">
+                    <i class="fas fa-plus"></i> Repetição com descanso
+                </button>
+            </div>
+
+            <!-- Informações resumidas -->
+            <div class="training-summary-bar">
+                <div class="summary-info">
+                    <i class="fas fa-clock"></i>
+                    <span id="totalDuration">0h 0min</span>
+                </div>
+                <div class="summary-info">
+                    <i class="fas fa-route"></i>
+                    <span id="totalDistance">0 km</span>
+                </div>
+                <div class="summary-info">
+                    <span>TSS: <strong id="totalTSS">0</strong></span>
+                </div>
+                <div class="summary-info">
+                    <span>IF: <strong id="totalIF">0.00</strong></span>
+                </div>
+            </div>
+
+            <!-- Lista de segmentos do treino -->
+            <div class="training-segments" id="trainingSegments">
+                <!-- Segmentos serão adicionados dinamicamente -->
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="training-actions">
+                <button type="button" class="btn-add-segment" onclick="openSegmentModal()">
+                    <i class="fas fa-plus"></i> Adicionar Segmento
+                </button>
+                <button type="button" class="btn-add-repetition" onclick="openRepetitionModal()">
+                    <i class="fas fa-plus"></i> Adicionar Repetição
+                </button>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea id="trainingNotes" class="form-textarea" rows="3" placeholder="Adicione observações sobre o treino..."></textarea>
+            </div>
+
+            <!-- Botões finais -->
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeDetailedTrainingModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Salvar Treino</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Segmento -->
+<div id="segmentModal" class="modal-overlay">
+    <div class="modal segment-modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Adicionar Segmento</h2>
+            <button class="modal-close" onclick="closeSegmentModal()">&times;</button>
+        </div>
+        
+        <form id="segmentForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo de Segmento</label>
+                    <select id="segmentType" class="form-select" onchange="updateSegmentFields()">
+                        <option value="correr">Correr</option>
+                        <option value="caminhar">Caminhar</option>
+                        <option value="sprint">Sprint</option>
+                        <option value="educativo">Educativo</option>
+                        <option value="descanso">Descanso</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Duração</label>
+                    <select id="durationType" class="form-select" onchange="updateDurationFields()">
+                        <option value="distancia">Distância</option>
+                        <option value="tempo">Tempo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" id="distanceGroup">
+                    <label>Distância</label>
+                    <div class="input-group">
+                        <input type="number" id="segmentDistance" class="form-input" step="0.1" min="0">
+                        <select id="distanceUnit" class="form-select unit-select">
+                            <option value="m">metros</option>
+                            <option value="km">km</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="timeGroup" style="display: none;">
+                    <label>Tempo</label>
+                    <div class="input-group">
+                        <input type="number" id="segmentMinutes" class="form-input" placeholder="min" min="0">
+                        <span class="input-separator">:</span>
+                        <input type="number" id="segmentSeconds" class="form-input" placeholder="seg" min="0" max="59">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Intensidade</label>
+                <select id="segmentIntensity" class="form-select">
+                    <option value="livre">Livre</option>
+                    <option value="leve">Leve (Z1)</option>
+                    <option value="moderado">Moderado (Z2)</option>
+                    <option value="forte">Forte (Z3)</option>
+                    <option value="muito-forte">Muito Forte (Z4)</option>
+                    <option value="maximo">Máximo (Z5)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Observação</label>
+                <input type="text" id="segmentNote" class="form-input" placeholder="Ex: Manter ritmo constante">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeSegmentModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Repetição -->
+<div id="repetitionModal" class="modal-overlay">
+    <div class="modal repetition-modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Adicionar Repetição</h2>
+            <button class="modal-close" onclick="closeRepetitionModal()">&times;</button>
+        </div>
+        
+        <form id="repetitionForm">
+            <div class="form-group">
+                <label>Número de Repetições</label>
+                <input type="number" id="repetitionCount" class="form-input" value="4" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Recuperação</label>
+                <select id="recoveryType" class="form-select">
+                    <option value="tempo">Por Tempo</option>
+                    <option value="distancia">Por Distância</option>
+                    <option value="completa">Recuperação Completa</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="recoveryTimeGroup">
+                <label>Tempo de Recuperação</label>
+                <div class="input-group">
+                    <input type="number" id="recoveryMinutes" class="form-input" value="2" min="0">
+                    <span class="input-label">minutos</span>
+                </div>
+            </div>
+
+            <div class="form-group" id="recoveryDistanceGroup" style="display: none;">
+                <label>Distância de Recuperação</label>
+                <div class="input-group">
+                    <input type="number" id="recoveryDistance" class="form-input" value="200" min="0">
+                    <select id="recoveryDistanceUnit" class="form-select unit-select">
+                        <option value="m">metros</option>
+                        <option value="km">km</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="repetition-preview">
+                <h4>Prévia da Repetição:</h4>
+                <div class="preview-content" id="repetitionPreview">
+                    4x (Segmentos selecionados) com 2 min recuperação
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeRepetitionModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- CSS específico da planilha -->
+<style>
+.planilhas-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.planilha-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    background: #f3f4f6;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.view-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.view-btn.active {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.planilha-week-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.week-nav-arrow {
+    background: #f3f4f6;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6b7280;
+}
+
+.week-nav-arrow:hover {
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+}
+
+.week-title-group {
+    text-align: center;
+    min-width: 300px;
+}
+
+.week-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.week-dates {
+    font-size: 14px;
+    color: #6b7280;
+    display: block;
+    margin-top: 4px;
+}
+
+.week-type {
+    font-size: 12px;
+    color: #3b82f6;
+    font-weight: 600;
+    display: block;
+    margin-top: 2px;
+}
+
+.planilha-stats {
+    display: flex;
+    gap: 24px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.stat-item i {
+    color: #3b82f6;
+}
+
+.quick-templates {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.quick-templates h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.templates-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.template-btn {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.template-btn:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.training-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.day-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.day-card.drag-over {
+    background: #eff6ff;
+    border: 2px dashed #3b82f6;
+}
+
+.day-header {
+    padding: 16px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.day-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.day-date {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.day-content {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.training-card {
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 12px;
+    cursor: move;
+    transition: all 0.2s;
+    border-left: 4px solid transparent;
+    position: relative;
+}
+
+.training-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.training-card.dragging {
+    opacity: 0.5;
+}
+
+.training-card.continuo { border-left-color: #3b82f6; background: #eff6ff; }
+.training-card.intervalado { border-left-color: #f59e0b; background: #fef3c7; }
+.training-card.longo { border-left-color: #10b981; background: #d1fae5; }
+.training-card.tempo { border-left-color: #ef4444; background: #fee2e2; }
+.training-card.fartlek { border-left-color: #8b5cf6; background: #ede9fe; }
+.training-card.regenerativo { border-left-color: #06b6d4; background: #cffafe; }
+.training-card.progressivo { border-left-color: #ec4899; background: #fce7f3; }
+.training-card.descanso { border-left-color: #6b7280; background: #f3f4f6; }
+
+.training-type {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.training-details {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.training-info {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.training-info span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.training-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.training-card:hover .training-menu {
+    opacity: 1;
+}
+
+.training-menu-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.training-menu-btn:hover {
+    background: #f3f4f6;
+}
+
+.add-training-card {
+    border: 2px dashed #d1d5db;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #9ca3af;
+    gap: 8px;
+}
+
+.add-training-card:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+    color: #3b82f6;
+}
+
+.empty-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.empty-day i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.rest-day {
+    background: #f3f4f6;
+    padding: 16px;
+    border-radius: 6px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.rest-day i {
+    font-size: 32px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Visualização mensal */
+.month-view {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.month-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-header {
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    background: #f9fafb;
+}
+
+.calendar-day {
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    position: relative;
+}
+
+.calendar-day-number {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.calendar-day-trainings {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar-training {
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background: #f3f4f6;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendar-training.continuo { background: #dbeafe; color: #1e40af; }
+.calendar-training.intervalado { background: #fed7aa; color: #c2410c; }
+.calendar-training.longo { background: #bbf7d0; color: #166534; }
+
+.planilha-actions-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.btn-action-planilha {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-action-planilha:hover {
+    background: #e5e7eb;
+}
+
+.btn-action-planilha.primary {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.btn-action-planilha.primary:hover {
+    background: #2563eb;
+}
+
+/* Modal de treino detalhado */
+.training-modal {
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.segment-modal,
+.repetition-modal {
+    max-width: 600px;
+}
+
+.activity-type-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.activity-type-btn {
+    background: #f3f4f6;
+    border: 2px solid transparent;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.activity-type-btn:hover {
+    background: #e5e7eb;
+}
+
+.activity-type-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.training-basic-config {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.unit-select {
+    width: auto;
+    min-width: 100px;
+}
+
+.input-separator {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.input-label {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.training-components {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.component-tag {
+    background: #e5e7eb;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.component-tag:hover {
+    background: #d1d5db;
+}
+
+.component-tag.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.training-summary-bar {
+    background: #e0f2fe;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.summary-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #0369a1;
+    font-weight: 500;
+}
+
+.training-segments {
+    margin-bottom: 24px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.segment-item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: move;
+    transition: all 0.2s;
+}
+
+.segment-item:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.segment-item.dragging {
+    opacity: 0.5;
+}
+
+.segment-type {
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+}
+
+.segment-type.aquecimento { background: #3b82f6; }
+.segment-type.principal { background: #ef4444; }
+.segment-type.intervalado { background: #f59e0b; }
+.segment-type.desaquecimento { background: #10b981; }
+.segment-type.educativos { background: #8b5cf6; }
+.segment-type.regenerativo { background: #06b6d4; }
+
+.segment-details {
+    flex: 1;
+}
+
+.segment-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.segment-info {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.segment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.segment-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.segment-btn:hover {
+    background: #f3f4f6;
+}
+
+.segment-btn.edit:hover {
+    color: #3b82f6;
+}
+
+.segment-btn.remove:hover {
+    color: #ef4444;
+}
+
+.repetition-group {
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.repetition-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.training-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.btn-add-segment,
+.btn-add-repetition {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-add-segment:hover,
+.btn-add-repetition:hover {
+    background: #e5e7eb;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.repetition-preview {
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.repetition-preview h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.preview-content {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .training-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .month-calendar {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .training-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .planilha-header {
+        flex-direction: column;
+    }
+    
+    .planilha-week-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .activity-type-selector {
+        flex-wrap: wrap;
+    }
+    
+    .training-components {
+        justify-content: center;
+    }
+    
+    .templates-list {
+        justify-content: center;
+    }
+}
+</style>
+
+<!-- JavaScript da planilha avançada -->
+<script>
+// Configurações e variáveis globais
+let currentTrainingWeek = 0;
+let currentView = 'week';
+let trainingData = JSON.parse(localStorage.getItem('advancedTrainingPlans') || '{}');
+let currentEditingDay = null;
+let currentActivityType = 'corrida';
+let editingSegmentIndex = null;
+let selectedSegmentsForRepetition = [];
+
+// Templates de treinos
+const trainingTemplates = {
+    base: [
+        { day: 'monday', training: { type: 'regenerativo', distance: 6, duration: 40, effort: 'leve', description: 'Corrida regenerativa' }},
+        { day: 'tuesday', training: { type: 'intervalado', distance: 8, duration: 50, effort: 'forte', description: 'Intervalado 6x1000m' }},
+        { day: 'wednesday', training: { type: 'descanso' }},
+        { day: 'thursday', training: { type: 'continuo', distance: 10, duration: 60, effort: 'moderado', description: 'Corrida contínua Z2' }},
+        { day: 'friday', training: { type: 'descanso' }},
+        { day: 'saturday', training: { type: 'tempo', distance: 12, duration: 70, effort: 'forte', description: 'Tempo Run 40min' }},
+        { day: 'sunday', training: { type: 'longo', distance: 18, duration: 120, effort: 'moderado', description: 'Longo progressivo' }}
+    ],
+    intensidade: [
+        { day: 'monday', training: { type: 'regenerativo', distance: 6, duration: 40, effort: 'leve' }},
+        { day: 'tuesday', training: { type: 'intervalado', distance: 10, duration: 60, effort: 'maximo', description: 'Intervalado 8x800m' }},
+        { day: 'wednesday', training: { type: 'continuo', distance: 8, duration: 50, effort: 'moderado' }},
+        { day: 'thursday', training: { type: 'fartlek', distance: 10, duration: 60, effort: 'forte', description: 'Fartlek 6x3min' }},
+        { day: 'friday', training: { type: 'descanso' }},
+        { day: 'saturday', training: { type: 'tempo', distance: 15, duration: 80, effort: 'forte', description: 'Tempo Run progressivo' }},
+        { day: 'sunday', training: { type: 'longo', distance: 20, duration: 130, effort: 'moderado' }}
+    ],
+    recuperacao: [
+        { day: 'monday', training: { type: 'descanso' }},
+        { day: 'tuesday', training: { type: 'regenerativo', distance: 5, duration: 35, effort: 'leve' }},
+        { day: 'wednesday', training: { type: 'continuo', distance: 6, duration: 40, effort: 'leve' }},
+        { day: 'thursday', training: { type: 'descanso' }},
+        { day: 'friday', training: { type: 'regenerativo', distance: 5, duration: 35, effort: 'leve' }},
+        { day: 'saturday', training: { type: 'continuo', distance: 8, duration: 50, effort: 'moderado' }},
+        { day: 'sunday', training: { type: 'descanso' }}
+    ],
+    prova: [
+        { day: 'monday', training: { type: 'regenerativo', distance: 5, duration: 35, effort: 'leve' }},
+        { day: 'tuesday', training: { type: 'intervalado', distance: 6, duration: 40, effort: 'moderado', description: 'Aquecimento + 4x100m progressivos' }},
+        { day: 'wednesday', training: { type: 'descanso' }},
+        { day: 'thursday', training: { type: 'continuo', distance: 4, duration: 25, effort: 'leve', description: 'Soltura pré-prova' }},
+        { day: 'friday', training: { type: 'descanso' }},
+        { day: 'saturday', training: { type: 'regenerativo', distance: 3, duration: 20, effort: 'leve', description: 'Ativação + educativos' }},
+        { day: 'sunday', training: { type: 'tempo', effort: 'maximo', description: '🏆 DIA DA PROVA!' }}
+    ]
+};
+
+// Estrutura de dados dos dias
+const weekDaysData = {
+    monday: { name: 'Segunda', id: 'monday' },
+    tuesday: { name: 'Terça', id: 'tuesday' },
+    wednesday: { name: 'Quarta', id: 'wednesday' },
+    thursday: { name: 'Quinta', id: 'thursday' },
+    friday: { name: 'Sexta', id: 'friday' },
+    saturday: { name: 'Sábado', id: 'saturday' },
+    sunday: { name: 'Domingo', id: 'sunday' }
+};
+
+// Inicializar planilha quando a aba for aberta
+function initializeAdvancedPlanilha() {
+    if (!currentAthlete) return;
+    
+    renderTrainingGrid();
+    updateWeekHeader();
+    updateWeekStats();
+    setupEventListeners();
+    setupDragAndDrop();
+}
+
+// Alternar visualização
+function toggleView(view) {
+    currentView = view;
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (view === 'week') {
+        document.getElementById('trainingGrid').style.display = 'grid';
+        document.getElementById('monthView').style.display = 'none';
+    } else {
+        document.getElementById('trainingGrid').style.display = 'none';
+        document.getElementById('monthView').style.display = 'block';
+        renderMonthView();
+    }
+}
+
+// Renderizar visualização mensal
+function renderMonthView() {
+    const monthView = document.getElementById('monthView');
+    const startDate = new Date('2025-05-01');
+    const endDate = new Date('2025-05-31');
+    
+    let html = '<div class="month-calendar">';
+    
+    // Headers dos dias
+    const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    dayHeaders.forEach(day => {
+        html += `<div class="calendar-header">${day}</div>`;
+    });
+    
+    // Preencher dias vazios no início
+    const firstDay = startDate.getDay();
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div class="calendar-day empty"></div>';
+    }
+    
+    // Dias do mês
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        const dayNum = date.getDate();
+        const weekNum = Math.floor((dayNum + firstDay - 1) / 7);
+        const dayOfWeek = Object.keys(weekDaysData)[date.getDay()];
+        
+        html += `<div class="calendar-day">
+            <div class="calendar-day-number">${dayNum}</div>
+            <div class="calendar-day-trainings">`;
+        
+        // Buscar treinos do dia
+        const weekKey = `week_${weekNum}`;
+        const dayTraining = trainingData[athleteId]?.[weekKey]?.[dayOfWeek];
+        
+        if (dayTraining && dayTraining[0]) {
+            const training = dayTraining[0];
+            html += `<div class="calendar-training ${training.type}">${training.type}</div>`;
         }
+        
+        html += '</div></div>';
+    }
+    
+    html += '</div>';
+    monthView.innerHTML = `<h3 style="text-align: center; margin-bottom: 20px;">Maio 2025</h3>${html}`;
+}
 
-        function createWorkoutPlan() {
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            if (!macrocicloId) return;
+// Renderizar grid de treinos
+function renderTrainingGrid() {
+    const grid = document.getElementById('trainingGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    const weekData = trainingData[athleteId]?.[weekKey] || {};
+    
+    // Calcular data inicial da semana
+    const startDate = new Date('2025-05-26');
+    startDate.setDate(startDate.getDate() + (currentTrainingWeek * 7));
+    
+    Object.entries(weekDaysData).forEach(([key, day], index) => {
+        const dayDate = new Date(startDate);
+        dayDate.setDate(dayDate.getDate() + index);
+        
+        const dayCard = createDayCard(day, dayDate, weekData[day.id]);
+        grid.appendChild(dayCard);
+    });
+}
 
-            const athleteId = getCurrentAthleteId();
-            if (!athleteId) return;
+// Criar card de dia
+function createDayCard(day, date, trainings) {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.dataset.dayId = day.id;
+    
+    const dateStr = date.getDate() + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
+    
+    card.innerHTML = `
+        <div class="day-header">
+            <h4 class="day-name">${day.name}</h4>
+            <div class="day-date">${dateStr}</div>
+        </div>
+        <div class="day-content" id="day-${day.id}">
+            ${renderDayTrainings(day.id, trainings)}
+        </div>
+    `;
+    
+    return card;
+}
 
-            // Inicializar estrutura de dados se não existir
-            if (!workoutPlans[athleteId]) {
-                workoutPlans[athleteId] = {};
-            }
-            if (!workoutPlans[athleteId][macrocicloId]) {
-                workoutPlans[athleteId][macrocicloId] = {};
-            }
+// Renderizar treinos do dia
+function renderDayTrainings(dayId, trainings) {
+    if (!trainings || trainings.length === 0) {
+        return `
+            <div class="empty-day">
+                <i class="fas fa-plus-circle"></i>
+                <p>Sem treino</p>
+                <button class="add-training-card" onclick="openTrainingModal('${dayId}')">
+                    <i class="fas fa-plus"></i> Adicionar Treino
+                </button>
+            </div>
+        `;
+    }
+    
+    if (trainings[0]?.type === 'descanso') {
+        return `
+            <div class="rest-day" draggable="true" data-training-index="0">
+                <i class="fas fa-bed"></i>
+                <strong>DESCANSO</strong>
+                <div class="training-menu">
+                    <button class="training-menu-btn" onclick="removeTraining('${dayId}', 0)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    let html = '';
+    trainings.forEach((training, index) => {
+        const tss = calculateTSS(training);
+        html += `
+            <div class="training-card ${training.type}" draggable="true" data-training-index="${index}">
+                <div class="training-type">${training.type.toUpperCase()}</div>
+                <div class="training-details">${training.description || generateTrainingDescription(training)}</div>
+                <div class="training-info">
+                    ${training.distance ? `<span><i class="fas fa-route"></i> ${training.distance}km</span>` : ''}
+                    ${training.duration ? `<span><i class="fas fa-clock"></i> ${training.duration}min</span>` : ''}
+                    ${tss > 0 ? `<span title="Training Stress Score">TSS: ${tss}</span>` : ''}
+                </div>
+                <div class="training-menu">
+                    <button class="training-menu-btn" onclick="editTraining('${dayId}', ${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="training-menu-btn" onclick="duplicateTraining('${dayId}', ${index})">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="training-menu-btn" onclick="removeTraining('${dayId}', ${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+        <button class="add-training-card" onclick="openTrainingModal('${dayId}')">
+            <i class="fas fa-plus"></i> Adicionar
+        </button>
+    `;
+    
+    return html;
+}
 
-            showWorkoutCalendar();
-            updateWorkoutWeekDisplay();
-            loadWorkoutsForWeek();
-        }
+// Calcular TSS (Training Stress Score)
+function calculateTSS(training) {
+    if (!training.duration || !training.effort) return 0;
+    
+    const intensityFactors = {
+        'leve': 0.65,
+        'moderado': 0.75,
+        'forte': 0.85,
+        'maximo': 0.95
+    };
+    
+    const IF = intensityFactors[training.effort] || 0.75;
+    const duration = training.duration / 60; // converter para horas
+    
+    // TSS = (duração em horas * IF^2 * 100)
+    return Math.round(duration * Math.pow(IF, 2) * 100);
+}
 
-        function showWorkoutCalendar() {
-            document.getElementById('emptyWorkoutState').style.display = 'none';
-            document.getElementById('weekNavigation').style.display = 'block';
-            document.getElementById('workoutCalendar').style.display = 'block';
-        }
-
-        function hideWorkoutCalendar() {
-            document.getElementById('emptyWorkoutState').style.display = 'block';
-            document.getElementById('weekNavigation').style.display = 'none';
-            document.getElementById('workoutCalendar').style.display = 'none';
-        }
-
-        function getCurrentAthleteId() {
-            if (!currentAthlete) return null;
-            return Object.keys(athletesData).find(id => 
-                athletesData[id].name === currentAthlete.name
-            );
-        }
-
-        function getWeekKey(date) {
-            const startOfWeek = new Date(date);
-            startOfWeek.setDate(date.getDate() - date.getDay() + 1); // Segunda-feira
-            return startOfWeek.toISOString().split('T')[0];
-        }
-
-        function previousWorkoutWeek() {
-            currentWorkoutWeek.setDate(currentWorkoutWeek.getDate() - 7);
-            updateWorkoutWeekDisplay();
-            loadWorkoutsForWeek();
-        }
-
-        function nextWorkoutWeek() {
-            currentWorkoutWeek.setDate(currentWorkoutWeek.getDate() + 7);
-            updateWorkoutWeekDisplay();
-            loadWorkoutsForWeek();
-        }
-
-        function updateWorkoutWeekDisplay() {
-            const weekEnd = new Date(currentWorkoutWeek);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            
-            const startStr = formatDate(currentWorkoutWeek);
-            const endStr = formatDate(weekEnd);
-            
-            // Calcular número da semana baseado no macrociclo
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            const macrociclos = JSON.parse(localStorage.getItem('macrociclosSalvos') || '[]');
-            const macro = macrociclos.find(m => m.id === macrocicloId);
-            
-            let weekNumber = 1;
-            if (macro) {
-                const macroStart = new Date(macro.inicio);
-                const diffTime = currentWorkoutWeek - macroStart;
-                const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
-                weekNumber = Math.max(1, diffWeeks + 1);
-            }
-            
-            document.getElementById('currentWorkoutWeek').textContent = `Semana ${weekNumber} - ${startStr} a ${endStr}`;
-            
-            // Atualizar datas dos dias
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            days.forEach((day, index) => {
-                const dayDate = new Date(currentWorkoutWeek);
-                dayDate.setDate(currentWorkoutWeek.getDate() + index);
-                const dayElement = document.getElementById(day + 'Date');
-                if (dayElement) {
-                    dayElement.textContent = formatDate(dayDate).substring(0, 5); // DD/MM
+// Atualizar estatísticas da semana
+function updateWeekStats() {
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    const weekData = trainingData[athleteId]?.[weekKey] || {};
+    
+    let totalDistance = 0;
+    let totalTime = 0;
+    let totalTSS = 0;
+    
+    Object.values(weekData).forEach(dayTrainings => {
+        if (dayTrainings && Array.isArray(dayTrainings)) {
+            dayTrainings.forEach(training => {
+                if (training.type !== 'descanso') {
+                    totalDistance += training.distance || 0;
+                    totalTime += training.duration || 0;
+                    totalTSS += calculateTSS(training);
                 }
             });
         }
+    });
+    
+    const hours = Math.floor(totalTime / 60);
+    const minutes = totalTime % 60;
+    
+    document.getElementById('weekTotalDistance').textContent = `${totalDistance} km`;
+    document.getElementById('weekTotalTime').textContent = `${hours}h ${minutes}min`;
+    document.getElementById('weekTotalTSS').textContent = `${totalTSS} TSS`;
+}
 
-        function addWorkout(day) {
-            currentWorkoutDay = day;
-            editingWorkoutId = null;
-            document.getElementById('workoutModalTitle').textContent = 'Adicionar Treino';
-            document.getElementById('submitWorkoutBtn').textContent = 'Salvar Treino';
-            clearWorkoutForm();
-            document.getElementById('workoutModal').classList.add('active');
-        }
+// Navegar períodos
+function navigatePeriod(direction) {
+    if (currentView === 'week') {
+        currentTrainingWeek = Math.max(0, currentTrainingWeek + direction);
+        updateWeekHeader();
+        renderTrainingGrid();
+        updateWeekStats();
+    } else {
+        // Navegação mensal seria implementada aqui
+        alert('Navegação mensal será implementada em breve!');
+    }
+}
 
-        function editWorkout(workoutId, day) {
-            const athleteId = getCurrentAthleteId();
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            const weekKey = getWeekKey(currentWorkoutWeek);
-            
-            const workout = workoutPlans[athleteId]?.[macrocicloId]?.[weekKey]?.[day]?.find(w => w.id === workoutId);
-            if (!workout) return;
+// Aplicar template
+function applyTemplate(templateName) {
+    if (!confirm(`Aplicar template "${templateName}"? Isso substituirá os treinos atuais da semana.`)) {
+        return;
+    }
+    
+    const template = trainingTemplates[templateName];
+    if (!template) return;
+    
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    
+    if (!trainingData[athleteId]) trainingData[athleteId] = {};
+    trainingData[athleteId][weekKey] = {};
+    
+    template.forEach(item => {
+        trainingData[athleteId][weekKey][item.day] = [item.training];
+    });
+    
+    localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+    renderTrainingGrid();
+    updateWeekStats();
+    alert('Template aplicado com sucesso!');
+}
 
-            currentWorkoutDay = day;
-            editingWorkoutId = workoutId;
-            document.getElementById('workoutModalTitle').textContent = 'Editar Treino';
-            document.getElementById('submitWorkoutBtn').textContent = 'Salvar Alterações';
-            
-            // Preencher formulário com dados do treino
-            document.getElementById('workoutType').value = workout.type;
-            document.getElementById('workoutZone').value = workout.zone;
-            document.getElementById('workoutDistance').value = workout.distance || '';
-            document.getElementById('workoutDuration').value = workout.duration || '';
-            document.getElementById('workoutIntensity').value = workout.intensity || '';
-            document.getElementById('workoutPace').value = workout.pace || '';
-            document.getElementById('workoutDescription').value = workout.description || '';
-            
-            document.getElementById('workoutModal').classList.add('active');
-        }
+// Abrir modal de treino
+function openTrainingModal(dayId, trainingIndex = null) {
+    currentEditingDay = dayId;
+    document.getElementById('trainingDayId').value = dayId;
+    document.getElementById('editingTrainingIndex').value = trainingIndex || '';
+    
+    // Resetar formulário
+    document.getElementById('detailedTrainingForm').reset();
+    document.getElementById('trainingSegments').innerHTML = '';
+    
+    // Se estiver editando, carregar dados
+    if (trainingIndex !== null) {
+        loadTrainingData(dayId, trainingIndex);
+    }
+    
+    document.getElementById('detailedTrainingModal').classList.add('active');
+    updateTrainingSummary();
+}
 
-        function deleteWorkout(workoutId, day) {
-            if (!confirm('Tem certeza que deseja excluir este treino?')) return;
-
-            const athleteId = getCurrentAthleteId();
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            const weekKey = getWeekKey(currentWorkoutWeek);
-            
-            if (workoutPlans[athleteId]?.[macrocicloId]?.[weekKey]?.[day]) {
-                workoutPlans[athleteId][macrocicloId][weekKey][day] = 
-                    workoutPlans[athleteId][macrocicloId][weekKey][day].filter(w => w.id !== workoutId);
-                
-                localStorage.setItem('workoutPlans', JSON.stringify(workoutPlans));
-                loadWorkoutsForWeek();
-                alert('Treino excluído com sucesso!');
+// Carregar dados do treino para edição
+function loadTrainingData(dayId, trainingIndex) {
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    const training = trainingData[athleteId]?.[weekKey]?.[dayId]?.[trainingIndex];
+    
+    if (training) {
+        document.getElementById('trainingTypeDetail').value = training.type;
+        document.getElementById('trainingEffort').value = training.effort || 'moderado';
+        document.getElementById('trainingTerrain').value = training.terrain || 'plano';
+        document.getElementById('trainingNotes').value = training.notes || '';
+        
+        // Selecionar tipo de atividade
+        document.querySelectorAll('.activity-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.type === (training.activityType || 'corrida')) {
+                btn.classList.add('active');
             }
+        });
+        
+        // Carregar segmentos
+        if (training.segments && training.segments.length > 0) {
+            training.segments.forEach(segment => {
+                addSegmentToList(segment);
+            });
         }
+    }
+}
 
-        function closeWorkoutModal() {
-            document.getElementById('workoutModal').classList.remove('active');
-            clearWorkoutForm();
-            selectedTemplate = null;
-            editingWorkoutId = null;
-            currentWorkoutDay = null;
+// Fechar modal de treino
+function closeDetailedTrainingModal() {
+    document.getElementById('detailedTrainingModal').classList.remove('active');
+    currentEditingDay = null;
+}
+
+// Abrir modal de segmento
+function openSegmentModal() {
+    document.getElementById('segmentModal').classList.add('active');
+    document.getElementById('segmentForm').reset();
+}
+
+// Fechar modal de segmento
+function closeSegmentModal() {
+    document.getElementById('segmentModal').classList.remove('active');
+}
+
+// Abrir modal de repetição
+function openRepetitionModal() {
+    const segments = document.querySelectorAll('.segment-item');
+    if (segments.length === 0) {
+        alert('Adicione pelo menos um segmento antes de criar uma repetição.');
+        return;
+    }
+    
+    document.getElementById('repetitionModal').classList.add('active');
+    updateRepetitionPreview();
+}
+
+// Fechar modal de repetição
+function closeRepetitionModal() {
+    document.getElementById('repetitionModal').classList.remove('active');
+}
+
+// Atualizar campos do segmento
+function updateSegmentFields() {
+    const type = document.getElementById('segmentType').value;
+    // Lógica adicional se necessário
+}
+
+// Atualizar campos de duração
+function updateDurationFields() {
+    const durationType = document.getElementById('durationType').value;
+    
+    if (durationType === 'tempo') {
+        document.getElementById('distanceGroup').style.display = 'none';
+        document.getElementById('timeGroup').style.display = 'block';
+    } else {
+        document.getElementById('distanceGroup').style.display = 'block';
+        document.getElementById('timeGroup').style.display = 'none';
+    }
+}
+
+// Adicionar segmento à lista
+function addSegmentToList(segmentData) {
+    const segmentsContainer = document.getElementById('trainingSegments');
+    const segmentId = Date.now() + Math.random();
+    
+    const segmentHtml = `
+        <div class="segment-item" id="segment-${segmentId}" draggable="true">
+            <div class="segment-type ${segmentData.type || 'principal'}"></div>
+            <div class="segment-details">
+                <div class="segment-title">${segmentData.title || 'Novo Segmento'}</div>
+                <div class="segment-info">${segmentData.info || 'Configurar segmento'}</div>
+            </div>
+            <div class="segment-actions">
+                <button class="segment-btn edit" onclick="editSegment('${segmentId}')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="segment-btn remove" onclick="removeSegment('${segmentId}')" title="Remover">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    segmentsContainer.insertAdjacentHTML('beforeend', segmentHtml);
+    setupSegmentDragAndDrop();
+    updateTrainingSummary();
+}
+
+// Remover segmento
+function removeSegment(segmentId) {
+    document.getElementById(`segment-${segmentId}`)?.remove();
+    updateTrainingSummary();
+}
+
+// Editar segmento
+function editSegment(segmentId) {
+    // Implementar edição de segmento
+    alert('Edição de segmento será implementada em breve!');
+}
+
+// Atualizar resumo do treino
+function updateTrainingSummary() {
+    const segments = document.querySelectorAll('.segment-item');
+    let totalDistance = 0;
+    let totalTime = 0;
+    let totalTSS = 0;
+    
+    segments.forEach(segment => {
+        // Extrair dados do segmento (simplificado para o exemplo)
+        const info = segment.querySelector('.segment-info').textContent;
+        
+        // Buscar distância
+        const distMatch = info.match(/(\d+(?:\.\d+)?)\s*(km|m)/i);
+        if (distMatch) {
+            const value = parseFloat(distMatch[1]);
+            const unit = distMatch[2].toLowerCase();
+            totalDistance += unit === 'km' ? value : value / 1000;
         }
-
-        function clearWorkoutForm() {
-            document.getElementById('workoutForm').reset();
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        
+        // Buscar tempo
+        const timeMatch = info.match(/(\d+)\s*min/i);
+        if (timeMatch) {
+            totalTime += parseInt(timeMatch[1]);
         }
+    });
+    
+    // Calcular TSS baseado no esforço selecionado
+    const effort = document.getElementById('trainingEffort').value;
+    const intensityFactors = {
+        'leve': 0.65,
+        'moderado': 0.75,
+        'forte': 0.85,
+        'maximo': 0.95
+    };
+    
+    const IF = intensityFactors[effort] || 0.75;
+    const duration = totalTime / 60; // converter para horas
+    totalTSS = Math.round(duration * Math.pow(IF, 2) * 100);
+    
+    // Atualizar exibição
+    const hours = Math.floor(totalTime / 60);
+    const minutes = totalTime % 60;
+    
+    document.getElementById('totalDuration').textContent = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+    document.getElementById('totalDistance').textContent = `${totalDistance.toFixed(1)} km`;
+    document.getElementById('totalTSS').textContent = totalTSS;
+    document.getElementById('totalIF').textContent = IF.toFixed(2);
+}
 
-        function fillWorkoutFormFromTemplate(templateKey) {
-            const template = workoutTemplates[templateKey];
-            if (!template) return;
+// Atualizar preview da repetição
+function updateRepetitionPreview() {
+    const count = document.getElementById('repetitionCount').value;
+    const recoveryType = document.getElementById('recoveryType').value;
+    let recoveryText = '';
+    
+    if (recoveryType === 'tempo') {
+        const minutes = document.getElementById('recoveryMinutes').value;
+        recoveryText = `${minutes} min recuperação`;
+    } else if (recoveryType === 'distancia') {
+        const distance = document.getElementById('recoveryDistance').value;
+        const unit = document.getElementById('recoveryDistanceUnit').value;
+        recoveryText = `${distance}${unit} recuperação`;
+    } else {
+        recoveryText = 'recuperação completa';
+    }
+    
+    document.getElementById('repetitionPreview').textContent = 
+        `${count}x (Segmentos selecionados) com ${recoveryText}`;
+}
 
-            document.getElementById('workoutType').value = template.type;
-            document.getElementById('workoutZone').value = template.zone;
-            document.getElementById('workoutDistance').value = template.distance;
-            document.getElementById('workoutDuration').value = template.duration;
-            document.getElementById('workoutIntensity').value = template.intensity;
-            document.getElementById('workoutPace').value = template.pace;
-            document.getElementById('workoutDescription').value = template.description;
+// Editar treino existente
+function editTraining(dayId, trainingIndex) {
+    openTrainingModal(dayId, trainingIndex);
+}
+
+// Duplicar treino
+function duplicateTraining(dayId, trainingIndex) {
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    const training = trainingData[athleteId]?.[weekKey]?.[dayId]?.[trainingIndex];
+    
+    if (training) {
+        const duplicate = JSON.parse(JSON.stringify(training));
+        duplicate.description = (duplicate.description || '') + ' (cópia)';
+        
+        if (!trainingData[athleteId][weekKey][dayId]) {
+            trainingData[athleteId][weekKey][dayId] = [];
         }
+        
+        trainingData[athleteId][weekKey][dayId].push(duplicate);
+        
+        localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+        renderTrainingGrid();
+        updateWeekStats();
+    }
+}
 
-        function handleWorkoutSubmit(e) {
+// Remover treino
+function removeTraining(dayId, trainingIndex) {
+    if (!confirm('Tem certeza que deseja excluir este treino?')) return;
+    
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    
+    if (trainingData[athleteId]?.[weekKey]?.[dayId]) {
+        trainingData[athleteId][weekKey][dayId].splice(trainingIndex, 1);
+        
+        if (trainingData[athleteId][weekKey][dayId].length === 0) {
+            delete trainingData[athleteId][weekKey][dayId];
+        }
+        
+        localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+        renderTrainingGrid();
+        updateWeekStats();
+    }
+}
+
+// Setup drag and drop
+function setupDragAndDrop() {
+    let draggedElement = null;
+    let draggedFromDay = null;
+    let draggedTrainingIndex = null;
+    
+    // Event delegation para cards de treino
+    document.addEventListener('dragstart', function(e) {
+        if (e.target.classList.contains('training-card') || e.target.classList.contains('rest-day')) {
+            draggedElement = e.target;
+            draggedFromDay = e.target.closest('.day-card').dataset.dayId;
+            draggedTrainingIndex = parseInt(e.target.dataset.trainingIndex);
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+    });
+    
+    document.addEventListener('dragend', function(e) {
+        if (e.target.classList.contains('training-card') || e.target.classList.contains('rest-day')) {
+            e.target.classList.remove('dragging');
+        }
+    });
+    
+    // Eventos para day cards
+    document.addEventListener('dragover', function(e) {
+        if (e.target.closest('.day-card')) {
             e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const dayCard = e.target.closest('.day-card');
+            dayCard.classList.add('drag-over');
+        }
+    });
+    
+    document.addEventListener('dragleave', function(e) {
+        if (e.target.classList.contains('day-card')) {
+            e.target.classList.remove('drag-over');
+        }
+    });
+    
+    document.addEventListener('drop', function(e) {
+        const dayCard = e.target.closest('.day-card');
+        if (dayCard && draggedElement) {
+            e.preventDefault();
+            dayCard.classList.remove('drag-over');
             
-            const athleteId = getCurrentAthleteId();
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            const weekKey = getWeekKey(currentWorkoutWeek);
+            const targetDay = dayCard.dataset.dayId;
             
-            if (!athleteId || !macrocicloId || !currentWorkoutDay) return;
-
-            const workoutData = {
-                id: editingWorkoutId || Date.now().toString(),
-                type: document.getElementById('workoutType').value,
-                zone: document.getElementById('workoutZone').value,
-                distance: parseFloat(document.getElementById('workoutDistance').value) || null,
-                duration: parseInt(document.getElementById('workoutDuration').value) || null,
-                intensity: document.getElementById('workoutIntensity').value,
-                pace: document.getElementById('workoutPace').value,
-                description: document.getElementById('workoutDescription').value,
-                completed: false,
-                feedback: null
-            };
-
-            // Inicializar estrutura se necessário
-            if (!workoutPlans[athleteId][macrocicloId][weekKey]) {
-                workoutPlans[athleteId][macrocicloId][weekKey] = {};
+            if (draggedFromDay !== targetDay) {
+                moveTraining(draggedFromDay, targetDay, draggedTrainingIndex);
             }
-            if (!workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay]) {
-                workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay] = [];
-            }
+        }
+    });
+}
 
-            if (editingWorkoutId) {
-                // Editar treino existente
-                const workoutIndex = workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay]
-                    .findIndex(w => w.id === editingWorkoutId);
-                if (workoutIndex !== -1) {
-                    workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay][workoutIndex] = workoutData;
-                }
+// Setup drag and drop para segmentos
+function setupSegmentDragAndDrop() {
+    let draggedSegment = null;
+    
+    document.querySelectorAll('.segment-item').forEach(segment => {
+        segment.addEventListener('dragstart', function(e) {
+            draggedSegment = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        segment.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+        });
+        
+        segment.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(this.parentNode, e.clientY);
+            if (afterElement == null) {
+                this.parentNode.appendChild(draggedSegment);
             } else {
-                // Adicionar novo treino
-                workoutPlans[athleteId][macrocicloId][weekKey][currentWorkoutDay].push(workoutData);
+                this.parentNode.insertBefore(draggedSegment, afterElement);
             }
+        });
+    });
+}
 
-            localStorage.setItem('workoutPlans', JSON.stringify(workoutPlans));
-            closeWorkoutModal();
-            loadWorkoutsForWeek();
-            alert(editingWorkoutId ? 'Treino atualizado com sucesso!' : 'Treino adicionado com sucesso!');
+// Obter elemento após o drag
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.segment-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
         }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
-        function loadWorkoutsForWeek() {
-            const athleteId = getCurrentAthleteId();
-            const macrocicloId = document.getElementById('macrocicloSelect').value;
-            const weekKey = getWeekKey(currentWorkoutWeek);
-            
-            if (!athleteId || !macrocicloId) return;
-
-            const weekWorkouts = workoutPlans[athleteId]?.[macrocicloId]?.[weekKey] || {};
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            
-            days.forEach(day => {
-                const dayWorkouts = weekWorkouts[day] || [];
-                const contentElement = document.getElementById(day + 'Workout');
-                
-                if (dayWorkouts.length > 0) {
-                    contentElement.innerHTML = dayWorkouts.map(workout => `
-                        <div class="workout-card">
-                            <div class="workout-header">
-                                <div class="workout-type">${workout.type}</div>
-                                <div class="workout-zone zone-${workout.zone}-bg">Zona ${workout.zone}</div>
-                            </div>
-                            <div class="workout-details">
-                                ${workout.distance ? `📏 ${workout.distance}km` : ''}
-                                ${workout.duration ? `⏱️ ${workout.duration}min` : ''}
-                                ${workout.pace ? `🏃‍♂️ ${workout.pace}` : ''}
-                                ${workout.intensity ? `💪 ${workout.intensity}` : ''}
-                            </div>
-                            <div class="workout-actions">
-                                <button class="workout-action-btn edit" onclick="editWorkout('${workout.id}', '${day}')" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="workout-action-btn delete" onclick="deleteWorkout('${workout.id}', '${day}')" title="Excluir">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('') + `
-                        <button class="add-workout-btn" onclick="addWorkout('${day}')">
-                            <i class="fas fa-plus"></i> Adicionar Treino
-                        </button>
-                    `;
-                } else {
-                    contentElement.innerHTML = `
-                        <button class="add-workout-btn" onclick="addWorkout('${day}')">
-                            <i class="fas fa-plus"></i> Adicionar Treino
-                        </button>
-                    `;
-                }
-            });
-
-            updateWeekSummary(weekWorkouts);
+// Mover treino entre dias
+function moveTraining(fromDay, toDay, trainingIndex) {
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    
+    if (trainingData[athleteId]?.[weekKey]?.[fromDay]?.[trainingIndex]) {
+        const training = trainingData[athleteId][weekKey][fromDay][trainingIndex];
+        
+        // Remover do dia original
+        trainingData[athleteId][weekKey][fromDay].splice(trainingIndex, 1);
+        if (trainingData[athleteId][weekKey][fromDay].length === 0) {
+            delete trainingData[athleteId][weekKey][fromDay];
         }
+        
+        // Adicionar ao novo dia
+        if (!trainingData[athleteId][weekKey][toDay]) {
+            trainingData[athleteId][weekKey][toDay] = [];
+        }
+        trainingData[athleteId][weekKey][toDay].push(training);
+        
+        localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+        renderTrainingGrid();
+        updateWeekStats();
+    }
+}
 
-        function updateWeekSummary(weekWorkouts) {
-            let totalVolume = 0;
-            let totalTime = 0;
-            let totalWorkouts = 0;
-            const zoneCount = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-
-            Object.values(weekWorkouts).forEach(dayWorkouts => {
-                dayWorkouts.forEach(workout => {
-                    totalWorkouts++;
-                    if (workout.distance) totalVolume += workout.distance;
-                    if (workout.duration) totalTime += workout.duration;
-                    if (workout.zone) zoneCount[workout.zone]++;
-                });
-            });
-
-            // Zona principal (mais utilizada)
-            const mainZone = Object.entries(zoneCount).reduce((a, b) => 
-                zoneCount[a[0]] > zoneCount[b[0]] ? a : b
+// Copiar semana
+function copyWeek() {
+    if (currentTrainingWeek === 0) {
+        alert('Não há semana anterior para copiar.');
+        return;
+    }
+    
+    if (confirm('Deseja copiar os treinos da semana anterior?')) {
+        const athleteId = Object.keys(athletesData).find(id => 
+            athletesData[id].name === currentAthlete.name
+        );
+        
+        const previousWeek = `week_${currentTrainingWeek - 1}`;
+        const currentWeek = `week_${currentTrainingWeek}`;
+        
+        if (trainingData[athleteId]?.[previousWeek]) {
+            if (!trainingData[athleteId]) trainingData[athleteId] = {};
+            
+            // Copiar dados da semana anterior
+            trainingData[athleteId][currentWeek] = JSON.parse(
+                JSON.stringify(trainingData[athleteId][previousWeek])
             );
-
-            document.getElementById('weekVolume').textContent = `${totalVolume.toFixed(1)} km`;
-            document.getElementById('weekTime').textContent = `${totalTime} min`;
-            document.getElementById('weekWorkouts').textContent = totalWorkouts;
-            document.getElementById('weekMainZone').textContent = 
-                totalWorkouts > 0 ? `Zona ${mainZone[0]}` : '-';
-        }
-
-        // Atualizar a função switchProfileTab para inicializar planilhas
-        const originalSwitchProfileTab = switchProfileTab;
-        switchProfileTab = function(tabName) {
-            originalSwitchProfileTab.call(this, tabName);
             
-            if (tabName === 'planilhas') {
-                setTimeout(initializeWorkoutSystem, 100);
+            // Salvar e atualizar
+            localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+            renderTrainingGrid();
+            updateWeekStats();
+            alert('Treinos copiados com sucesso!');
+        } else {
+            alert('A semana anterior não possui treinos.');
+        }
+    }
+}
+
+// Limpar semana
+function clearWeek() {
+    if (confirm('Tem certeza que deseja limpar todos os treinos desta semana?')) {
+        const athleteId = Object.keys(athletesData).find(id => 
+            athletesData[id].name === currentAthlete.name
+        );
+        
+        const weekKey = `week_${currentTrainingWeek}`;
+        
+        if (trainingData[athleteId]) {
+            delete trainingData[athleteId][weekKey];
+            localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+            renderTrainingGrid();
+            updateWeekStats();
+            alert('Semana limpa com sucesso!');
+        }
+    }
+}
+
+// Exportar semana para PDF
+function exportWeek() {
+    alert('Exportação para PDF será implementada em breve!');
+    // Aqui seria implementada a lógica de exportação usando uma biblioteca como jsPDF
+}
+
+// Salvar planilha
+function savePlanilha() {
+    localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+    alert('Planilha salva com sucesso!');
+}
+
+// Gerar descrição do treino
+function generateTrainingDescription(training) {
+    const typeDescriptions = {
+        continuo: 'Corrida contínua',
+        intervalado: 'Treino intervalado',
+        fartlek: 'Fartlek',
+        tempo: 'Tempo run',
+        longo: 'Longo',
+        progressivo: 'Progressivo',
+        regenerativo: 'Regenerativo',
+        descanso: 'Descanso'
+    };
+    
+    let description = typeDescriptions[training.type] || 'Treino';
+    
+    if (training.effort) {
+        description += ` - ${training.effort}`;
+    }
+    
+    if (training.terrain && training.terrain !== 'plano') {
+        description += ` (${training.terrain})`;
+    }
+    
+    return description;
+}
+
+// Atualizar header da semana
+function updateWeekHeader() {
+    const startDate = new Date('2025-05-26');
+    startDate.setDate(startDate.getDate() + (currentTrainingWeek * 7));
+    
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 6);
+    
+    const formatDate = (date) => {
+        return date.getDate() + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
+    };
+    
+    document.getElementById('weekTitle').textContent = `Semana ${currentTrainingWeek + 1}`;
+    document.getElementById('weekDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}/${startDate.getFullYear()}`;
+    
+    // Aqui você pode adicionar lógica para mostrar o microciclo baseado no planejamento
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    // Por enquanto, apenas mostrar o número da semana como microciclo
+    document.getElementById('weekType').textContent = `Microciclo: ${currentTrainingWeek + 1}`;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Listener para tipo de atividade
+    document.querySelectorAll('.activity-type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.activity-type-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentActivityType = this.dataset.type;
+        });
+    });
+    
+    // Listener para componentes de treino
+    document.querySelectorAll('.component-tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+    });
+    
+    // Listener do formulário principal
+    const trainingForm = document.getElementById('detailedTrainingForm');
+    if (trainingForm) {
+        trainingForm.addEventListener('submit', handleTrainingSubmit);
+    }
+    
+    // Listener do formulário de segmento
+    const segmentForm = document.getElementById('segmentForm');
+    if (segmentForm) {
+        segmentForm.addEventListener('submit', handleSegmentSubmit);
+    }
+    
+    // Listener do formulário de repetição
+    const repetitionForm = document.getElementById('repetitionForm');
+    if (repetitionForm) {
+        repetitionForm.addEventListener('submit', handleRepetitionSubmit);
+    }
+    
+    // Listener para tipo de recuperação
+    const recoveryType = document.getElementById('recoveryType');
+    if (recoveryType) {
+        recoveryType.addEventListener('change', function() {
+            if (this.value === 'tempo') {
+                document.getElementById('recoveryTimeGroup').style.display = 'block';
+                document.getElementById('recoveryDistanceGroup').style.display = 'none';
+            } else if (this.value === 'distancia') {
+                document.getElementById('recoveryTimeGroup').style.display = 'none';
+                document.getElementById('recoveryDistanceGroup').style.display = 'block';
+            } else {
+                document.getElementById('recoveryTimeGroup').style.display = 'none';
+                document.getElementById('recoveryDistanceGroup').style.display = 'none';
             }
-        };
+            updateRepetitionPreview();
+        });
+    }
+    
+    // Listeners para atualizar preview da repetição
+    document.getElementById('repetitionCount')?.addEventListener('input', updateRepetitionPreview);
+    document.getElementById('recoveryMinutes')?.addEventListener('input', updateRepetitionPreview);
+    document.getElementById('recoveryDistance')?.addEventListener('input', updateRepetitionPreview);
+    document.getElementById('recoveryDistanceUnit')?.addEventListener('change', updateRepetitionPreview);
+}
 
-        // Função para gerar planilha automática baseada no macrociclo (funcionalidade futura)
-        function generateAutomaticWorkoutPlan() {
-            // Esta função pode ser implementada para gerar planilhas automáticas
-            // baseadas no tipo de macrociclo e nas zonas calculadas do atleta
-            console.log('Geração automática de planilha - em desenvolvimento');
-        }                        <!-- Aba Planilhas -->
-                        <div id="planilhasTab" class="tab-content">
-                            <!-- Seletor de Macrociclo Ativo -->
-                            <div class="evaluation-section">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                    <h3 class="section-title" style="margin-bottom: 0;">
-                                        <i class="fas fa-calendar-week"></i> Planilhas de Treino
-                                    </h3>
-                                    <div style="display: flex; gap: 12px; align-items: center;">
-                                        <select id="macrocicloSelect" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #d1d5db;">
-                                            <option value="">Selecionar Macrociclo</option>
-                                        </select>
-                                        <button class="btn-primary" onclick="createWorkoutPlan()" id="createPlanBtn" disabled>
-                                            <i class="fas fa-plus"></i> Criar Planilha
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Navegação Semanal -->
-                                <div id="weekNavigation" style="display: none;">
-                                    <div class="period-selector" style="margin-bottom: 20px;">
-                                        <button class="period-navigation" onclick="previousWorkoutWeek()">
-                                            <i class="fas fa-chevron-left"></i> Semana Anterior
-                                        </button>
-                                        <div class="current-period" id="currentWorkoutWeek">
-                                            Semana 1 - 26/05 a 01/06/2025
-                                        </div>
-                                        <button class="period-navigation" onclick="nextWorkoutWeek()">
-                                            Próxima Semana <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+// Handler do formulário de treino
+function handleTrainingSubmit(e) {
+    e.preventDefault();
+    
+    const athleteId = Object.keys(athletesData).find(id => 
+        athletesData[id].name === currentAthlete.name
+    );
+    
+    const weekKey = `week_${currentTrainingWeek}`;
+    const dayId = document.getElementById('trainingDayId').value;
+    const editingIndex = document.getElementById('editingTrainingIndex').value;
+    
+    // Coletar segmentos
+    const segments = [];
+    document.querySelectorAll('.segment-item').forEach(item => {
+        segments.push({
+            title: item.querySelector('.segment-title').textContent,
+            info: item.querySelector('.segment-info').textContent,
+            type: item.querySelector('.segment-type').className.replace('segment-type ', '')
+        });
+    });
+    
+    // Calcular totais baseados nos segmentos
+    let totalDistance = 0;
+    let totalTime = 0;
+    
+    segments.forEach(segment => {
+        const info = segment.info;
+        
+        // Extrair distância
+        const distMatch = info.match(/(\d+(?:\.\d+)?)\s*(km|m)/i);
+        if (distMatch) {
+            const value = parseFloat(distMatch[1]);
+            const unit = distMatch[2].toLowerCase();
+            totalDistance += unit === 'km' ? value : value / 1000;
+        }
+        
+        // Extrair tempo
+        const timeMatch = info.match(/(\d+)\s*min/i);
+        if (timeMatch) {
+            totalTime += parseInt(timeMatch[1]);
+        }
+    });
+    
+    // Criar objeto do treino
+    const trainingInfo = {
+        type: document.getElementById('trainingTypeDetail').value,
+        effort: document.getElementById('trainingEffort').value,
+        terrain: document.getElementById('trainingTerrain').value,
+        notes: document.getElementById('trainingNotes').value,
+        activityType: document.querySelector('.activity-type-btn.active').dataset.type,
+        distance: totalDistance,
+        duration: totalTime,
+        segments: segments,
+        description: segments.length > 0 ? `${segments.length} segmentos` : generateTrainingDescription({
+            type: document.getElementById('trainingTypeDetail').value,
+            effort: document.getElementById('trainingEffort').value,
+            terrain: document.getElementById('trainingTerrain').value
+        })
+    };
+    
+    // Salvar treino
+    if (!trainingData[athleteId]) trainingData[athleteId] = {};
+    if (!trainingData[athleteId][weekKey]) trainingData[athleteId][weekKey] = {};
+    if (!trainingData[athleteId][weekKey][dayId]) trainingData[athleteId][weekKey][dayId] = [];
+    
+    if (editingIndex !== '') {
+        // Editar treino existente
+        trainingData[athleteId][weekKey][dayId][parseInt(editingIndex)] = trainingInfo;
+    } else {
+        // Adicionar novo treino
+        trainingData[athleteId][weekKey][dayId].push(trainingInfo);
+    }
+    
+    // Salvar e atualizar
+    localStorage.setItem('advancedTrainingPlans', JSON.stringify(trainingData));
+    closeDetailedTrainingModal();
+    renderTrainingGrid();
+    updateWeekStats();
+    
+    alert('Treino salvo com sucesso!');
+}
 
-                            <!-- Calendário de Treinos -->
-                            <div id="workoutCalendar" style="display: none;">
-                                <div class="workout-week-grid">
-                                    <div class="workout-day" data-day="monday">
-                                        <div class="day-header">
-                                            <h4>Segunda-feira</h4>
-                                            <span class="day-date" id="mondayDate">26/05</span>
-                                        </div>
-                                        <div class="workout-content" id="mondayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('monday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="tuesday">
-                                        <div class="day-header">
-                                            <h4>Terça-feira</h4>
-                                            <span class="day-date" id="tuesdayDate">27/05</span>
-                                        </div>
-                                        <div class="workout-content" id="tuesdayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('tuesday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="wednesday">
-                                        <div class="day-header">
-                                            <h4>Quarta-feira</h4>
-                                            <span class="day-date" id="wednesdayDate">28/05</span>
-                                        </div>
-                                        <div class="workout-content" id="wednesdayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('wednesday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="thursday">
-                                        <div class="day-header">
-                                            <h4>Quinta-feira</h4>
-                                            <span class="day-date" id="thursdayDate">29/05</span>
-                                        </div>
-                                        <div class="workout-content" id="thursdayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('thursday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="friday">
-                                        <div class="day-header">
-                                            <h4>Sexta-feira</h4>
-                                            <span class="day-date" id="fridayDate">30/05</span>
-                                        </div>
-                                        <div class="workout-content" id="fridayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('friday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="saturday">
-                                        <div class="day-header">
-                                            <h4>Sábado</h4>
-                                            <span class="day-date" id="saturdayDate">31/05</span>
-                                        </div>
-                                        <div class="workout-content" id="saturdayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('saturday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="workout-day" data-day="sunday">
-                                        <div class="day-header">
-                                            <h4>Domingo</h4>
-                                            <span class="day-date" id="sundayDate">01/06</span>
-                                        </div>
-                                        <div class="workout-content" id="sundayWorkout">
-                                            <button class="add-workout-btn" onclick="addWorkout('sunday')">
-                                                <i class="fas fa-plus"></i> Adicionar Treino
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+// Handler do formulário de segmento
+function handleSegmentSubmit(e) {
+    e.preventDefault();
+    
+    const segmentType = document.getElementById('segmentType').value;
+    const durationType = document.getElementById('durationType').value;
+    const intensity = document.getElementById('segmentIntensity').value;
+    const note = document.getElementById('segmentNote').value;
+    
+    let title = '';
+    let info = '';
+    
+    // Criar título baseado no tipo
+    const typeNames = {
+        correr: 'Correr',
+        caminhar: 'Caminhar',
+        sprint: 'Sprint',
+        educativo: 'Educativo',
+        descanso: 'Descanso'
+    };
+    
+    title = typeNames[segmentType] || 'Segmento';
+    
+    // Adicionar duração ao título e info
+    if (durationType === 'distancia') {
+        const distance = document.getElementById('segmentDistance').value;
+        const unit = document.getElementById('distanceUnit').value;
+        title += ` ${distance}${unit}`;
+        info += `Distância: ${distance}${unit}`;
+    } else {
+        const minutes = document.getElementById('segmentMinutes').value || 0;
+        const seconds = document.getElementById('segmentSeconds').value || 0;
+        const totalMin = parseInt(minutes) + (parseInt(seconds) / 60);
+        title += ` ${minutes}min`;
+        if (seconds > 0) title += `${seconds}s`;
+        info += `Tempo: ${minutes}min`;
+        if (seconds > 0) info += `${seconds}s`;
+    }
+    
+    // Adicionar intensidade
+    title += ` ${intensity}`;
+    info += ` | Intensidade: ${intensity}`;
+    
+    // Adicionar observação se houver
+    if (note) {
+        info += ` | ${note}`;
+    }
+    
+    // Determinar tipo para cor
+    let colorType = 'principal';
+    if (segmentType === 'educativo') colorType = 'educativos';
+    else if (segmentType === 'descanso') colorType = 'regenerativo';
+    else if (intensity === 'leve' || intensity === 'livre') colorType = 'aquecimento';
+    else if (intensity === 'muito-forte' || intensity === 'maximo') colorType = 'intervalado';
+    
+    // Adicionar segmento
+    addSegmentToList({
+        title: title,
+        info: info,
+        type: colorType
+    });
+    
+    closeSegmentModal();
+}
 
-                                <!-- Resumo da Semana -->
-                                <div class="week-summary">
-                                    <h4 style="margin-bottom: 12px;"><i class="fas fa-chart-bar"></i> Resumo da Semana</h4>
-                                    <div class="summary-grid">
-                                        <div class="summary-item">
-                                            <span class="summary-label">Volume Total</span>
-                                            <span class="summary-value" id="weekVolume">0 km</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <span class="summary-label">Tempo Total</span>
-                                            <span class="summary-value" id="weekTime">0 min</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <span class="summary-label">Treinos</span>
-                                            <span class="summary-value" id="weekWorkouts">0</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <span class="summary-label">Zona Principal</span>
-                                            <span class="summary-value" id="weekMainZone">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+// Handler do formulário de repetição
+function handleRepetitionSubmit(e) {
+    e.preventDefault();
+    
+    const count = document.getElementById('repetitionCount').value;
+    const recoveryType = document.getElementById('recoveryType').value;
+    
+    // Criar grupo de repetição
+    const segments = document.querySelectorAll('.segment-item');
+    const segmentsToRepeat = [];
+    
+    segments.forEach(segment => {
+        segmentsToRepeat.push({
+            title: segment.querySelector('.segment-title').textContent,
+            info: segment.querySelector('.segment-info').textContent,
+            type: segment.querySelector('.segment-type').className.replace('segment-type ', '')
+        });
+    });
+    
+    // Adicionar repetições
+    for (let i = 0; i < count; i++) {
+        // Adicionar segmentos
+        segmentsToRepeat.forEach(segment => {
+            addSegmentToList(segment);
+        });
+        
+        // Adicionar recuperação (exceto na última)
+        if (i < count - 1 && recoveryType !== 'completa') {
+            let recoverySegment = {
+                title: '',
+                info: '',
+                type: 'regenerativo'
+            };
+            
+            if (recoveryType === 'tempo') {
+                const minutes = document.getElementById('recoveryMinutes').value;
+                recoverySegment.title = `Recuperação ${minutes}min`;
+                recoverySegment.info = `Tempo: ${minutes}min | Intensidade: recuperação`;
+            } else {
+                const distance = document.getElementById('recoveryDistance').value;
+                const unit = document.getElementById('recoveryDistanceUnit').value;
+                recoverySegment.title = `Recuperação ${distance}${unit}`;
+                recoverySegment.info = `Distância: ${distance}${unit} | Intensidade: recuperação`;
+            }
+            
+            addSegmentToList(recoverySegment);
+        }
+    }
+    
+    closeRepetitionModal();
+}
 
-                            <!-- Estado vazio -->
-                            <div id="emptyWorkoutState" class="empty-state">
-                                <i class="fas fa-calendar-alt"></i>
-                                <h3>Selecione um Macrociclo</h3>
-                                <p>Escolha um macrociclo ativo para começar a criar planilhas de treino</p>
-                            </div>
-                        </div>
+// Modificar a função switchProfileTab para usar a nova planilha
+const originalSwitchTab = window.switchProfileTab;
+window.switchProfileTab = function(tabName) {
+    if (typeof originalSwitchTab === 'function') {
+        originalSwitchTab(tabName);
+    }
+    
+    // Remover active de todas as abas
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // Ativar aba selecionada
+    event.target.classList.add('active');
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    if (tabName === 'planilhas') {
+        initializeAdvancedPlanilha();
+    }
+    
+    // Se for aba de eventos, carregar eventos do atleta
+    if (tabName === 'eventos') {
+        loadAthleteEvents();
+    }
+};
+</script>
 
                         <!-- Aba Eventos -->
                         <div id="eventosTab" class="tab-content">
