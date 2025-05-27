@@ -1669,8 +1669,128 @@
 
                         <!-- Aba Planejamento -->
                         <div id="planejamentoTab" class="tab-content">
-                            <h3 style="margin-bottom: 20px;">Planejamento de Macrociclo</h3>
-                            <p style="color: #6b7280; margin-bottom: 30px;">Esta funcionalidade estará disponível em breve.</p>
+                            <div class="planilhas-container">
+                                <!-- Header do Planejamento -->
+                                <div class="planilha-header">
+                                    <div class="view-toggle">
+                                        <button class="view-btn active">
+                                            <i class="fas fa-calendar-alt"></i> Macrociclos
+                                        </button>
+                                        <button class="view-btn">
+                                            <i class="fas fa-chart-line"></i> Periodização
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="planilha-week-header">
+                                        <div class="week-title-group">
+                                            <h3 class="week-title">Planejamento de Macrociclo</h3>
+                                            <span class="week-dates">Estruturação e Periodização</span>
+                                            <span class="week-type">Temporada 2025</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="planilha-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>0 Macrociclos</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>0 Semanas</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-target"></i>
+                                            <span>0 Objetivos</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Seção para criar novo planejamento -->
+                                <div class="quick-templates">
+                                    <h4><i class="fas fa-plus-circle"></i> Criar Novo Planejamento</h4>
+                                    
+                                    <form id="macroForm" style="margin-top: 16px;">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="macroNome">Nome do Macrociclo</label>
+                                                <input type="text" id="macroNome" required placeholder="Ex: Base Geral" class="search-input">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="macroObs">Objetivo / Observação</label>
+                                                <input type="text" id="macroObs" placeholder="Descreva o foco deste período..." class="search-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="inicioMacro">Início</label>
+                                                <input type="date" id="inicioMacro" required class="search-input">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fimMacro">Término</label>
+                                                <input type="date" id="fimMacro" required class="search-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="semanasMacro">Semanas</label>
+                                                <input type="number" id="semanasMacro" min="1" required readonly style="background: #f3f4f6;" class="search-input">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="mesociclos">Distribuição dos Mesociclos</label>
+                                                <input type="text" id="mesociclos" placeholder="Ex: 4,3,4 (3 mesociclos com 4, 3 e 4 semanas)" class="search-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="templates-list" style="margin-top: 16px;">
+                                            <button type="button" class="template-btn" onclick="gerarPlanejamentoPersonalizado()">
+                                                <i class="fas fa-layer-group"></i> Gerar Estrutura
+                                            </button>
+                                            <button type="button" class="template-btn" id="salvarBtn" style="background: #10b981; color: white;">
+                                                <i class="fas fa-save"></i> Salvar Planejamento
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <div id="mesoResultado" style="margin-top: 24px; display: none;">
+                                        <h4 style="margin-bottom: 12px; color: #1f2937;">Estrutura do Plano:</h4>
+                                        <div id="estruturaMesociclos"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de Macrociclos Salvos -->
+                                <div class="training-grid" style="grid-template-columns: 1fr; gap: 16px;">
+                                    <div class="day-card" style="min-height: auto;">
+                                        <div class="day-header">
+                                            <h4 class="day-name"><i class="fas fa-clipboard-list"></i> Macrociclos Salvos</h4>
+                                            <div class="day-date">Planejamentos criados</div>
+                                        </div>
+                                        <div class="day-content" id="listaMacrociclos">
+                                            <div class="empty-day" style="height: auto; padding: 40px;">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <p>Nenhum macrociclo salvo ainda</p>
+                                                <small style="color: #9ca3af; margin-top: 8px; display: block;">
+                                                    Crie um novo planejamento acima para começar
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botões de ação -->
+                                <div class="planilha-actions-bottom">
+                                    <button class="btn-action-planilha" onclick="exportPlanejamento()">
+                                        <i class="fas fa-file-export"></i> Exportar Planejamento
+                                    </button>
+                                    <button class="btn-action-planilha" onclick="importPlanejamento()">
+                                        <i class="fas fa-file-import"></i> Importar Planejamento
+                                    </button>
+                                    <button class="btn-action-planilha primary" onclick="savePlanejamentos()">
+                                        <i class="fas fa-save"></i> Salvar Alterações
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Aba Planilhas -->
@@ -2329,6 +2449,14 @@
                 }, 200);
             }
             
+            // Inicializar planejamento se for a aba de planejamento
+            if (tabName === 'planejamento') {
+                console.log('Inicializando planejamento...');
+                setTimeout(() => {
+                    initializePlanejamento();
+                }, 200);
+            }
+            
             // Se for aba de eventos, carregar eventos do atleta
             if (tabName === 'eventos') {
                 loadAthleteEvents();
@@ -2765,7 +2893,278 @@
             }
         }
 
-        // === FUNÇÕES DE EVENTOS ===
+        // === FUNÇÕES DO PLANEJAMENTO ===
+        
+        let macrociclosSalvos = JSON.parse(localStorage.getItem('macrociclosSalvos') || '[]');
+
+        // Inicializar planejamento quando necessário
+        function initializePlanejamento() {
+            console.log('Inicializando planejamento');
+            listarMacrociclos();
+            setupPlanejamentoListeners();
+        }
+
+        // Setup dos listeners do planejamento
+        function setupPlanejamentoListeners() {
+            const inicioMacroInput = document.getElementById('inicioMacro');
+            const fimMacroInput = document.getElementById('fimMacro');
+            const semanasMacroInput = document.getElementById('semanasMacro');
+            const salvarBtn = document.getElementById('salvarBtn');
+            
+            if (inicioMacroInput) inicioMacroInput.addEventListener('change', calcularSemanas);
+            if (fimMacroInput) fimMacroInput.addEventListener('change', calcularSemanas);
+            if (semanasMacroInput) semanasMacroInput.addEventListener('input', ajustarFimPorSemanas);
+            if (salvarBtn) salvarBtn.addEventListener('click', salvarMacrociclo);
+        }
+
+        // Calcular semanas automaticamente
+        function calcularSemanas() {
+            const inicio = new Date(document.getElementById('inicioMacro').value);
+            const fim = new Date(document.getElementById('fimMacro').value);
+            if (inicio && fim && fim > inicio) {
+                const diff = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+                const semanas = Math.ceil(diff / 7);
+                document.getElementById('semanasMacro').value = semanas;
+            } else {
+                document.getElementById('semanasMacro').value = '';
+            }
+        }
+
+        // Ajustar fim por semanas
+        function ajustarFimPorSemanas() {
+            const inicio = new Date(document.getElementById('inicioMacro').value);
+            const semanas = parseInt(document.getElementById('semanasMacro').value);
+            if (inicio && semanas > 0) {
+                const fim = new Date(inicio);
+                fim.setDate(fim.getDate() + (semanas * 7) - 1);
+                document.getElementById('fimMacro').value = fim.toISOString().split('T')[0];
+            }
+        }
+
+        // Gerar planejamento personalizado
+        function gerarPlanejamentoPersonalizado() {
+            try {
+                const nome = document.getElementById('macroNome').value.trim();
+                const obs = document.getElementById('macroObs').value.trim();
+                const inicio = new Date(document.getElementById('inicioMacro').value);
+                const semanas = parseInt(document.getElementById('semanasMacro').value);
+                const inputMesos = document.getElementById('mesociclos').value.trim();
+
+                if (!nome || !inicio || semanas <= 0 || !inputMesos) {
+                    alert('Preencha todos os campos corretamente.');
+                    return;
+                }
+
+                // Processar distribuição dos mesociclos
+                const distribuicao = inputMesos.split(',').map(s => {
+                    const num = parseInt(s.trim());
+                    if (isNaN(num) || num <= 0) {
+                        throw new Error(`Valor inválido: "${s.trim()}". Use apenas números positivos.`);
+                    }
+                    return num;
+                });
+
+                const soma = distribuicao.reduce((a, b) => a + b, 0);
+                if (soma !== semanas) {
+                    alert(`A soma das semanas dos mesociclos (${soma}) não corresponde ao total informado (${semanas}).`);
+                    return;
+                }
+
+                const estrutura = document.getElementById('estruturaMesociclos');
+                estrutura.innerHTML = '';
+
+                const tiposMesociclo = ['Base Geral', 'Específico', 'Polimento', 'Competitivo'];
+                const tiposMicro = ['Adaptativa', 'Choque', 'Regenerativa'];
+
+                let semanaAtual = 1;
+                distribuicao.forEach((semanasNeste, m) => {
+                    const inicioSemana = semanaAtual;
+                    const fimSemana = semanaAtual + semanasNeste - 1;
+                    semanaAtual = fimSemana + 1;
+
+                    const bloco = document.createElement('div');
+                    bloco.className = 'day-card';
+                    bloco.style.marginBottom = '16px';
+                    bloco.style.minHeight = 'auto';
+
+                    const selectMesociclo = document.createElement('select');
+                    selectMesociclo.style.marginLeft = '8px';
+                    selectMesociclo.style.padding = '8px 12px';
+                    selectMesociclo.style.borderRadius = '6px';
+                    selectMesociclo.style.border = '1px solid #d1d5db';
+                    selectMesociclo.className = 'search-input';
+                    
+                    tiposMesociclo.forEach(tipo => {
+                        const opt = document.createElement('option');
+                        opt.value = tipo;
+                        opt.textContent = tipo;
+                        selectMesociclo.appendChild(opt);
+                    });
+
+                    bloco.innerHTML = `
+                        <div class="day-header">
+                            <h4 class="day-name">Mesociclo ${m + 1}</h4>
+                            <div class="day-date">Semanas ${inicioSemana} a ${fimSemana}</div>
+                        </div>
+                        <div class="day-content">
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo do Mesociclo:</label>
+                            </div>
+                            <div id="semanas-${m}" style="margin-top: 16px;"></div>
+                        </div>
+                    `;
+
+                    bloco.querySelector('.day-content').insertBefore(selectMesociclo, bloco.querySelector('#semanas-' + m));
+
+                    const listaSemanas = document.getElementById('semanas-' + m);
+                    
+                    for (let i = 0; i < semanasNeste; i++) {
+                        const semana = inicioSemana + i;
+                        const semanaDiv = document.createElement('div');
+                        semanaDiv.style.display = 'flex';
+                        semanaDiv.style.alignItems = 'center';
+                        semanaDiv.style.justifyContent = 'space-between';
+                        semanaDiv.style.margin = '8px 0';
+                        semanaDiv.style.padding = '8px';
+                        semanaDiv.style.background = '#f9fafb';
+                        semanaDiv.style.borderRadius = '6px';
+                        
+                        const selectMicro = document.createElement('select');
+                        selectMicro.style.padding = '6px 12px';
+                        selectMicro.style.borderRadius = '4px';
+                        selectMicro.style.border = '1px solid #d1d5db';
+                        selectMicro.className = 'search-input';
+                        selectMicro.style.width = '150px';
+                        
+                        tiposMicro.forEach(tipo => {
+                            const opt = document.createElement('option');
+                            opt.value = tipo;
+                            opt.textContent = tipo;
+                            selectMicro.appendChild(opt);
+                        });
+                        
+                        semanaDiv.innerHTML = `<span style="font-weight: 500;">Semana ${semana}:</span>`;
+                        semanaDiv.appendChild(selectMicro);
+                        listaSemanas.appendChild(semanaDiv);
+                    }
+
+                    estrutura.appendChild(bloco);
+                });
+
+                document.getElementById('mesoResultado').style.display = 'block';
+                
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+        }
+
+        // Salvar macrociclo
+        function salvarMacrociclo() {
+            const novo = {
+                id: Date.now().toString(),
+                nome: document.getElementById('macroNome').value.trim(),
+                objetivo: document.getElementById('macroObs').value.trim(),
+                inicio: document.getElementById('inicioMacro').value,
+                fim: document.getElementById('fimMacro').value,
+                semanas: document.getElementById('semanasMacro').value,
+                distribuicao: document.getElementById('mesociclos').value.trim()
+            };
+
+            if (!novo.nome || !novo.objetivo || !novo.inicio || !novo.fim || !novo.semanas || !novo.distribuicao) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            macrociclosSalvos.push(novo);
+            localStorage.setItem('macrociclosSalvos', JSON.stringify(macrociclosSalvos));
+            listarMacrociclos();
+            alert("Macrociclo salvo!");
+            document.getElementById('macroForm').reset();
+            document.getElementById('mesoResultado').style.display = 'none';
+        }
+
+        // Listar macrociclos salvos
+        function listarMacrociclos() {
+            const div = document.getElementById('listaMacrociclos');
+            if (!div) return;
+
+            if (macrociclosSalvos.length === 0) {
+                div.innerHTML = `
+                    <div class="empty-day" style="height: auto; padding: 40px;">
+                        <i class="fas fa-calendar-alt"></i>
+                        <p>Nenhum macrociclo salvo ainda</p>
+                        <small style="color: #9ca3af; margin-top: 8px; display: block;">
+                            Crie um novo planejamento acima para começar
+                        </small>
+                    </div>
+                `;
+                return;
+            }
+
+            div.innerHTML = macrociclosSalvos.map(m => `
+                <div class="training-card continuo" style="margin-bottom: 12px;">
+                    <div class="training-type">${m.nome}</div>
+                    <div class="training-details">${m.objetivo}</div>
+                    <div class="training-info">
+                        <span><i class="fas fa-calendar"></i> ${m.inicio} a ${m.fim}</span>
+                        <span><i class="fas fa-clock"></i> ${m.semanas} semanas</span>
+                        <span><i class="fas fa-layer-group"></i> ${m.distribuicao}</span>
+                    </div>
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <button class="template-btn" onclick="editarMacrociclo('${m.id}')" style="background: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="template-btn" onclick="excluirMacrociclo('${m.id}')" style="background: #ef4444; color: white; padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Excluir macrociclo
+        function excluirMacrociclo(id) {
+            const i = macrociclosSalvos.findIndex(m => m.id === id);
+            if (i >= 0) {
+                if (confirm("Confirma exclusão?")) {
+                    macrociclosSalvos.splice(i, 1);
+                    localStorage.setItem('macrociclosSalvos', JSON.stringify(macrociclosSalvos));
+                    listarMacrociclos();
+                }
+            }
+        }
+
+        // Editar macrociclo
+        function editarMacrociclo(id) {
+            const m = macrociclosSalvos.find(m => m.id === id);
+            if (!m) return;
+
+            document.getElementById('macroNome').value = m.nome;
+            document.getElementById('macroObs').value = m.objetivo;
+            document.getElementById('inicioMacro').value = m.inicio;
+            document.getElementById('fimMacro').value = m.fim;
+            document.getElementById('semanasMacro').value = m.semanas;
+            document.getElementById('mesociclos').value = m.distribuicao;
+
+            excluirMacrociclo(id);
+            alert("Edite os dados e clique em SALVAR para atualizar.");
+        }
+
+        // Exportar planejamento
+        function exportPlanejamento() {
+            alert('Exportação de planejamento será implementada em breve!');
+        }
+
+        // Importar planejamento
+        function importPlanejamento() {
+            alert('Importação de planejamento será implementada em breve!');
+        }
+
+        // Salvar planejamentos
+        function savePlanejamentos() {
+            localStorage.setItem('macrociclosSalvos', JSON.stringify(macrociclosSalvos));
+            alert('Planejamentos salvos com sucesso!');
+        }
 
         function openEventModal(eventId = null) {
             editingEventId = eventId;
