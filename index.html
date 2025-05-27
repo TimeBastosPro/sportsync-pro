@@ -1443,7 +1443,7 @@
                         <button class="profile-tab" onclick="switchProfileTab('planejamento')">
                             <i class="fas fa-calendar-alt"></i> Planejamento
                         </button>
-                        <button class="profile-tab" onclick="switchProfileTab('planilhas')">
+                        <button class="profile-tab" onclick="switchProfileTab('planilhas'); setTimeout(() => { if(currentAthlete) initializeAdvancedPlanilha(); }, 100);">
                             <i class="fas fa-file-excel"></i> Planilhas
                         </button>
                         <button class="profile-tab" onclick="switchProfileTab('eventos')">
