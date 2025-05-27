@@ -1915,7 +1915,11 @@ function saveEditedFields(section) {
 
   document.addEventListener('DOMContentLoaded', () => {
     listarMacrociclos();
-    document.getElementById('salvarBtn').addEventListener('click', salvarMacrociclo);
+   document.body.addEventListener('click', function(event) {
+        if (event.target && event.target.id === 'salvarBtn') {
+            salvarMacrociclo();
+        }
+    });
   });
 </script>
 <!-- Aba Planilhas -->
