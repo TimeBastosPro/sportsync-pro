@@ -2304,6 +2304,8 @@
 
         // Função para trocar aba do perfil
         function switchProfileTab(tabName) {
+            console.log('Mudando para aba:', tabName);
+            
             // Remover active de todas as abas
             document.querySelectorAll('.profile-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -2314,13 +2316,17 @@
 
             // Ativar aba selecionada
             event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
+            const tabContent = document.getElementById(tabName + 'Tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
             
             // Inicializar planilha se for a aba de planilhas
             if (tabName === 'planilhas') {
+                console.log('Inicializando planilha...');
                 setTimeout(() => {
                     initializeAdvancedPlanilha();
-                }, 100);
+                }, 200);
             }
             
             // Se for aba de eventos, carregar eventos do atleta
@@ -2333,12 +2339,40 @@
 
         // Inicializar planilha quando a aba for aberta
         function initializeAdvancedPlanilha() {
-            if (!currentAthlete) return;
+            console.log('Função initializeAdvancedPlanilha chamada');
+            console.log('currentAthlete:', currentAthlete);
+            
+            if (!currentAthlete) {
+                console.log('Nenhum atleta selecionado');
+                return;
+            }
             
             console.log('Inicializando planilha para:', currentAthlete.name);
-            renderTrainingGrid();
-            updateWeekHeader();
-            updateWeekStats();
+            
+            // Verificar se os elementos existem
+            const grid = document.getElementById('trainingGrid');
+            const weekTitle = document.getElementById('weekTitle');
+            const weekDates = document.getElementById('weekDates');
+            
+            console.log('Elementos encontrados:', {
+                grid: !!grid,
+                weekTitle: !!weekTitle, 
+                weekDates: !!weekDates
+            });
+            
+            if (!grid) {
+                console.error('Elemento trainingGrid não encontrado!');
+                return;
+            }
+            
+            try {
+                renderTrainingGrid();
+                updateWeekHeader();
+                updateWeekStats();
+                console.log('Planilha inicializada com sucesso');
+            } catch (error) {
+                console.error('Erro ao inicializar planilha:', error);
+            }
         }
 
         // Alternar visualização
@@ -2356,29 +2390,45 @@
 
         // Renderizar grid de treinos
         function renderTrainingGrid() {
-            const grid = document.getElementById('trainingGrid');
-            if (!grid) return;
+            console.log('Função renderTrainingGrid chamada');
             
+            const grid = document.getElementById('trainingGrid');
+            if (!grid) {
+                console.error('Grid não encontrado!');
+                return;
+            }
+            
+            console.log('Limpando grid...');
             grid.innerHTML = '';
             
             const athleteId = Object.keys(athletesData).find(id => 
                 athletesData[id].name === currentAthlete.name
             );
             
+            console.log('AthleteId encontrado:', athleteId);
+            
             const weekKey = `week_${currentTrainingWeek}`;
             const weekData = trainingData[athleteId]?.[weekKey] || {};
+            
+            console.log('Dados da semana:', weekData);
             
             // Calcular data inicial da semana
             const startDate = new Date('2025-05-26');
             startDate.setDate(startDate.getDate() + (currentTrainingWeek * 7));
             
+            console.log('Criando cards dos dias...');
+            
             Object.entries(weekDaysData).forEach(([key, day], index) => {
+                console.log(`Criando card para ${day.name}`);
+                
                 const dayDate = new Date(startDate);
                 dayDate.setDate(dayDate.getDate() + index);
                 
                 const dayCard = createDayCard(day, dayDate, weekData[day.id]);
                 grid.appendChild(dayCard);
             });
+            
+            console.log('Grid renderizado com sucesso');
         }
 
         // Criar card de dia
@@ -2683,6 +2733,8 @@
 
         // Atualizar header da semana
         function updateWeekHeader() {
+            console.log('Atualizando header da semana');
+            
             const startDate = new Date('2025-05-26');
             startDate.setDate(startDate.getDate() + (currentTrainingWeek * 7));
             
@@ -2693,9 +2745,24 @@
                 return date.getDate() + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
             };
             
-            document.getElementById('weekTitle').textContent = `Semana ${currentTrainingWeek + 1}`;
-            document.getElementById('weekDates').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}/${startDate.getFullYear()}`;
-            document.getElementById('weekType').textContent = `Microciclo: ${currentTrainingWeek + 1}`;
+            const weekTitleEl = document.getElementById('weekTitle');
+            const weekDatesEl = document.getElementById('weekDates');
+            const weekTypeEl = document.getElementById('weekType');
+            
+            if (weekTitleEl) {
+                weekTitleEl.textContent = `Semana ${currentTrainingWeek + 1}`;
+                console.log('Título da semana atualizado');
+            }
+            
+            if (weekDatesEl) {
+                weekDatesEl.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}/${startDate.getFullYear()}`;
+                console.log('Datas da semana atualizadas');
+            }
+            
+            if (weekTypeEl) {
+                weekTypeEl.textContent = `Microciclo: ${currentTrainingWeek + 1}`;
+                console.log('Tipo da semana atualizado');
+            }
         }
 
         // === FUNÇÕES DE EVENTOS ===
